@@ -7,12 +7,24 @@ package frc.robot.subsystems.swerve;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.StateSpaceUtil;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 public class SwerveModule extends SubsystemBase {
 	
@@ -25,6 +37,9 @@ public class SwerveModule extends SubsystemBase {
 	Translation2d motorMeters;
 	
 	PIDController steerPID = new PIDController(.01, 0, 0);
+
+	
+	Timer distanceTimer, distanceXTimer, distanceYTimer;
 	
 	double unoptimizedRotation;
 	
@@ -32,24 +47,28 @@ public class SwerveModule extends SubsystemBase {
 	
 	double encoderOffset;
 	
-	double encoderValue;
+	// double encoderValue;
 	
 	double steerSpeed;
 	
 	double driveSpeed;
 	
 	double drivePercent;
+
+	double initialVelocity = 0;
 	
 	/**
 	 * Uses the average RPM of the motor, along with the circumference of the
 	 * wheel, to calculate an approximate voltage value when given a speed in
 	 * meters per second. 
 	 */
-	private double maxSpeed = (5500 / 60.) * .1 / 3;
+	private double maxSpeed = 11.5;
 	
 	double finalAngle;
 	
 	double regulatedAngle;
+
+	boolean hasBeenEnabled = false;
 	
 	private CANSparkMax initializeMotor(int motorID) {
 		
@@ -77,11 +96,128 @@ public class SwerveModule extends SubsystemBase {
 		steerPID.enableContinuousInput(-180, 180);
 		this.motorMeters = motorMeters;
 		steerPID.setTolerance(1);
-		
+		distanceTimer = new Timer();
+		distanceXTimer = new Timer();
+		distanceYTimer = new Timer();
+		distanceTimer.restart();
+		distanceXTimer.start();
+		distanceYTimer.start();
+	}
+
+	double 
+		displacement = 0, 
+		distanceX = 0, 
+		distanceY = 0, 
+		speedX = 0,
+		speedY = 0,
+		speedHypotenuse = 0, 
+		displacementAngle = 0;
+	
+	private Matrix<N3, N1> newDisplacement;
+	private Vector<N3> finalDisplacement = new Vector<>(Nat.N3());
+	public Vector<N3> getDisplacementVector () {
+		newDisplacement = StateSpaceUtil.poseToVector(new Pose2d(getDistanceX(), getDistanceY(), getEncoderRotation()));
+		finalDisplacement.plus(newDisplacement);
+
+		return new Vector<N3>(StateSpaceUtil.poseToVector(new Pose2d(getDistanceX(), getDistanceY(), getEncoderRotation())));
+	}
+
+	public void resetTimer () {
+		distanceTimer.reset();
+	}
+
+	public SwerveModulePosition getPosition () {
+		return new SwerveModulePosition(getDisplacement(), new Rotation2d(getDistanceX(), getDistanceY()));
+	}
+
+	public double getSpeedX () {
+		return driveSpeed * Math.cos(getEncoderRotation().getRadians());
+	}
+
+	public double getSpeedY () {
+		return driveSpeed * Math.sin(getEncoderRotation().getRadians());
+	}
+
+	private double finalDistanceX;
+	public double getDistanceX () {
+		return distanceTimer.get() * getSpeedX();
+	}
+
+	private double finalDistanceY;
+	public double getDistanceY () {
+		return distanceTimer.get() * getSpeedY();
+	}
+
+	public double getDisplacement () {
+		return Math.sqrt(Math.pow(getDistanceX(), 2) + Math.pow(getDistanceY(), 2));
+	}
+	
+	double 
+		initialDistance = 0,
+		initialX = 0,
+		initialY = 0,
+		absoluteXPosition = 0,
+		absoluteYPosition = 0;
+	public void resetDistanceTimer () {
+		if (DriverStation.isEnabled() && !hasBeenEnabled) {
+			distanceTimer.restart();
+			hasBeenEnabled = true;
+		}
+		else if (DriverStation.isDisabled()) {
+			distanceTimer.stop();
+		}
+		double spd = driveSpeed;
+		double angle = getEncoderRotation().getDegrees();
+
+		Timer.delay(.01); 
+
+		if (spd != driveSpeed && spd != 0 && angle < getEncoderRotation().getDegrees() - 1 && angle > getEncoderRotation().getDegrees() + 1) {
+			initialX = getDistanceX();
+			initialY = getDistanceY();
+			distanceTimer.reset();
+		}
+	}
+
+	public void resetTimerX () {
+		if (DriverStation.isEnabled() && !hasBeenEnabled) {
+			distanceXTimer.restart();
+			hasBeenEnabled = true;
+		}
+		if (DriverStation.isDisabled() && hasBeenEnabled) {
+			distanceXTimer.stop();
+			hasBeenEnabled = false;
+		}
+		double spdX = getSpeedX();
+
+		Timer.delay(.01); 
+
+		if (spdX != getSpeedX() && getSpeedX() != 0) {
+			initialX = getDistanceX() - initialX;
+			distanceXTimer.reset();
+		}
+	}
+
+	public void resetTimerY () {
+		if (DriverStation.isEnabled() && !hasBeenEnabled) {
+			distanceYTimer.restart();
+			hasBeenEnabled = true;
+		}
+		if (DriverStation.isDisabled() && hasBeenEnabled) {
+			distanceYTimer.stop();
+			hasBeenEnabled = false;
+		}
+		double spdY = getSpeedY();
+
+		Timer.delay(.01); 
+
+		if (spdY != getSpeedY() && getSpeedY() != 0) {
+			initialY = getDistanceY() - initialY;
+			distanceYTimer.reset();
+		}
 	}
 	
 	private double metersPerSecondToPercentage(double metersPerSecond) {
-		return metersPerSecond / maxSpeed;
+		return metersPerSecond;
 		
 	}
 	
@@ -91,10 +227,13 @@ public class SwerveModule extends SubsystemBase {
 	 */
 	public void resetEncoder() {
 		
-		encoderOffset = encoder.getAbsolutePosition().getValueAsDouble();
+		encoderOffset = encoder.getAbsolutePosition().getValueAsDouble() * 360;
 		
 	}
 
+	public double getDriveMotorPercentage () {
+		return drivePercent;
+	}
 	
 	/**
 	 * Uses the encoder offset, which is set using the resetEncoders() method, 
@@ -102,7 +241,7 @@ public class SwerveModule extends SubsystemBase {
 	 */
 	public Rotation2d getEncoderRotation() {
 		
-		regulatedAngle = encoder.getAbsolutePosition().getValueAsDouble() - encoderOffset;
+		regulatedAngle = (encoder.getAbsolutePosition().getValueAsDouble() * 360.) - encoderOffset;
 		
 		if (regulatedAngle < -180) regulatedAngle += 360;
 		else if (regulatedAngle > 180) regulatedAngle -= 360;
@@ -164,11 +303,23 @@ public class SwerveModule extends SubsystemBase {
 		
 	}
 	
+	private boolean firstEnable = true;
 	@Override
 	public void periodic() {
 		
+		if (DriverStation.isEnabled() && firstEnable) {
+			distanceTimer.restart();
+			firstEnable = false;
+		}
+		else if (DriverStation.isDisabled()) {
+			distanceTimer.stop();
+			firstEnable = true;
+		}
+		resetTimerX();
+		resetTimerY();
+		distanceX = getDistanceX();
+		distanceY = getDistanceY();
 		// This method will be called once per scheduler run
-		
 	}
 	
 	@Override
@@ -204,12 +355,34 @@ public class SwerveModule extends SubsystemBase {
 			null
 		);
 		
-		builder.addDoubleProperty(
-			"drive-Voltage",
-			() -> drivePercent, 
-			null
-		);
+		// builder.addDoubleProperty(
+		// 	"drive-Percent",
+		// 	() -> drivePercent, 
+		// 	null
+		// );
+
+		// builder.addDoubleProperty(
+		// 	"drive-Voltage", 
+		// 	() -> driveMotor.getBusVoltage(), 
+		// 	null
+		// );
 		
+		// builder.addDoubleProperty(
+		// 	"drive-Current", 
+		// 	() -> driveMotor.getOutputCurrent(), 
+		// 	null
+		// );
+		
+		// builder.addDoubleProperty(
+		// 	"drive-DutyCycle", 
+		// 	() -> driveMotor.get(), 
+		// 	null
+		// );
+
+		builder.addDoubleProperty(
+			"Timer", 
+			() -> distanceTimer.get(), 
+			null);
 	}
 	
 }

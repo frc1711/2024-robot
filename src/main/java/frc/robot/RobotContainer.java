@@ -15,8 +15,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.auton.framework.basic.OdometryAuton;
+import frc.robot.commands.auton.framework.basic.SwerveAuton;
+import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveModule;
+// import frc.robot.subsystems.swerve.Swerve.StartPosition;
 
 public class RobotContainer {
 
@@ -26,16 +30,21 @@ public class RobotContainer {
 	private final DriveCommand driveCommand;
 	private final XboxController driveController;
   	private final SendableChooser<Supplier<Command>> autonChooser;
+	private final SendableChooser<Supplier<Swerve.StartPosition>> startPositionChooser;
 
   public RobotContainer() {
 	driveController = new XboxController(0);
+	startPositionChooser = new SendableChooser<>();
+	configStartPositionChooser();
 
 	flModule = new SwerveModule(IDMap.flSteerMotorID, IDMap.flDriveMotorID, IDMap.flEncoderID, new Translation2d(.43, .41)); //TODO: Update motor positions when using different robots
 	frModule = new SwerveModule(IDMap.frSteerMotorID, IDMap.frDriveMotorID, IDMap.frEncoderID, new Translation2d(.43, -.41));
 	rlModule = new SwerveModule(IDMap.rlSteerMotorID, IDMap.rlDriveMotorID, IDMap.rlEncoderID, new Translation2d(-.43, .41));
 	rrModule = new SwerveModule(IDMap.rrSteerMotorID, IDMap.rrDriveMotorID, IDMap.rrEncoderID, new Translation2d(-.43, -.41));
 	gyro = new AHRS();
-	swerveSubsystem = new Swerve(flModule, frModule, rlModule, rrModule, gyro);
+	swerveSubsystem = new Swerve(flModule, frModule, rlModule, rrModule, gyro,
+	startPositionChooser.getSelected().get()
+	);
     autonChooser = new SendableChooser<>();
 
 	driveCommand = new DriveCommand(
@@ -50,7 +59,6 @@ public class RobotContainer {
 		);
 
 	swerveSubsystem.setDefaultCommand(driveCommand);
-
     configAutonChooser();
   }
 
@@ -62,7 +70,7 @@ public class RobotContainer {
 		Shuffleboard.getTab("Config Window").add(name, sendable);
 		
 	}  
-	
+
 	/**
 	 * Creates a new sendable command in the Analysis Tab of ShuffleBoard.
 	 */
@@ -71,21 +79,31 @@ public class RobotContainer {
 		Command command,
 		boolean canRunWhileDisabled
 	) {
-		
+
 		putSendable(
 			name,
 			command.withName(name).ignoringDisable(canRunWhileDisabled)
 		);
-		
+
 	}
-	
+
 	private void configAutonChooser() {
-		
+		autonChooser.addOption("Odometry Test Auton", () -> new SwerveAuton(swerveSubsystem, 1, 0, 0));
+		autonChooser.addOption("Timed Swerve Auton", () -> new TimedSwerveAuton(swerveSubsystem));
+
 		putSendable("Auton Chooser", autonChooser);
-		
+
+	}
+
+	private void configStartPositionChooser () {
+		startPositionChooser.setDefaultOption("First Station Position", () -> Swerve.StartPosition.STATION_ONE);
+		startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_TWO);
+		startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_THREE);
+
+		putSendable("Start Postion Chooser", startPositionChooser);
 	}
 
   public Command getAutonomousCommand() {
-    return null;
+    return autonChooser.getSelected().get();
   }
 }

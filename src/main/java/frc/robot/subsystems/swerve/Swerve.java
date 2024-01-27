@@ -6,13 +6,20 @@ package frc.robot.subsystems.swerve;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+// import frc.robot.util.Odometry;
 
 public class Swerve extends SubsystemBase {
   
@@ -24,22 +31,45 @@ public class Swerve extends SubsystemBase {
   
   // private Odometry odometry;
 
+  private SwerveDriveOdometry swerveDriveOdometry;
+
+  private SwerveModulePosition[] modulePositions;
+
   private AHRS gyro;
 
   private SwerveDriveKinematics kinematics;
+
+  //TODO: Find coordinates of start positions
+  public enum StartPosition {
+    STATION_ONE (new Translation2d (0, 0), new Rotation2d (0)),
+    STATION_TWO (new Translation2d (0, 0), new Rotation2d (0)),
+    STATION_THREE (new Translation2d (0, 0), new Rotation2d (0));
+    Translation2d translation;
+    Rotation2d rotation;
+    StartPosition (Translation2d translation, Rotation2d rotation) {
+      this.translation = translation;
+        this.rotation = rotation;
+    }
+  }
 
   public Swerve(
     SwerveModule flModule,
     SwerveModule frModule,
     SwerveModule rlModule,
     SwerveModule rrModule,
-    AHRS gyro
+    AHRS gyro,
+    StartPosition startPosition
   ) {
     this.flModule = flModule;
     this.frModule = frModule;
     this.rlModule = rlModule;
     this.rrModule = rrModule;
     this.gyro = gyro;
+    modulePositions = new SwerveModulePosition[4];
+    modulePositions[0] = flModule.getPosition();
+    modulePositions[1] = frModule.getPosition();
+    modulePositions[2] = rlModule.getPosition();
+    modulePositions[3] = rrModule.getPosition();
     // odometry = new Odometry(gyro, Odometry.StartPosition.STATION_ONE);
     kinematics = new SwerveDriveKinematics(
         flModule.motorMeters,
@@ -47,6 +77,7 @@ public class Swerve extends SubsystemBase {
         rlModule.motorMeters,
         rrModule.motorMeters
     );
+    swerveDriveOdometry = new SwerveDriveOdometry(kinematics, getGyroRotation(), modulePositions, new Pose2d(startPosition.translation, getGyroRotation()));
     this.gyro = gyro;
 
     /**Create a new sendable field for each module*/
@@ -60,6 +91,7 @@ public class Swerve extends SubsystemBase {
     /**Create a new sendable command to reset the encoders */
     RobotContainer.putCommand("Reset Encoders", new InstantCommand(this::resetEncoders, this), true);
     RobotContainer.putCommand("Reset Gyro", new InstantCommand(this::resetGyro, this), true);
+    RobotContainer.putCommand("Reset Odometry Timers", new InstantCommand(this::resetDistanceTimers, this), true);
   }
 
   /**Runs the stop() method on each module */
@@ -70,8 +102,32 @@ public class Swerve extends SubsystemBase {
     rrModule.stop();
   }
 
+  public Pose2d updateOdometry () {
+    modulePositions[0] = flModule.getPosition();
+    modulePositions[1] = frModule.getPosition();
+    modulePositions[2] = rlModule.getPosition();
+    modulePositions[3] = rrModule.getPosition();
+    return swerveDriveOdometry.update(getGyroRotation(),  new SwerveDriveWheelPositions(modulePositions));
+  }
+
+  public SwerveDriveWheelPositions getWheelPositions () {
+    modulePositions[0] = flModule.getPosition();
+    modulePositions[1] = frModule.getPosition();
+    modulePositions[2] = rlModule.getPosition();
+    modulePositions[3] = rrModule.getPosition();
+    return new SwerveDriveWheelPositions(modulePositions);
+  }
+
   public void resetGyro() {
     gyro.reset();
+    swerveDriveOdometry.resetPosition(getGyroRotation(), modulePositions, updateOdometry());
+  }
+
+  public void resetDistanceTimers () {
+    flModule.resetTimer();
+    frModule.resetTimer();
+    rlModule.resetTimer();
+    rrModule.resetTimer();
   }
 
   public Rotation2d getGyroRotation () {
@@ -91,7 +147,7 @@ public class Swerve extends SubsystemBase {
   }
 
   public void updateModulesFieldRelative (ChassisSpeeds desiredVelocity, double speedMultiplier) {
-    ChassisSpeeds.fromFieldRelativeSpeeds(desiredVelocity, gyro.getRotation2d());
+    desiredVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(desiredVelocity, gyro.getRotation2d());
     SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(desiredVelocity);
     flModule.update(moduleStates[0], speedMultiplier);
     frModule.update(moduleStates[1], speedMultiplier);
@@ -117,7 +173,13 @@ public class Swerve extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
+    updateOdometry();
+  }
+
+  @Override
+  public void initSendable (SendableBuilder builder) {
+    builder.addDoubleProperty("Swerve Odometry X Component", () -> updateOdometry().getX(), null);
+    builder.addDoubleProperty("Swerve Odometry Y Component", () -> updateOdometry().getY(), null);
   }
   
 }

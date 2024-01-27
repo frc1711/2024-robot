@@ -10,6 +10,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.util.ControlsUtilities;
 
@@ -65,6 +66,8 @@ public class DriveCommand extends Command {
     
     timer = new Timer();
 
+    RobotContainer.putSendable("Swerve Odometry", swerveSubsystem);
+
     addRequirements(swerveSubsystem);
   }
 
@@ -94,9 +97,16 @@ public class DriveCommand extends Command {
     double absoluteNextThetaSpeed = Math.abs(nextThetaSpeed);
 
     // Apply global deadband.
-    nextXSpeed = absoluteNextXSpeed < DriveCommand.X_DEADBAND ?  0 : ControlsUtilities.enforceMaximumPositiveDelta(currentXSpeed, nextXSpeed, X_MAX_ACCELERATION);
-    nextYSpeed = absoluteNextYSpeed < DriveCommand.Y_DEADBAND ?  0 : ControlsUtilities.enforceMaximumPositiveDelta(currentYSpeed, nextYSpeed, Y_MAX_ACCELERATION);
-    nextThetaSpeed = absoluteNextThetaSpeed < DriveCommand.THETA_DEADBAND ?  0 : ControlsUtilities.enforceMaximumPositiveDelta(currentThetaSpeed, nextThetaSpeed, THETA_MAX_ACCELERATION);
+    if (absoluteNextXSpeed < DriveCommand.X_DEADBAND && absoluteNextYSpeed < DriveCommand.Y_DEADBAND && absoluteNextThetaSpeed < DriveCommand.THETA_DEADBAND) {
+      nextXSpeed = 0;
+      nextYSpeed = 0;
+      nextThetaSpeed = 0;
+    }
+    else {
+      nextXSpeed = ControlsUtilities.enforceMaximumPositiveDelta(currentXSpeed, nextXSpeed, X_MAX_ACCELERATION);
+      nextYSpeed = ControlsUtilities.enforceMaximumPositiveDelta(currentYSpeed, nextYSpeed, Y_MAX_ACCELERATION);
+      nextThetaSpeed = ControlsUtilities.enforceMaximumPositiveDelta(currentThetaSpeed, nextThetaSpeed, THETA_MAX_ACCELERATION);
+    }
 
     this.speedMultiplier = slowMode.getAsBoolean() ? 0.25 : 1;
 
