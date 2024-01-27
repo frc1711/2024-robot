@@ -23,8 +23,7 @@ public class Limelight {
     private static final ArrayList<Limelight> allLimelights = new ArrayList<>();
     
     public static final Limelight
-        INTAKE_LIMELIGHT = new Limelight("intake", "10.17.11.17"),
-        ARM_LIMELIGHT = new Limelight("arm", "10.17.11.16");
+        LIMELIGHT = new Limelight("limelight", "10.17.11.16");
 
     private NetworkTable TABLE;
     private static final long SNAPSHOT_RESET_MILLIS = 1000;
