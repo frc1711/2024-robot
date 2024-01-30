@@ -91,7 +91,7 @@ public class SwerveModule extends SubsystemBase {
 	 */
 	public void resetEncoder() {
 		
-		encoderOffset = encoder.getAbsolutePosition().getValueAsDouble();
+		encoderOffset = encoder.getAbsolutePosition().getValueAsDouble() * 360;
 		
 	}
 
@@ -101,8 +101,8 @@ public class SwerveModule extends SubsystemBase {
 	 * to determine the current position of the CANcoder.
 	 */
 	public Rotation2d getEncoderRotation() {
-		
-		regulatedAngle = encoder.getAbsolutePosition().getValueAsDouble() - encoderOffset;
+
+		regulatedAngle = encoder.getAbsolutePosition().getValueAsDouble() * 360 - encoderOffset;
 		
 		if (regulatedAngle < -180) regulatedAngle += 360;
 		else if (regulatedAngle > 180) regulatedAngle -= 360;
