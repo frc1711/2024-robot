@@ -130,7 +130,7 @@ public class DriveCommand extends Command {
         ChassisSpeeds.fromFieldRelativeSpeeds(
           this.currentXSpeed,
           this.currentYSpeed,
-          this.currentThetaSpeed + oneEighty,
+          -this.currentThetaSpeed + oneEighty,
           swerveSubsystem.getGyroRotation()
         ),
         speedMultiplier
