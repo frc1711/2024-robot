@@ -6,6 +6,7 @@ package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.Matrix;
@@ -38,8 +39,9 @@ public class SwerveModule extends SubsystemBase {
 	
 	PIDController steerPID = new PIDController(.01, 0, 0);
 
-	
 	Timer distanceTimer, distanceXTimer, distanceYTimer;
+
+	RelativeEncoder driveEncoder;
 	
 	double unoptimizedRotation;
 	
@@ -93,134 +95,20 @@ public class SwerveModule extends SubsystemBase {
 		encoder = new CANcoder(encoderID);
 		driveMotor = initializeMotor(driveMotorID);
 		steerMotor = initializeMotor(steerMotorID);
+		driveEncoder = driveMotor.getEncoder();
 		steerPID.enableContinuousInput(-180, 180);
 		this.motorMeters = motorMeters;
 		steerPID.setTolerance(1);
-		distanceTimer = new Timer();
-		distanceXTimer = new Timer();
-		distanceYTimer = new Timer();
-		distanceTimer.restart();
-		distanceXTimer.start();
-		distanceYTimer.start();
-	}
-
-	double 
-		displacement = 0, 
-		distanceX = 0, 
-		distanceY = 0, 
-		speedX = 0,
-		speedY = 0,
-		speedHypotenuse = 0, 
-		displacementAngle = 0;
-	
-	private Matrix<N3, N1> newDisplacement;
-	private Vector<N3> finalDisplacement = new Vector<>(Nat.N3());
-	public Vector<N3> getDisplacementVector () {
-		newDisplacement = StateSpaceUtil.poseToVector(new Pose2d(getDistanceX(), getDistanceY(), getEncoderRotation()));
-		finalDisplacement.plus(newDisplacement);
-
-		return new Vector<N3>(StateSpaceUtil.poseToVector(new Pose2d(getDistanceX(), getDistanceY(), getEncoderRotation())));
-	}
-
-	public void resetTimer () {
-		distanceTimer.reset();
 	}
 
 	public SwerveModulePosition getPosition () {
-		return new SwerveModulePosition(getDisplacement(), new Rotation2d(getDistanceX(), getDistanceY()));
-	}
-
-	public double getSpeedX () {
-		return driveSpeed * Math.cos(getEncoderRotation().getRadians());
-	}
-
-	public double getSpeedY () {
-		return driveSpeed * Math.sin(getEncoderRotation().getRadians());
-	}
-
-	private double finalDistanceX;
-	public double getDistanceX () {
-		return distanceTimer.get() * getSpeedX();
-	}
-
-	private double finalDistanceY;
-	public double getDistanceY () {
-		return distanceTimer.get() * getSpeedY();
-	}
-
-	public double getDisplacement () {
-		return Math.sqrt(Math.pow(getDistanceX(), 2) + Math.pow(getDistanceY(), 2));
-	}
-	
-	double 
-		initialDistance = 0,
-		initialX = 0,
-		initialY = 0,
-		absoluteXPosition = 0,
-		absoluteYPosition = 0;
-	public void resetDistanceTimer () {
-		if (DriverStation.isEnabled() && !hasBeenEnabled) {
-			distanceTimer.restart();
-			hasBeenEnabled = true;
-		}
-		else if (DriverStation.isDisabled()) {
-			distanceTimer.stop();
-		}
-		double spd = driveSpeed;
-		double angle = getEncoderRotation().getDegrees();
-
-		Timer.delay(.01); 
-
-		if (spd != driveSpeed && spd != 0 && angle < getEncoderRotation().getDegrees() - 1 && angle > getEncoderRotation().getDegrees() + 1) {
-			initialX = getDistanceX();
-			initialY = getDistanceY();
-			distanceTimer.reset();
-		}
-	}
-
-	public void resetTimerX () {
-		if (DriverStation.isEnabled() && !hasBeenEnabled) {
-			distanceXTimer.restart();
-			hasBeenEnabled = true;
-		}
-		if (DriverStation.isDisabled() && hasBeenEnabled) {
-			distanceXTimer.stop();
-			hasBeenEnabled = false;
-		}
-		double spdX = getSpeedX();
-
-		Timer.delay(.01); 
-
-		if (spdX != getSpeedX() && getSpeedX() != 0) {
-			initialX = getDistanceX() - initialX;
-			distanceXTimer.reset();
-		}
-	}
-
-	public void resetTimerY () {
-		if (DriverStation.isEnabled() && !hasBeenEnabled) {
-			distanceYTimer.restart();
-			hasBeenEnabled = true;
-		}
-		if (DriverStation.isDisabled() && hasBeenEnabled) {
-			distanceYTimer.stop();
-			hasBeenEnabled = false;
-		}
-		double spdY = getSpeedY();
-
-		Timer.delay(.01); 
-
-		if (spdY != getSpeedY() && getSpeedY() != 0) {
-			initialY = getDistanceY() - initialY;
-			distanceYTimer.reset();
-		}
+		return new SwerveModulePosition(driveEncoder.getPosition(), getEncoderRotation());
 	}
 	
 	private double metersPerSecondToPercentage(double metersPerSecond) {
 		return metersPerSecond;
 		
 	}
-	
 	/**
 	 * Sets the encoderOffset to the current value of the CANcoder. This value
 	 * is later used to set a new zero position for the encoder.
@@ -306,19 +194,6 @@ public class SwerveModule extends SubsystemBase {
 	private boolean firstEnable = true;
 	@Override
 	public void periodic() {
-		
-		if (DriverStation.isEnabled() && firstEnable) {
-			distanceTimer.restart();
-			firstEnable = false;
-		}
-		else if (DriverStation.isDisabled()) {
-			distanceTimer.stop();
-			firstEnable = true;
-		}
-		resetTimerX();
-		resetTimerY();
-		distanceX = getDistanceX();
-		distanceY = getDistanceY();
 		// This method will be called once per scheduler run
 	}
 	
