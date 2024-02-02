@@ -4,8 +4,6 @@ package frc.robot.commands.auton.framework.basic;
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-// package frc.robot.commands.auton.framework.basic;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,7 +11,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swerve.Swerve;
-// import frc.robot.util.Odometry;
 
 public class OdometryAuton extends Command {
 
@@ -40,7 +37,7 @@ public class OdometryAuton extends Command {
   Pose2d robotPose;
   @Override
   public void execute() {
-    // robotPose = swerveDrive.updateOdometry();
+    robotPose = swerveDrive.updateOdometry();
 
     displacementX = robotPose.getX();
     displacementY = robotPose.getY();
