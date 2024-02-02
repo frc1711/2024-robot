@@ -28,12 +28,12 @@ public class BassAuton extends SequentialCommandGroup {
     
     //TODO: Decide which notes to pick up in autons to determine angle to the speaker's AprilTag and their positions relative to the robot
     addCommands(
-      new SpeakerAuton(shooterSubsystem, armSubsystem, 0), 
+      new SpeakerAuton(shooterSubsystem, armSubsystem), 
       // new OdometryAuton(kinematics, swerveSubsystem, new Translation2d()), 
       new PickupAuton(intakeSubsystem, swerveSubsystem), 
-      new SpeakerAuton(shooterSubsystem, armSubsystem, 0), 
+      new SpeakerAuton(shooterSubsystem, armSubsystem), 
       // new OdometryAuton(kinematics, swerveSubsystem, new Translation2d()),
       new PickupAuton(intakeSubsystem, swerveSubsystem),
-      new SpeakerAuton(shooterSubsystem, armSubsystem, 0));
+      new SpeakerAuton(shooterSubsystem, armSubsystem));
   }
 }
