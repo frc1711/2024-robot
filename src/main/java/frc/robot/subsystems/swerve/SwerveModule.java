@@ -45,7 +45,7 @@ public class SwerveModule extends SubsystemBase {
 	 * wheel, to calculate an approximate voltage value when given a speed in
 	 * meters per second. 
 	 */
-	private double maxSpeed = (5500 / 60.) * .1 / 3;
+	private double maxSpeed = (5500 / 60.) * .1 / 8;
 	
 	double finalAngle;
 	
