@@ -22,8 +22,8 @@ public class OdometryAuton extends Command {
   public OdometryAuton(Swerve swerveDrive, Translation2d targetPosition) {
     this.swerveDrive = swerveDrive;
     this.targetPosition = targetPosition;
-    xDistancePID = new PIDController(0.01, 0, 0);
-    yDistancePID = new PIDController(0.01, 0, 0);
+    xDistancePID = new PIDController(1, 0, 0);
+    yDistancePID = new PIDController(1, 0, 0);
 
     addRequirements(swerveDrive);
   }
@@ -45,7 +45,7 @@ public class OdometryAuton extends Command {
     speedX = xDistancePID.calculate(displacementX, targetPosition.getX());
     speedY = yDistancePID.calculate(displacementY, targetPosition.getY());
 
-    swerveDrive.updateModules(new ChassisSpeeds(speedX, speedY, 0), 0);
+    swerveDrive.updateModules(new ChassisSpeeds(speedX, speedY, 0), 1);
   }
 
   @Override

@@ -91,6 +91,7 @@ public class Swerve extends SubsystemBase {
     /**Create a new sendable command to reset the encoders */
     RobotContainer.putCommand("Reset Encoders", new InstantCommand(this::resetEncoders, this), true);
     RobotContainer.putCommand("Reset Gyro", new InstantCommand(this::resetGyro, this), true);
+    RobotContainer.putCommand("Reset Odometry", new InstantCommand(this::resetOdometry, this), true);
   }
 
   /**Runs the stop() method on each module */
@@ -107,6 +108,13 @@ public class Swerve extends SubsystemBase {
     modulePositions[2] = rlModule.getPosition();
     modulePositions[3] = rrModule.getPosition();
     return swerveDriveOdometry.update(getGyroRotation(),  new SwerveDriveWheelPositions(modulePositions));
+  }
+
+  public void resetOdometry () {
+    flModule.resetModuleDistance();
+    frModule.resetModuleDistance();
+    rlModule.resetModuleDistance();
+    rrModule.resetModuleDistance();
   }
 
   public SwerveDriveWheelPositions getWheelPositions () {

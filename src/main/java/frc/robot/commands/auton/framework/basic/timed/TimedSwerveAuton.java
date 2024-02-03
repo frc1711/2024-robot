@@ -17,6 +17,7 @@ public class TimedSwerveAuton extends Command {
 
   public TimedSwerveAuton(Swerve swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
+    timer = new Timer();
     timer.start();
   }
 

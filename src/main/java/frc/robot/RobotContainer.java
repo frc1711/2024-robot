@@ -88,7 +88,7 @@ public class RobotContainer {
 	}
 
 	private void configAutonChooser() {
-		autonChooser.addOption("Odometry Test Auton", () -> new SwerveAuton(swerveSubsystem, 1, 0, 0));
+		autonChooser.addOption("Odometry Test Auton", () -> new OdometryAuton(swerveSubsystem, new Translation2d(.5, 0)));
 		autonChooser.addOption("Timed Swerve Auton", () -> new TimedSwerveAuton(swerveSubsystem));
 
 		putSendable("Auton Chooser", autonChooser);

@@ -9,23 +9,13 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.StateSpaceUtil;
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 
 public class SwerveModule extends SubsystemBase {
 	
@@ -38,8 +28,6 @@ public class SwerveModule extends SubsystemBase {
 	Translation2d motorMeters;
 	
 	PIDController steerPID = new PIDController(.01, 0, 0);
-
-	Timer distanceTimer, distanceXTimer, distanceYTimer;
 
 	RelativeEncoder driveEncoder;
 	
@@ -96,13 +84,19 @@ public class SwerveModule extends SubsystemBase {
 		driveMotor = initializeMotor(driveMotorID);
 		steerMotor = initializeMotor(steerMotorID);
 		driveEncoder = driveMotor.getEncoder();
+		driveEncoder.setPositionConversionFactor(1/6.12);
 		steerPID.enableContinuousInput(-180, 180);
 		this.motorMeters = motorMeters;
 		steerPID.setTolerance(1);
 	}
 
 	public SwerveModulePosition getPosition () {
-		return new SwerveModulePosition(driveEncoder.getPosition(), getEncoderRotation());
+		return new SwerveModulePosition(driveEncoder.getPosition() * .1, getEncoderRotation());
+	}
+
+	double distanceOffset = 0;
+	public void resetModuleDistance () {
+		distanceOffset = driveEncoder.getPosition() * .1;
 	}
 	
 	private double metersPerSecondToPercentage(double metersPerSecond) {
@@ -191,7 +185,6 @@ public class SwerveModule extends SubsystemBase {
 		
 	}
 	
-	private boolean firstEnable = true;
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
@@ -230,34 +223,17 @@ public class SwerveModule extends SubsystemBase {
 			null
 		);
 		
-		// builder.addDoubleProperty(
-		// 	"drive-Percent",
-		// 	() -> drivePercent, 
-		// 	null
-		// );
-
-		// builder.addDoubleProperty(
-		// 	"drive-Voltage", 
-		// 	() -> driveMotor.getBusVoltage(), 
-		// 	null
-		// );
-		
-		// builder.addDoubleProperty(
-		// 	"drive-Current", 
-		// 	() -> driveMotor.getOutputCurrent(), 
-		// 	null
-		// );
-		
-		// builder.addDoubleProperty(
-		// 	"drive-DutyCycle", 
-		// 	() -> driveMotor.get(), 
-		// 	null
-		// );
+		builder.addDoubleProperty(
+			"distance-Readout", 
+			() -> driveEncoder.getPosition() * .1 - distanceOffset, 
+			null
+		);
 
 		builder.addDoubleProperty(
-			"Timer", 
-			() -> distanceTimer.get(), 
-			null);
+			"distance-Offset", 
+			() -> distanceOffset, 
+			null
+		);
 	}
 	
 }
