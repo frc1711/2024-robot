@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.XboxController;
@@ -88,7 +90,7 @@ public class RobotContainer {
 	}
 
 	private void configAutonChooser() {
-		autonChooser.addOption("Odometry Test Auton", () -> new OdometryAuton(swerveSubsystem, new Translation2d(.5, 0)));
+		autonChooser.addOption("Odometry Test Auton", () -> new OdometryAuton(swerveSubsystem, new Pose2d(new Translation2d(.5, 0), new Rotation2d()), 1));
 		autonChooser.addOption("Timed Swerve Auton", () -> new TimedSwerveAuton(swerveSubsystem));
 
 		putSendable("Auton Chooser", autonChooser);

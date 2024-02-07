@@ -110,6 +110,10 @@ public class Swerve extends SubsystemBase {
     return swerveDriveOdometry.update(getGyroRotation(),  new SwerveDriveWheelPositions(modulePositions));
   }
 
+  public Pose2d getRobotPose () {
+    return swerveDriveOdometry.getPoseMeters();
+  }
+
   public void resetOdometry () {
     flModule.resetModuleDistance();
     frModule.resetModuleDistance();

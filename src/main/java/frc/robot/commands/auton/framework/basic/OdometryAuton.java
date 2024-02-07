@@ -16,14 +16,18 @@ public class OdometryAuton extends Command {
 
   // Odometry kinematics;
   Swerve swerveDrive;
-  Translation2d targetPosition;
+  Pose2d targetPose;
   PIDController xDistancePID, yDistancePID;
+  double speedMultiplier;
   
-  public OdometryAuton(Swerve swerveDrive, Translation2d targetPosition) {
+  public OdometryAuton(Swerve swerveDrive, Pose2d targetPose, double speedMultiplier) {
     this.swerveDrive = swerveDrive;
-    this.targetPosition = targetPosition;
+    this.targetPose = targetPose;
+    this.speedMultiplier = speedMultiplier;
     xDistancePID = new PIDController(1, 0, 0);
     yDistancePID = new PIDController(1, 0, 0);
+    yDistancePID.enableContinuousInput(0, 360);
+    yDistancePID.setTolerance(1);
 
     addRequirements(swerveDrive);
   }
@@ -33,7 +37,7 @@ public class OdometryAuton extends Command {
     swerveDrive.stop();
   }
 
-  double displacementX, displacementY, speedX, speedY;
+  double displacementX, displacementY, speedX, speedY, speedTheta;
   Pose2d robotPose;
   @Override
   public void execute() {
@@ -42,10 +46,11 @@ public class OdometryAuton extends Command {
     displacementX = robotPose.getX();
     displacementY = robotPose.getY();
 
-    speedX = xDistancePID.calculate(displacementX, targetPosition.getX());
-    speedY = yDistancePID.calculate(displacementY, targetPosition.getY());
+    speedX = xDistancePID.calculate(displacementX, targetPose.getX());
+    speedY = xDistancePID.calculate(displacementY, targetPose.getY());
+    speedTheta = yDistancePID.calculate(swerveDrive.getGyroRotation().getDegrees(), targetPose.getRotation().getDegrees());
 
-    swerveDrive.updateModules(new ChassisSpeeds(speedX, speedY, 0), 1);
+    swerveDrive.updateModules(new ChassisSpeeds(speedX, speedY, speedTheta), speedMultiplier);
   }
 
   @Override
