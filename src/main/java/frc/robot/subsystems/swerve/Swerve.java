@@ -41,7 +41,7 @@ public class Swerve extends SubsystemBase {
 
   //TODO: Find coordinates of start positions
   public enum StartPosition {
-    STATION_ONE (new Translation2d (0, 0), new Rotation2d (0)),
+    STATION_ONE (new Translation2d (.8, 6.6), new Rotation2d (0)),
     STATION_TWO (new Translation2d (0, 0), new Rotation2d (0)),
     STATION_THREE (new Translation2d (0, 0), new Rotation2d (0));
     Translation2d translation;
@@ -81,11 +81,11 @@ public class Swerve extends SubsystemBase {
     this.gyro = gyro;
 
     /**Create a new sendable field for each module*/
-    RobotContainer.putSendable("fl-Module", flModule);
-    RobotContainer.putSendable("fr-Module", frModule);
-    RobotContainer.putSendable("rl-Module", rlModule);
-    RobotContainer.putSendable("rr-Module", rrModule); 
-    RobotContainer.putSendable("gyro", gyro);
+    RobotContainer.putSendable("Analysis Tab", "fl-Module", flModule);
+    RobotContainer.putSendable("Analysis Tab", "fr-Module", frModule);
+    RobotContainer.putSendable("Analysis Tab", "rl-Module", rlModule);
+    RobotContainer.putSendable("Analysis Tab", "rr-Module", rrModule); 
+    RobotContainer.putSendable("Analysis Tab", "gyro", gyro);
     // RobotContainer.putSendable("kinematics", odometry);
 
     /**Create a new sendable command to reset the encoders */

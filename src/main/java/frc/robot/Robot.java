@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.ShooterCommand;
+import frc.robot.subsystems.Shooter;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -15,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+  private Command m_autonomousCommand, m_testCommand;
 
   private RobotContainer m_robotContainer;
 
@@ -77,6 +79,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    m_robotContainer.initTeleop();
   }
 
   /** This function is called periodically during operator control. */
@@ -87,6 +91,11 @@ public class Robot extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+
+    m_testCommand = m_robotContainer.getTestCommand();
+    
+    if (m_testCommand != null)
+        m_testCommand.schedule();
   }
 
   /** This function is called periodically during test mode. */

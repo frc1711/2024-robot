@@ -16,10 +16,15 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
+import frc.robot.commands.test.ShooterTest;
+import frc.robot.commands.test.TestCommand;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveModule;
 // import frc.robot.subsystems.swerve.Swerve.StartPosition;
@@ -29,9 +34,11 @@ public class RobotContainer {
 	private final Swerve swerveSubsystem;
 	private final SwerveModule flModule, frModule, rlModule, rrModule;
 	private final AHRS gyro;
-	private final DriveCommand driveCommand;
-	private final XboxController driveController;
-  	private final SendableChooser<Supplier<Command>> autonChooser;
+	public final Shooter shooter;
+	public final Intake intake;
+	private DriveCommand driveCommand;
+	public final XboxController driveController;
+  	private final SendableChooser<Supplier<Command>> autonChooser, testChooser;
 	private final SendableChooser<Supplier<Swerve.StartPosition>> startPositionChooser;
 
   public RobotContainer() {
@@ -44,32 +51,45 @@ public class RobotContainer {
 	rlModule = new SwerveModule(IDMap.rlSteerMotorID, IDMap.rlDriveMotorID, IDMap.rlEncoderID, new Translation2d(-.43, .41));
 	rrModule = new SwerveModule(IDMap.rrSteerMotorID, IDMap.rrDriveMotorID, IDMap.rrEncoderID, new Translation2d(-.43, -.41));
 	gyro = new AHRS();
+	shooter = new Shooter(IDMap.leftShooterMotorID, IDMap.rightShooterMotorID);
+	intake = new Intake(IDMap.intakeMotorID);
 	swerveSubsystem = new Swerve(flModule, frModule, rlModule, rrModule, gyro,
 	startPositionChooser.getSelected().get()
 	);
     autonChooser = new SendableChooser<>();
+	testChooser = new SendableChooser<>();
 
+	
+
+	
+    configAutonChooser();
+  }
+
+  public void initTeleop () {
 	driveCommand = new DriveCommand(
-			swerveSubsystem, 
-			() -> driveController.getLeftY(), 
-			() -> driveController.getLeftX(), 
-			() -> driveController.getRightX(), 
-			() -> driveController.getRightTriggerAxis() > .1,
-			() -> driveController.getRightStickButton(),
-			() -> driveController.getXButton(),
-			() -> driveController.getStartButton()
-		);
+				swerveSubsystem, 
+				() -> driveController.getLeftY(), 
+				() -> driveController.getLeftX(), 
+				() -> driveController.getRightX(), 
+				() -> driveController.getRightTriggerAxis() > .1,
+				() -> driveController.getRightStickButton(),
+				() -> driveController.getXButton(),
+				() -> driveController.getStartButton()
+			);
 
 	swerveSubsystem.setDefaultCommand(driveCommand);
-    configAutonChooser();
+  }
+
+  public Command getTestCommand () {
+	return testChooser.getSelected().get();
   }
 
   /**
 	 * Creates a new sendable field in the Analysis Tab of ShuffleBoard.
 	 */
-	public static void putSendable(String name, Sendable sendable) {
+	public static void putSendable(String tab, String name, Sendable sendable) {
 		
-		Shuffleboard.getTab("Config Window").add(name, sendable);
+		Shuffleboard.getTab(tab).add(name, sendable);
 		
 	}  
 
@@ -83,6 +103,7 @@ public class RobotContainer {
 	) {
 
 		putSendable(
+			"Analysis Tab",
 			name,
 			command.withName(name).ignoringDisable(canRunWhileDisabled)
 		);
@@ -93,7 +114,7 @@ public class RobotContainer {
 		autonChooser.addOption("Odometry Test Auton", () -> new OdometryAuton(swerveSubsystem, new Pose2d(new Translation2d(.5, 0), new Rotation2d()), 1));
 		autonChooser.addOption("Timed Swerve Auton", () -> new TimedSwerveAuton(swerveSubsystem));
 
-		putSendable("Auton Chooser", autonChooser);
+		putSendable("Pre-match Tab", "Auton Chooser", autonChooser);
 
 	}
 
@@ -102,7 +123,63 @@ public class RobotContainer {
 		startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_TWO);
 		startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_THREE);
 
-		putSendable("Start Postion Chooser", startPositionChooser);
+		putSendable("Pre-match Tab", "Start Postion Chooser", startPositionChooser);
+	}
+
+	private void configTestTab () {
+		
+
+		testChooser.addOption(
+			"Shooter Test Command", 
+			() -> new TestCommand(
+					shooter, 
+					new InstantCommand(
+						() -> shooter.runShooter(1, 1), 
+						shooter
+						), 
+					new InstantCommand(
+						() -> shooter.stop(), 
+						shooter
+						), 
+					new InstantCommand(
+						() -> shooter.increaseShooterSpeed(), 
+						shooter
+						), 
+					new InstantCommand(
+					() -> shooter.decreaseShooterSpeed(), 
+						shooter
+						), 
+					() -> driveController.getLeftBumperPressed(), 
+					() -> driveController.getRightBumperPressed(), 
+					() -> driveController.getAButtonPressed(), 
+					() -> driveController.getAButton()
+				));
+
+		testChooser.addOption(
+			"Intake Test Command", 
+			() -> new TestCommand(
+					shooter, 
+					new InstantCommand(
+						() -> intake.runIntake(),
+						intake
+						), 
+					new InstantCommand(
+						() -> intake.stop(), 
+						intake
+						), 
+					new InstantCommand(
+						() -> intake.increaseIntakeSpeed(), 
+						intake
+						), 
+					new InstantCommand(
+					() -> intake.decreaseIntakeSpeed(), 
+						intake
+						), 
+					() -> driveController.getLeftBumperPressed(), 
+					() -> driveController.getRightBumperPressed(), 
+					() -> driveController.getAButtonPressed(), 
+					() -> driveController.getAButton()
+				));
 	}
 
   public Command getAutonomousCommand() {

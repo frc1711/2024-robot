@@ -25,7 +25,7 @@ public class OdometryAuton extends Command {
     this.targetPose = targetPose;
     this.speedMultiplier = speedMultiplier;
     xDistancePID = new PIDController(1, 0, 0);
-    yDistancePID = new PIDController(1, 0, 0);
+    yDistancePID = new PIDController(.1, 0, 0);
     yDistancePID.enableContinuousInput(0, 360);
     yDistancePID.setTolerance(1);
 

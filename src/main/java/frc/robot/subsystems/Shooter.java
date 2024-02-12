@@ -4,18 +4,47 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-  /** Creates a new Shooter. */
-  public Shooter() {}
+  
+  CANSparkMax leftShooterMotor, rightShooterMotor;
 
-  public  void stop () {
-    
+  public Shooter(int leftShooterID, int rightShooterID) {
+    leftShooterMotor = new CANSparkMax(rightShooterID, MotorType.kBrushless);
+    rightShooterMotor = new CANSparkMax(leftShooterID, MotorType.kBrushless);
+    leftShooterMotor.setIdleMode(IdleMode.kCoast);
+    rightShooterMotor.setIdleMode(IdleMode.kCoast);
   }
 
-  public void runShooter () {
+  public  void stop () {
+    leftShooterMotor.stopMotor();
+    rightShooterMotor.stopMotor();
+  }
 
+  public void runShooter (double leftMotorSpeed, double rightMotorSpeed) {
+    leftShooterMotor.set(leftMotorSpeed);
+    rightShooterMotor.set(rightMotorSpeed);
+  }
+
+  double leftSpeed = .5, rightSpeed = .5;
+  public void runShooterTest () {
+    leftShooterMotor.set(leftSpeed);
+    rightShooterMotor.set(rightSpeed);
+  }
+
+  public void increaseShooterSpeed () {
+    if (leftSpeed <= 1) leftSpeed += .05;
+    if (rightSpeed <= 1) rightSpeed += .05;
+  }
+
+  public void decreaseShooterSpeed () {
+    if (leftSpeed >= -1) leftSpeed -= .05;
+    if (rightSpeed >= -1) rightSpeed -= .05;
   }
 
   @Override

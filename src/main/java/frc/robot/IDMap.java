@@ -14,7 +14,6 @@ package frc.robot;
  */
 public final class IDMap {
   public static final int 
-		pcmID = 13,
 		flDriveMotorID = 1,
 		flSteerMotorID = 2,
 		flEncoderID = 9,
@@ -27,6 +26,7 @@ public final class IDMap {
 		rrDriveMotorID = 7,
 		rrSteerMotorID = 8,
 		rrEncoderID = 12,
-		leftSpinnerMotorID = 14,
-		rightSpinnerMotorID = 15;
+		rightShooterMotorID = 13,
+		leftShooterMotorID = 14,
+		intakeMotorID = 15;
 }
