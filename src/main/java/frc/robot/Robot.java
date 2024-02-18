@@ -92,9 +92,9 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
 
-    m_testCommand = m_robotContainer.getTestCommand();
+    // m_testCommand = m_robotContainer.getTestCommand();
     
-    // new ShooterCommand(m_robotContainer.shooter, () -> m_robotContainer.driveController.getAButton()).schedule();
+    new ShooterCommand(m_robotContainer.shooter, () -> m_robotContainer.driveController.getAButton()).schedule();
   }
 
   /** This function is called periodically during test mode. */
