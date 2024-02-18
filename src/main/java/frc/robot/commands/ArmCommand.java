@@ -2,46 +2,40 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.test;
+package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Arm;
 
-public class ShooterTest extends Command {
+public class ArmCommand extends Command {
   
-  Shooter shooter;
+  Arm arm;
 
-  double rightMotorSpeed, leftMotorSpeed;
+  DoubleSupplier armSpeed;
 
-  BooleanSupplier runShooter;
-
-  public ShooterTest(Shooter shooter, BooleanSupplier runShooter, double leftMotorSpeed, double rightMotorSpeed) {
-    this.shooter = shooter;
-    this.leftMotorSpeed = leftMotorSpeed;
-    this.rightMotorSpeed = rightMotorSpeed;
-    this.runShooter = runShooter;
-    addRequirements(shooter);    
+  public ArmCommand(Arm arm, DoubleSupplier raiseArm, DoubleSupplier lowerArm) {
+    this.arm = arm;
+    this.armSpeed = armSpeed;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.stop();
+    arm.stop();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (runShooter.getAsBoolean())
-    shooter.runShooter(leftMotorSpeed, rightMotorSpeed);
+    arm.changeAngle(armSpeed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.stop();
+    arm.stop();
   }
 
   // Returns true when the command should end.

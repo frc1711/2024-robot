@@ -12,20 +12,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   
-  CANSparkMax intakeMotor;
+  CANSparkMax leftIntakeMotor, rightIntakeMotor;
 
-  public Intake(int intakeMotorID) {
-    intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
-    intakeMotor.setIdleMode(IdleMode.kBrake);
+  public Intake(int intakeMotorLeftID, int intakeMotorRightID) {
+    leftIntakeMotor = new CANSparkMax(intakeMotorLeftID, MotorType.kBrushless);
+    rightIntakeMotor = new CANSparkMax(intakeMotorRightID, MotorType.kBrushless);
+    rightIntakeMotor.setIdleMode(IdleMode.kBrake);
+    leftIntakeMotor.setIdleMode(IdleMode.kBrake);
   }
 
   public void stop () {
-    intakeMotor.stopMotor();
+    leftIntakeMotor.stopMotor();
+    rightIntakeMotor.stopMotor();
   }
 
   double intakeMotorSpeed = .5;
-  public void runIntake () {
-    intakeMotor.set(intakeMotorSpeed);
+  int speedMultiplier = 1;
+  public void runIntake (boolean reverseMode) {
+    if (reverseMode) speedMultiplier = -1;
+    else speedMultiplier = 1;
+    leftIntakeMotor.set(speedMultiplier * intakeMotorSpeed);
+    rightIntakeMotor.set(speedMultiplier * intakeMotorSpeed);
   }
 
   public void increaseIntakeSpeed () {

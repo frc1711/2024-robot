@@ -39,6 +39,8 @@ public class Swerve extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics;
 
+  public StartPosition startPosition;
+
   //TODO: Find coordinates of start positions
   public enum StartPosition {
     STATION_ONE (new Translation2d (.8, 6.6), new Rotation2d (0)),
@@ -49,6 +51,10 @@ public class Swerve extends SubsystemBase {
     StartPosition (Translation2d translation, Rotation2d rotation) {
       this.translation = translation;
         this.rotation = rotation;
+    }
+
+    public Translation2d getTranslation () {
+      return translation;
     }
   }
 
@@ -65,6 +71,7 @@ public class Swerve extends SubsystemBase {
     this.rlModule = rlModule;
     this.rrModule = rrModule;
     this.gyro = gyro;
+    this.startPosition = startPosition;
     modulePositions = new SwerveModulePosition[4];
     modulePositions[0] = flModule.getPosition();
     modulePositions[1] = frModule.getPosition();
@@ -132,6 +139,10 @@ public class Swerve extends SubsystemBase {
   public void resetGyro() {
     gyro.reset();
     swerveDriveOdometry.resetPosition(getGyroRotation(), modulePositions, updateOdometry());
+  }
+
+  public StartPosition getStartPosition () {
+    return startPosition;
   }
 
   public Rotation2d getGyroRotation () {

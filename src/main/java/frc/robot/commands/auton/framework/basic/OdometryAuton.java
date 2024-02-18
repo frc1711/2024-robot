@@ -25,9 +25,10 @@ public class OdometryAuton extends Command {
     this.targetPose = targetPose;
     this.speedMultiplier = speedMultiplier;
     xDistancePID = new PIDController(1, 0, 0);
-    yDistancePID = new PIDController(.1, 0, 0);
+    yDistancePID = new PIDController(.01, 0, 0);
     yDistancePID.enableContinuousInput(0, 360);
     yDistancePID.setTolerance(1);
+    xDistancePID.setTolerance(.1);
 
     addRequirements(swerveDrive);
   }
@@ -50,7 +51,7 @@ public class OdometryAuton extends Command {
     speedY = xDistancePID.calculate(displacementY, targetPose.getY());
     speedTheta = yDistancePID.calculate(swerveDrive.getGyroRotation().getDegrees(), targetPose.getRotation().getDegrees());
 
-    swerveDrive.updateModules(new ChassisSpeeds(speedX, speedY, speedTheta), speedMultiplier);
+    swerveDrive.updateModules(ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, speedTheta, swerveDrive.getGyroRotation()), speedMultiplier);
   }
 
   @Override

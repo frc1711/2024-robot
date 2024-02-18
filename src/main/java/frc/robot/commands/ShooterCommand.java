@@ -30,7 +30,7 @@ public class ShooterCommand extends Command {
   @Override
   public void execute() {
     if (runShooter.getAsBoolean())
-    shooter.runShooter(-.7, .7);
+    shooter.runShooter(-1, 1);
     else
     shooter.stop();
   }

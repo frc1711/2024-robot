@@ -26,7 +26,10 @@ public final class IDMap {
 		rrDriveMotorID = 7,
 		rrSteerMotorID = 8,
 		rrEncoderID = 12,
-		rightShooterMotorID = 13,
-		leftShooterMotorID = 14,
-		intakeMotorID = 15;
+		rightShooterMotorID = 14,
+		leftShooterMotorID = 15,
+		armMotorRight = 16,
+		armMotorLeft = 17,
+		intakeMotorRight = 18,
+		intakeMotorLeft = 19;
 }

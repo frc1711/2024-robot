@@ -23,7 +23,7 @@ public class Limelight {
     private static final ArrayList<Limelight> allLimelights = new ArrayList<>();
     
     public static final Limelight
-        LIMELIGHT = new Limelight("limelight", "10.17.11.16");
+        LIMELIGHT = new Limelight("APRILTAGS", "10.17.11.11");
 
     private NetworkTable TABLE;
     private static final long SNAPSHOT_RESET_MILLIS = 1000;

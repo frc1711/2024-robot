@@ -94,8 +94,7 @@ public class Robot extends TimedRobot {
 
     m_testCommand = m_robotContainer.getTestCommand();
     
-    if (m_testCommand != null)
-        m_testCommand.schedule();
+    // new ShooterCommand(m_robotContainer.shooter, () -> m_robotContainer.driveController.getAButton()).schedule();
   }
 
   /** This function is called periodically during test mode. */
