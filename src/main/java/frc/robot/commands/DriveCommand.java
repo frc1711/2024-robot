@@ -110,23 +110,23 @@ public class DriveCommand extends Command {
 
     this.speedMultiplier = slowMode.getAsBoolean() ? 0.25 : 1;
 
-    if (turnAround.getAsBoolean() && !wasOneEighty) {
+    // if (turnAround.getAsBoolean() && !wasOneEighty) {
 
-      timer.reset();
-      oneEighty = 1;
-      wasOneEighty = true;
+    //   timer.reset();
+    //   oneEighty = 1;
+    //   wasOneEighty = true;
 
-    } else if (oneEighty != 0 && timer.hasElapsed(1)) {
+    // } else if (oneEighty != 0 && timer.hasElapsed(1)) {
 
-      oneEighty = 0;
-      wasOneEighty = false;
+    //   oneEighty = 0;
+    //   wasOneEighty = false;
 
-    }
+    // }
 
     if (resetGyro.getAsBoolean()) swerveSubsystem.resetGyro();
 
-    if (xMode.getAsBoolean()) swerveSubsystem.xMode();
-    else if (
+    // if (xMode.getAsBoolean()) swerveSubsystem.xMode();
+    if (
       Math.abs(nextXSpeed) > .15 ||
       Math.abs(nextYSpeed) > .15 ||
       Math.abs(nextThetaSpeed) > .15

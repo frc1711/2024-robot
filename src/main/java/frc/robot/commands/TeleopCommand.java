@@ -20,10 +20,10 @@ public class TeleopCommand extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+      new ArmCommand(arm, () -> subsystemController.getRightBumper(), () -> subsystemController.getLeftBumper()),
       new DriveCommand(swerve, () -> driveController.getLeftY(), () -> driveController.getLeftX(), () -> driveController.getRightX(), () -> driveController.getRightTriggerAxis() >= .15, () -> driveController.getRightStickButton(), null, null),
-      new ArmCommand(arm, () -> subsystemController.getRightTriggerAxis(), () -> subsystemController.getLeftTriggerAxis()),
       new ShooterCommand(shooter, () -> subsystemController.getAButton()),
-      new IntakeCommand(intake, () -> subsystemController.getYButton(), () -> subsystemController.getRightBumper())
+      new IntakeCommand(intake, () -> subsystemController.getYButton(), () -> subsystemController.getXButton())
     );
   }
 }

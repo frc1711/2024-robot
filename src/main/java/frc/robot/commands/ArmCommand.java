@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,11 +14,12 @@ public class ArmCommand extends Command {
   
   Arm arm;
 
-  DoubleSupplier armSpeed;
+  BooleanSupplier raiseArm, lowerArm;
 
-  public ArmCommand(Arm arm, DoubleSupplier raiseArm, DoubleSupplier lowerArm) {
+  public ArmCommand(Arm arm, BooleanSupplier raiseArm, BooleanSupplier lowerArm) {
     this.arm = arm;
-    this.armSpeed = armSpeed;
+    this.raiseArm = raiseArm;
+    this.lowerArm = lowerArm;
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +31,9 @@ public class ArmCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.changeAngle(armSpeed.getAsDouble());
+    if (raiseArm.getAsBoolean()) arm.changeAngle(.5);
+    else if (lowerArm.getAsBoolean()) arm.changeAngle(-.5);
+    else arm.stop();
   }
 
   // Called once the command ends or is interrupted.

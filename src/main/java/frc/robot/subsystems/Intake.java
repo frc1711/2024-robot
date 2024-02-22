@@ -17,6 +17,8 @@ public class Intake extends SubsystemBase {
   public Intake(int intakeMotorLeftID, int intakeMotorRightID) {
     leftIntakeMotor = new CANSparkMax(intakeMotorLeftID, MotorType.kBrushless);
     rightIntakeMotor = new CANSparkMax(intakeMotorRightID, MotorType.kBrushless);
+    rightIntakeMotor.setInverted(true);
+    leftIntakeMotor.setInverted(false);
     rightIntakeMotor.setIdleMode(IdleMode.kBrake);
     leftIntakeMotor.setIdleMode(IdleMode.kBrake);
   }
@@ -26,11 +28,11 @@ public class Intake extends SubsystemBase {
     rightIntakeMotor.stopMotor();
   }
 
-  double intakeMotorSpeed = .5;
+  double intakeMotorSpeed = .9;
   int speedMultiplier = 1;
   public void runIntake (boolean reverseMode) {
-    if (reverseMode) speedMultiplier = -1;
-    else speedMultiplier = 1;
+    if (reverseMode) speedMultiplier = 1;
+    else speedMultiplier = -1;
     leftIntakeMotor.set(speedMultiplier * intakeMotorSpeed);
     rightIntakeMotor.set(speedMultiplier * intakeMotorSpeed);
   }

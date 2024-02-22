@@ -18,6 +18,8 @@ public class Shooter extends SubsystemBase {
   public Shooter(int leftShooterID, int rightShooterID) {
     leftShooterMotor = new CANSparkMax(rightShooterID, MotorType.kBrushless);
     rightShooterMotor = new CANSparkMax(leftShooterID, MotorType.kBrushless);
+    rightShooterMotor.setInverted(false);
+    leftShooterMotor.setInverted(true);
     leftShooterMotor.setIdleMode(IdleMode.kCoast);
     rightShooterMotor.setIdleMode(IdleMode.kCoast);
   }

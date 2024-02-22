@@ -29,10 +29,10 @@ public class Arm extends SubsystemBase {
   public Arm(int leftTuffboxID, int rightTuffboxID) {
     leftTuffbox = new CANSparkMax(leftTuffboxID, MotorType.kBrushless);
     rightTuffbox = new CANSparkMax(rightTuffboxID, MotorType.kBrushless); 
-    boreEncoder = rightTuffbox.getAbsoluteEncoder(Type.kDutyCycle);
-    leftTuffbox.setIdleMode(IdleMode.kBrake);
-    rightTuffbox.setIdleMode(IdleMode.kBrake);
-    rightTuffbox.setInverted(true); //Set the motor to be inverted so that it rotates in the same direction as the otehr motor with the same input value.
+    // boreEncoder = rightTuffbox.getAbsoluteEncoder(Type.kDutyCycle);
+    // leftTuffbox.setIdleMode(IdleMode.kBrake);
+    // rightTuffbox.setIdleMode(IdleMode.kBrake);
+    // rightTuffbox.setInverted(true); //Set the motor to be inverted so that it rotates in the same direction as the otehr motor with the same input value.
     anglePID = new PIDController(.01, 0, 0);
   }
 
@@ -55,15 +55,8 @@ public class Arm extends SubsystemBase {
   }
 
   public void changeAngle (double speed) {
-    if (getAngleDegrees() <= 90 && speed >= 0) {
     leftTuffbox.set(speed);
     rightTuffbox.set(speed);
-    }
-    else if (getAngleDegrees() >= 0 && speed <= 0) {
-      leftTuffbox.set(speed);
-      rightTuffbox.set(speed);
-    }
-    else stop();
   }
 
   @Override

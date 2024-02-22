@@ -30,6 +30,7 @@ public class IntakeCommand extends Command {
   @Override
   public void execute() {
     if (runIntake.getAsBoolean()) intake.runIntake(reverseMode.getAsBoolean());
+    else intake.stop();
   }
 
   // Called once the command ends or is interrupted.

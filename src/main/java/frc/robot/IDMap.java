@@ -17,8 +17,8 @@ public final class IDMap {
 		flDriveMotorID = 1,
 		flSteerMotorID = 2,
 		flEncoderID = 9,
-		frDriveMotorID = 4,
-		frSteerMotorID = 3,
+		frDriveMotorID = 3,
+		frSteerMotorID = 4,
 		frEncoderID = 10,
 		rlDriveMotorID = 5,
 		rlSteerMotorID = 6,
@@ -30,6 +30,6 @@ public final class IDMap {
 		leftShooterMotorID = 15,
 		armMotorRight = 16,
 		armMotorLeft = 17,
-		intakeMotorRight = 18,
-		intakeMotorLeft = 19;
+		intakeMotorRight = 19,
+		intakeMotorLeft = 18;
 }

@@ -60,7 +60,7 @@ public class RobotContainer {
 	swerveSubsystem = new Swerve(flModule, frModule, rlModule, rrModule, gyro,
 	startPositionChooser.getSelected().get()
 	);
-	teleopCommand = new TeleopCommand(intake, swerveSubsystem, shooter, arm, driveController, driveController);
+	teleopCommand = new TeleopCommand(intake, swerveSubsystem, shooter, arm, driveController, subsystemController);
 	putSendable("Analysis Tab", "Odometry", swerveSubsystem);
     autonChooser = new SendableChooser<>();
 	testChooser = new SendableChooser<>();
