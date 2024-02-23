@@ -28,7 +28,7 @@ public class SwerveModule extends SubsystemBase {
 	Translation2d motorMeters;
 	
 	PIDController steerPID = new PIDController(.01, 0, 0);
-
+	
 	RelativeEncoder driveEncoder;
 	
 	double unoptimizedRotation;
@@ -44,20 +44,20 @@ public class SwerveModule extends SubsystemBase {
 	double driveSpeed;
 	
 	double drivePercent;
-
+	
 	double initialVelocity = 0;
 	
 	/**
 	 * Uses the average RPM of the motor, along with the circumference of the
 	 * wheel, to calculate an approximate voltage value when given a speed in
-	 * meters per second. 
+	 * meters per second.
 	 */
 	private double maxSpeed = 11.5;
 	
 	double finalAngle;
 	
 	double regulatedAngle;
-
+	
 	boolean hasBeenEnabled = false;
 	
 	private CANSparkMax initializeMotor(int motorID) {
@@ -68,11 +68,11 @@ public class SwerveModule extends SubsystemBase {
 		return motor;
 		
 	}
-
+	
 	// private CANCoder initializeEncoder(int encoderID) {
 	// 	return new CANCoder(encoderID);
 	// }
-
+	
 	public SwerveModule(
 		int steerMotorID,
 		int driveMotorID,
@@ -84,25 +84,36 @@ public class SwerveModule extends SubsystemBase {
 		driveMotor = initializeMotor(driveMotorID);
 		steerMotor = initializeMotor(steerMotorID);
 		driveEncoder = driveMotor.getEncoder();
-		driveEncoder.setPositionConversionFactor(1/6.12);
+		driveEncoder.setPositionConversionFactor(1 / 6.12);
 		steerPID.enableContinuousInput(-180, 180);
 		this.motorMeters = motorMeters;
 		steerPID.setTolerance(1);
+		
 	}
-
-	public SwerveModulePosition getPosition () {
-		return new SwerveModulePosition(driveEncoder.getPosition() * .1, getEncoderRotation());
+	
+	public SwerveModulePosition getPosition() {
+		
+		return new SwerveModulePosition(
+			driveEncoder.getPosition() * .1,
+			getEncoderRotation()
+		);
+		
 	}
-
+	
 	double distanceOffset = 0;
-	public void resetModuleDistance () {
+	
+	public void resetModuleDistance() {
+		
 		distanceOffset = driveEncoder.getPosition() * .1;
+		
 	}
 	
 	private double metersPerSecondToPercentage(double metersPerSecond) {
+		
 		return metersPerSecond;
 		
 	}
+	
 	/**
 	 * Sets the encoderOffset to the current value of the CANcoder. This value
 	 * is later used to set a new zero position for the encoder.
@@ -112,18 +123,20 @@ public class SwerveModule extends SubsystemBase {
 		encoderOffset = encoder.getAbsolutePosition().getValueAsDouble() * 360;
 		
 	}
-
-	public double getDriveMotorPercentage () {
+	
+	public double getDriveMotorPercentage() {
+		
 		return drivePercent;
+		
 	}
 	
 	/**
-	 * Uses the encoder offset, which is set using the resetEncoders() method, 
+	 * Uses the encoder offset, which is set using the resetEncoders() method,
 	 * to determine the current position of the CANcoder.
 	 */
 	public Rotation2d getEncoderRotation() {
 		
-		regulatedAngle = (encoder.getAbsolutePosition().getValueAsDouble() * 360.) - encoderOffset;
+		regulatedAngle = (encoder.getAbsolutePosition().getValueAsDouble() * 360) - encoderOffset;
 		
 		if (regulatedAngle < -180) regulatedAngle += 360;
 		else if (regulatedAngle > 180) regulatedAngle -= 360;
@@ -133,14 +146,14 @@ public class SwerveModule extends SubsystemBase {
 	}
 	
 	/**
-	 * Takes in a SwerveModuleState, then uses a PID controller to calculate 
-	 * approximate values for the steerSpeed and the metersPerSecondToVoltage() 
+	 * Takes in a SwerveModuleState, then uses a PID controller to calculate
+	 * approximate values for the steerSpeed and the metersPerSecondToVoltage()
 	 * method to calculate the driveVoltage.
-	 * 
+	 * <p>
 	 * WIP
 	 */
 	public void update(SwerveModuleState desiredState, double speedMultiplier) {
-
+		
 		unoptimizedRotation = desiredState.angle.getDegrees();
 		
 		SwerveModuleState optimizedState = SwerveModuleState.optimize(
@@ -149,11 +162,11 @@ public class SwerveModule extends SubsystemBase {
 		);
 		
 		optimizedRotation = optimizedState.angle.getDegrees();
-
+		
 		double encoderRotation = getEncoderRotation().getDegrees();
 		double desiredRotation = optimizedState.angle.getDegrees();
 		double angularTolerance = 5.0;
-
+		
 		if ((Math.abs(encoderRotation - desiredRotation) < angularTolerance)) {
 			
 			this.steerSpeed = 0;
@@ -166,16 +179,16 @@ public class SwerveModule extends SubsystemBase {
 			);
 			
 		}
-
+		
 		this.drivePercent = metersPerSecondToPercentage(
 			optimizedState.speedMetersPerSecond * speedMultiplier
 		);
 		
 		this.driveSpeed = optimizedState.speedMetersPerSecond;
-
+		
 		driveMotor.set(this.drivePercent);
 		steerMotor.set(this.steerSpeed);
-
+		
 	}
 	
 	public void stop() {
@@ -187,7 +200,9 @@ public class SwerveModule extends SubsystemBase {
 	
 	@Override
 	public void periodic() {
+		
 		// This method will be called once per scheduler run
+		
 	}
 	
 	@Override
@@ -195,45 +210,46 @@ public class SwerveModule extends SubsystemBase {
 		
 		builder.addDoubleProperty(
 			"unop-rotation",
-			() -> unoptimizedRotation, 
+			() -> unoptimizedRotation,
 			null
 		);
 		
 		builder.addDoubleProperty(
 			"op-rotation",
-			() -> optimizedRotation, 
+			() -> optimizedRotation,
 			null
 		);
 		
 		builder.addDoubleProperty(
 			"actual-rotation",
-			() -> getEncoderRotation().getDegrees(), 
+			() -> getEncoderRotation().getDegrees(),
 			null
 		);
 		
 		builder.addDoubleProperty(
 			"steer-Speed",
-			() -> steerSpeed, 
+			() -> steerSpeed,
 			null
 		);
 		
 		builder.addDoubleProperty(
 			"drive-Speed",
-			() -> driveSpeed, 
+			() -> driveSpeed,
 			null
 		);
 		
 		builder.addDoubleProperty(
-			"distance-Readout", 
-			() -> driveEncoder.getPosition() * .1 - distanceOffset, 
+			"distance-Readout",
+			() -> driveEncoder.getPosition() * .1 - distanceOffset,
 			null
 		);
-
+		
 		builder.addDoubleProperty(
-			"distance-Offset", 
-			() -> distanceOffset, 
+			"distance-Offset",
+			() -> distanceOffset,
 			null
 		);
+		
 	}
 	
 }
