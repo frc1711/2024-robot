@@ -11,46 +11,60 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swerve.Swerve;
 
 public class RotateAuton extends Command {
-  
-  Swerve swerveSubsystem;
-  Rotation2d rotation;
-  PIDController rotationalPID;
-
-  public RotateAuton(Swerve swerveSubsystem, Rotation2d rotation) {
-    this.swerveSubsystem = swerveSubsystem;
-    this.rotation = rotation;
-
-    rotationalPID = new PIDController(1, 0, 0);
-
-    rotationalPID.enableContinuousInput(0, 360);
-    rotationalPID.setTolerance(1);
-
-    addRequirements(swerveSubsystem);    
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    swerveSubsystem.stop();
-  }
-
-  double rotationSpeed;
-  @Override
-  public void execute() {
-    rotationSpeed = rotationalPID.calculate(swerveSubsystem.getGyroRotation().getDegrees(), rotation.getDegrees());
-
-    swerveSubsystem.updateModules(new ChassisSpeeds(0, 0, rotationSpeed), 1);
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    swerveSubsystem.stop();
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return rotationalPID.atSetpoint();
-  }
+	
+	Swerve swerveSubsystem;
+	
+	Rotation2d rotation;
+	
+	PIDController rotationalPID;
+	
+	public RotateAuton(Swerve swerveSubsystem, Rotation2d rotation) {
+		
+		this.swerveSubsystem = swerveSubsystem;
+		this.rotation = rotation;
+		
+		rotationalPID = new PIDController(1, 0, 0);
+		
+		rotationalPID.enableContinuousInput(0, 360);
+		rotationalPID.setTolerance(1);
+		
+		addRequirements(swerveSubsystem);
+		
+	}
+	
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+		
+		swerveSubsystem.stop();
+		
+	}
+	
+	double rotationSpeed;
+	
+	@Override
+	public void execute() {
+		
+		rotationSpeed = rotationalPID.calculate(swerveSubsystem.getGyroRotation().getDegrees(), rotation.getDegrees());
+		
+		swerveSubsystem.updateModules(new ChassisSpeeds(0, 0, rotationSpeed), 1);
+		
+	}
+	
+	// Called once the command ends or is interrupted.
+	@Override
+	public void end(boolean interrupted) {
+		
+		swerveSubsystem.stop();
+		
+	}
+	
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		
+		return rotationalPID.atSetpoint();
+		
+	}
+	
 }
