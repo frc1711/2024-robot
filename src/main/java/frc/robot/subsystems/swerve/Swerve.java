@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.IDMap;
 import frc.robot.RobotContainer;
 // import frc.robot.util.Odometry;
 
@@ -72,11 +73,36 @@ public class Swerve extends SubsystemBase {
 		StartPosition startPosition
 	) {
 		
-		this.flModule = flModule;
-		this.frModule = frModule;
-		this.rlModule = rlModule;
-		this.rrModule = rrModule;
-		this.gyro = gyro;
+		this.flModule = new SwerveModule(
+			IDMap.FRONT_LEFT_STEER_MOTOR.id,
+			IDMap.FRONT_LEFT_DRIVE_MOTOR.id,
+			IDMap.FRONT_LEFT_ENCODER.id,
+			new Translation2d(.254, .269875)
+		);
+		
+		this.frModule = new SwerveModule(
+			IDMap.FRONT_RIGHT_STEER_MOTOR.id,
+			IDMap.FRONT_RIGHT_DRIVE_MOTOR.id,
+			IDMap.FRONT_RIGHT_ENCODER.id,
+			new Translation2d(.254, -.269875)
+		);
+		
+		this.rlModule = new SwerveModule(
+			IDMap.REAR_LEFT_STEER_MOTOR.id,
+			IDMap.REAR_LEFT_DRIVE_MOTOR.id,
+			IDMap.REAR_LEFT_ENCODER.id,
+			new Translation2d(-.254, .296875)
+		);
+		
+		this.rrModule = new SwerveModule(
+			IDMap.REAR_RIGHT_STEER_MOTOR.id,
+			IDMap.REAR_RIGHT_DRIVE_MOTOR.id,
+			IDMap.REAR_RIGHT_ENCODER.id,
+			new Translation2d(-.254, -.269875)
+		);
+		
+		this.gyro = new AHRS();;
+		
 		this.startPosition = startPosition;
 		modulePositions = new SwerveModulePosition[4];
 		modulePositions[0] = flModule.getPosition();

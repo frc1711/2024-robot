@@ -29,10 +29,6 @@ public class RobotContainer {
 	
 	private final Swerve swerveSubsystem;
 	
-	private final SwerveModule flModule, frModule, rlModule, rrModule;
-	
-	private final AHRS gyro;
-	
 	public final Shooter shooter;
 	
 	public final Intake intake;
@@ -55,35 +51,6 @@ public class RobotContainer {
 		configStartPositionChooser();
 		
 		// TODO: Update motor positions when using different robots
-		flModule = new SwerveModule(
-			IDMap.FRONT_LEFT_STEER_MOTOR.id,
-			IDMap.FRONT_LEFT_DRIVE_MOTOR.id,
-			IDMap.FRONT_LEFT_ENCODER.id,
-			new Translation2d(.254, .269875)
-		);
-		
-		frModule = new SwerveModule(
-			IDMap.FRONT_RIGHT_STEER_MOTOR.id,
-			IDMap.FRONT_RIGHT_DRIVE_MOTOR.id,
-			IDMap.FRONT_RIGHT_ENCODER.id,
-			new Translation2d(.254, -.269875)
-		);
-		
-		rlModule = new SwerveModule(
-			IDMap.REAR_LEFT_STEER_MOTOR.id,
-			IDMap.REAR_LEFT_DRIVE_MOTOR.id,
-			IDMap.REAR_LEFT_ENCODER.id,
-			new Translation2d(-.254, .296875)
-		);
-		
-		rrModule = new SwerveModule(
-			IDMap.REAR_RIGHT_STEER_MOTOR.id,
-			IDMap.REAR_RIGHT_DRIVE_MOTOR.id,
-			IDMap.REAR_RIGHT_ENCODER.id,
-			new Translation2d(-.254, -.269875)
-		);
-		
-		gyro = new AHRS();
 		
 		shooter = new Shooter(
 			IDMap.LEFT_SHOOTER_MOTOR.id,
