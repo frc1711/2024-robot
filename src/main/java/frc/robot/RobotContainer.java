@@ -33,14 +33,23 @@ import frc.robot.subsystems.swerve.SwerveModule;
 public class RobotContainer {
 	
 	private final Swerve swerveSubsystem;
+	
 	private final SwerveModule flModule, frModule, rlModule, rrModule;
+	
 	private final AHRS gyro;
+	
 	public final Shooter shooter;
+	
 	public final Intake intake;
+	
 	public final Arm arm;
+	
 	private final TeleopCommand teleopCommand;
+	
 	public final XboxController driveController, subsystemController;
-  	private final SendableChooser<Supplier<Command>> autonChooser, testChooser;
+	
+	private final SendableChooser<Supplier<Command>> autonChooser, testChooser;
+	
 	private final SendableChooser<Supplier<Swerve.StartPosition>> startPositionChooser;
 	
 	public RobotContainer() {
@@ -50,19 +59,71 @@ public class RobotContainer {
 		startPositionChooser = new SendableChooser<>();
 		configStartPositionChooser();
 		
-		flModule = new SwerveModule(IDMap.flSteerMotorID, IDMap.flDriveMotorID, IDMap.flEncoderID, new Translation2d(.254, .269875)); //TODO: Update motor positions when using different robots
-		frModule = new SwerveModule(IDMap.frSteerMotorID, IDMap.frDriveMotorID, IDMap.frEncoderID, new Translation2d(.254, -.269875));
-		rlModule = new SwerveModule(IDMap.rlSteerMotorID, IDMap.rlDriveMotorID, IDMap.rlEncoderID, new Translation2d(-.254, .296875));
-		rrModule = new SwerveModule(IDMap.rrSteerMotorID, IDMap.rrDriveMotorID, IDMap.rrEncoderID, new Translation2d(-.254, -.269875));
+		// TODO: Update motor positions when using different robots
+		flModule = new SwerveModule(
+			IDMap.flSteerMotorID,
+			IDMap.flDriveMotorID,
+			IDMap.flEncoderID,
+			new Translation2d(.254, .269875)
+		);
+		
+		frModule = new SwerveModule(
+			IDMap.frSteerMotorID,
+			IDMap.frDriveMotorID,
+			IDMap.frEncoderID,
+			new Translation2d(.254, -.269875)
+		);
+		
+		rlModule = new SwerveModule(
+			IDMap.rlSteerMotorID,
+			IDMap.rlDriveMotorID,
+			IDMap.rlEncoderID,
+			new Translation2d(-.254, .296875)
+		);
+		
+		rrModule = new SwerveModule(
+			IDMap.rrSteerMotorID,
+			IDMap.rrDriveMotorID,
+			IDMap.rrEncoderID,
+			new Translation2d(-.254, -.269875)
+		);
+		
 		gyro = new AHRS();
-		shooter = new Shooter(IDMap.leftShooterMotorID, IDMap.rightShooterMotorID);
-		intake = new Intake(IDMap.intakeMotorLeft, IDMap.intakeMotorRight);
-		arm = new Arm(IDMap.armMotorLeft, IDMap.armMotorRight);
-		swerveSubsystem = new Swerve(flModule, frModule, rlModule, rrModule, gyro,
+		
+		shooter = new Shooter(
+			IDMap.leftShooterMotorID,
+			IDMap.rightShooterMotorID
+		);
+		
+		intake = new Intake(
+			IDMap.intakeMotorLeft,
+			IDMap.intakeMotorRight
+		);
+		
+		arm = new Arm(
+			IDMap.armMotorLeft,
+			IDMap.armMotorRight
+		);
+		swerveSubsystem = new Swerve(
+			flModule,
+			frModule,
+			rlModule,
+			rrModule,
+			gyro,
 			startPositionChooser.getSelected().get()
 		);
-		teleopCommand = new TeleopCommand(intake, swerveSubsystem, shooter, arm, driveController, subsystemController);
+		
+		teleopCommand = new TeleopCommand(
+			intake,
+			swerveSubsystem,
+			shooter,
+			arm,
+			driveController,
+			subsystemController
+		);
+		
 		putSendable("Analysis Tab", "Odometry", swerveSubsystem);
+		
 		autonChooser = new SendableChooser<>();
 		testChooser = new SendableChooser<>();
 		
@@ -71,13 +132,13 @@ public class RobotContainer {
 		
 	}
 	
-	public void initTeleop () {
+	public void initTeleop() {
 		
 		teleopCommand.schedule();
 		
 	}
 	
-	public Command getTestCommand () {
+	public Command getTestCommand() {
 		
 		return testChooser.getSelected().get();
 		
@@ -89,7 +150,7 @@ public class RobotContainer {
 	public static void putSendable(String tab, String name, Sendable sendable) {
 		
 		Shuffleboard.getTab(tab).add(name, sendable);
-	
+		
 	}
 	
 	/**
@@ -115,95 +176,95 @@ public class RobotContainer {
 		autonChooser.addOption("Timed Swerve Auton", () -> new TimedSwerveAuton(swerveSubsystem));
 		
 		putSendable("Pre-match Tab", "Auton Chooser", autonChooser);
-	
+		
 	}
 	
-	private void configStartPositionChooser () {
+	private void configStartPositionChooser() {
 		
 		startPositionChooser.setDefaultOption("First Station Position", () -> Swerve.StartPosition.STATION_ONE);
 		startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_TWO);
 		startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_THREE);
 		
 		putSendable("Pre-match Tab", "Start Postion Chooser", startPositionChooser);
-	
+		
 	}
 	
-	private void configTestTab () {
+	private void configTestTab() {
 		
-		 // putSendable("Test Tab", "Shooter", shooter);
-		 //
-		 // testChooser.addOption(
-			//  "Shooter Test Command",
-			//  () -> new ShooterTest(
-			// 	 shooter,
-			// 	 driveController::getAButton,
-			// 	 1,
-			// 	 1
-			//  )
-		 // );
-		 //
-		 // new TestCommand(
-			//  shooter,
-			//  new InstantCommand(
-			// 	 () -> shooter.runShooter(
-			// 		 1, 
-			// 		 1
-			// 	 ),
-			// 	 shooter
-			//  ),
-			//  new InstantCommand(
-			// 	 shooter::stop,
-			// 	 shooter
-			//  ),
-			//  new InstantCommand(
-			// 	 shooter::increaseShooterSpeed,
-			// 	 shooter
-			//  ),
-			//  new InstantCommand(
-			// 	 shooter::decreaseShooterSpeed,
-			// 	 shooter
-			//  ),
-			//  driveController::getLeftBumperPressed,
-			//  driveController::getRightBumperPressed,
-			//  driveController::getXButtonPressed,
-			//  driveController::getAButton
-		 // );
-		 //
-		 // testChooser.addOption(
-			//  "Intake Test Command",
-			//  () -> new TestCommand(
-			// 	 shooter,
-			// 	 new InstantCommand(
-			// 		 () -> intake.runIntake(false),
-			// 		 intake
-			// 	 ),
-			// 	 new InstantCommand(
-			// 		 intake::stop,
-			// 		 intake
-			// 	 ),
-			// 	 new InstantCommand(
-			// 		 intake::increaseIntakeSpeed,
-			// 		 intake
-			// 	 ),
-			// 	 new InstantCommand(
-			// 		 intake::decreaseIntakeSpeed,
-			// 		 intake
-			// 	 ),
-			// 	 driveController::getLeftBumperPressed,
-			// 	 driveController::getRightBumperPressed,
-			// 	 driveController::getAButtonPressed,
-			// 	 driveController::getAButton
-			//  )
-		 // );
-		 
-		 putSendable("Test Tab", "Test Command Chooser", testChooser);
-	
+		// putSendable("Test Tab", "Shooter", shooter);
+		//
+		// testChooser.addOption(
+		//  "Shooter Test Command",
+		//  () -> new ShooterTest(
+		// 	 shooter,
+		// 	 driveController::getAButton,
+		// 	 1,
+		// 	 1
+		//  )
+		// );
+		//
+		// new TestCommand(
+		//  shooter,
+		//  new InstantCommand(
+		// 	 () -> shooter.runShooter(
+		// 		 1, 
+		// 		 1
+		// 	 ),
+		// 	 shooter
+		//  ),
+		//  new InstantCommand(
+		// 	 shooter::stop,
+		// 	 shooter
+		//  ),
+		//  new InstantCommand(
+		// 	 shooter::increaseShooterSpeed,
+		// 	 shooter
+		//  ),
+		//  new InstantCommand(
+		// 	 shooter::decreaseShooterSpeed,
+		// 	 shooter
+		//  ),
+		//  driveController::getLeftBumperPressed,
+		//  driveController::getRightBumperPressed,
+		//  driveController::getXButtonPressed,
+		//  driveController::getAButton
+		// );
+		//
+		// testChooser.addOption(
+		//  "Intake Test Command",
+		//  () -> new TestCommand(
+		// 	 shooter,
+		// 	 new InstantCommand(
+		// 		 () -> intake.runIntake(false),
+		// 		 intake
+		// 	 ),
+		// 	 new InstantCommand(
+		// 		 intake::stop,
+		// 		 intake
+		// 	 ),
+		// 	 new InstantCommand(
+		// 		 intake::increaseIntakeSpeed,
+		// 		 intake
+		// 	 ),
+		// 	 new InstantCommand(
+		// 		 intake::decreaseIntakeSpeed,
+		// 		 intake
+		// 	 ),
+		// 	 driveController::getLeftBumperPressed,
+		// 	 driveController::getRightBumperPressed,
+		// 	 driveController::getAButtonPressed,
+		// 	 driveController::getAButton
+		//  )
+		// );
+		
+		putSendable("Test Tab", "Test Command Chooser", testChooser);
+		
 	}
 	
 	public Command getAutonomousCommand() {
 		
 		return autonChooser.getSelected().get();
-	
+		
 	}
-
+	
 }
