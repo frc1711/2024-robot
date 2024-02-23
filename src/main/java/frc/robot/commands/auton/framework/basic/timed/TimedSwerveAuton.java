@@ -7,7 +7,6 @@ package frc.robot.commands.auton.framework.basic.timed;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.auton.framework.basic.SwerveAuton;
 import frc.robot.subsystems.swerve.Swerve;
 
 public class TimedSwerveAuton extends Command {

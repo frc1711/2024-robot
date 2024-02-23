@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.auton.framework.basic.ArmAuton;
-import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.RotateAuton;
 import frc.robot.commands.auton.framework.basic.ShooterAuton;
 import frc.robot.subsystems.Arm;

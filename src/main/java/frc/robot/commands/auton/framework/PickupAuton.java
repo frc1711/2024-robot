@@ -4,12 +4,9 @@
 
 package frc.robot.commands.auton.framework;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.commands.auton.framework.basic.IntakeAuton;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
-import frc.robot.commands.auton.framework.basic.SwerveAuton;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.swerve.Swerve;
 
