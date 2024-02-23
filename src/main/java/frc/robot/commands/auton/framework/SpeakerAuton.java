@@ -20,20 +20,32 @@ import frc.robot.util.Limelight;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class SpeakerAuton extends SequentialCommandGroup {
-
-  double cameraToArmX = 0;
-  double cameraToArmZ = 0;
-
-  public SpeakerAuton(Swerve swerveSubsystem, Shooter shooterSubsystem, Arm armSubsystem, double angleToSpeakerTag) {
-    
-    Pose2d robotPose = swerveSubsystem.getRobotPose();
-
-    double armToTagZ = Limelight.LIMELIGHT.getAprilTag().get().verticalOffset() + cameraToArmZ;
-    double armToTagX = Limelight.LIMELIGHT.getAprilTag().get().horizontalOffset() + cameraToArmX;
-
-    Math.atan(armToTagZ/armToTagX);
-
-    addCommands(new RotateAuton(swerveSubsystem, new Rotation2d(angleToSpeakerTag)), new ArmAuton(armSubsystem, Math.atan(armToTagZ/armToTagX)), new ShooterAuton(shooterSubsystem));
-    //TODO: Run extensive troubleshooting and testing bc this is very experimental/theoretical 
-  }
+	
+	double cameraToArmX = 0;
+	
+	double cameraToArmZ = 0;
+	
+	public SpeakerAuton(
+		Swerve swerveSubsystem,
+		Shooter shooterSubsystem,
+		Arm armSubsystem,
+		double angleToSpeakerTag
+	) {
+		
+		Pose2d robotPose = swerveSubsystem.getRobotPose();
+		
+		double armToTagZ = Limelight.LIMELIGHT.getAprilTag().get().verticalOffset() + cameraToArmZ;
+		double armToTagX = Limelight.LIMELIGHT.getAprilTag().get().horizontalOffset() + cameraToArmX;
+		
+		Math.atan(armToTagZ / armToTagX);
+		
+		addCommands(
+			new RotateAuton(swerveSubsystem, new Rotation2d(angleToSpeakerTag)),
+			new ArmAuton(armSubsystem, Math.atan(armToTagZ / armToTagX)),
+			new ShooterAuton(shooterSubsystem)
+		);
+		// TODO: Run extensive troubleshooting and testing bc this is very experimental/theoretical
+		
+	}
+	
 }
