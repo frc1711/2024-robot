@@ -4,34 +4,47 @@
 
 package frc.robot;
 
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
- * constants are needed, to reduce verbosity.
- */
-public final class IDMap {
+public enum IDMap {
 	
-	public static final int
-		flDriveMotorID = 1,
-		flSteerMotorID = 2,
-		flEncoderID = 9,
-		frDriveMotorID = 3,
-		frSteerMotorID = 4,
-		frEncoderID = 10,
-		rlDriveMotorID = 5,
-		rlSteerMotorID = 6,
-		rlEncoderID = 11,
-		rrDriveMotorID = 7,
-		rrSteerMotorID = 8,
-		rrEncoderID = 12,
-		rightShooterMotorID = 14,
-		leftShooterMotorID = 15,
-		armMotorRight = 16,
-		armMotorLeft = 17,
-		intakeMotorRight = 19,
-		intakeMotorLeft = 18;
+	// Swerve Modules
+	
+	FRONT_LEFT_DRIVE_MOTOR(1),
+	FRONT_LEFT_STEER_MOTOR(2),
+	FRONT_LEFT_ENCODER(9),
+	
+	FRONT_RIGHT_DRIVE_MOTOR(3),
+	FRONT_RIGHT_STEER_MOTOR(4),
+	FRONT_RIGHT_ENCODER(10),
+	
+	REAR_LEFT_DRIVE_MOTOR(5),
+	REAR_LEFT_STEER_MOTOR(6),
+	REAR_LEFT_ENCODER(11),
+	
+	REAR_RIGHT_DRIVE_MOTOR(7),
+	REAR_RIGHT_STEER_MOTOR(8),
+	REAR_RIGHT_ENCODER(12),
+	
+	// Shooter Motors
+	
+	LEFT_SHOOTER_MOTOR(15),
+	RIGHT_SHOOTER_MOTOR(14),
+	
+	// Pivot Motors
+	
+	LEFT_PIVOT_MOTOR(17),
+	RIGHT_PIVOT_MOTOR(16),
+	
+	// Intake Motors
+	
+	LEFT_LOWER_INTAKE_MOTOR(18),
+	RIGHT_UPPER_INTAKE_MOTOR(19);
+	
+	public final int id;
+	
+	IDMap(int id) {
+		
+		this.id = id;
+		
+	}
 	
 }

@@ -61,48 +61,48 @@ public class RobotContainer {
 		
 		// TODO: Update motor positions when using different robots
 		flModule = new SwerveModule(
-			IDMap.flSteerMotorID,
-			IDMap.flDriveMotorID,
-			IDMap.flEncoderID,
+			IDMap.FRONT_LEFT_STEER_MOTOR.id,
+			IDMap.FRONT_LEFT_DRIVE_MOTOR.id,
+			IDMap.FRONT_LEFT_ENCODER.id,
 			new Translation2d(.254, .269875)
 		);
 		
 		frModule = new SwerveModule(
-			IDMap.frSteerMotorID,
-			IDMap.frDriveMotorID,
-			IDMap.frEncoderID,
+			IDMap.FRONT_RIGHT_STEER_MOTOR.id,
+			IDMap.FRONT_RIGHT_DRIVE_MOTOR.id,
+			IDMap.FRONT_RIGHT_ENCODER.id,
 			new Translation2d(.254, -.269875)
 		);
 		
 		rlModule = new SwerveModule(
-			IDMap.rlSteerMotorID,
-			IDMap.rlDriveMotorID,
-			IDMap.rlEncoderID,
+			IDMap.REAR_LEFT_STEER_MOTOR.id,
+			IDMap.REAR_LEFT_DRIVE_MOTOR.id,
+			IDMap.REAR_LEFT_ENCODER.id,
 			new Translation2d(-.254, .296875)
 		);
 		
 		rrModule = new SwerveModule(
-			IDMap.rrSteerMotorID,
-			IDMap.rrDriveMotorID,
-			IDMap.rrEncoderID,
+			IDMap.REAR_RIGHT_STEER_MOTOR.id,
+			IDMap.REAR_RIGHT_DRIVE_MOTOR.id,
+			IDMap.REAR_RIGHT_ENCODER.id,
 			new Translation2d(-.254, -.269875)
 		);
 		
 		gyro = new AHRS();
 		
 		shooter = new Shooter(
-			IDMap.leftShooterMotorID,
-			IDMap.rightShooterMotorID
+			IDMap.LEFT_SHOOTER_MOTOR.id,
+			IDMap.RIGHT_SHOOTER_MOTOR.id
 		);
 		
 		intake = new Intake(
-			IDMap.intakeMotorLeft,
-			IDMap.intakeMotorRight
+			IDMap.LEFT_LOWER_INTAKE_MOTOR.id,
+			IDMap.RIGHT_UPPER_INTAKE_MOTOR.id
 		);
 		
 		arm = new Arm(
-			IDMap.armMotorLeft,
-			IDMap.armMotorRight
+			IDMap.LEFT_PIVOT_MOTOR.id,
+			IDMap.RIGHT_PIVOT_MOTOR.id
 		);
 		swerveSubsystem = new Swerve(
 			flModule,
