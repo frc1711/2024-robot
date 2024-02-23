@@ -13,7 +13,8 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class IDMap {
-  public static final int 
+	
+	public static final int
 		flDriveMotorID = 1,
 		flSteerMotorID = 2,
 		flEncoderID = 9,
@@ -32,4 +33,5 @@ public final class IDMap {
 		armMotorLeft = 17,
 		intakeMotorRight = 19,
 		intakeMotorLeft = 18;
+	
 }
