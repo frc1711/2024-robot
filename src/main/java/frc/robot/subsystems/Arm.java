@@ -13,25 +13,25 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase {
 	
-	CANSparkMax leftTuffbox, rightTuffbox;
+	CANSparkMax leftToughbox, rightToughbox;
 	
 	PIDController anglePID;
 	
 	SparkAbsoluteEncoder boreEncoder;
 	
-	public Arm(int leftTuffboxID, int rightTuffboxID) {
+	public Arm(int leftToughboxID, int rightToughboxID) {
 		
-		leftTuffbox = new CANSparkMax(leftTuffboxID, MotorType.kBrushless);
-		rightTuffbox = new CANSparkMax(rightTuffboxID, MotorType.kBrushless);
+		leftToughbox = new CANSparkMax(leftToughboxID, MotorType.kBrushless);
+		rightToughbox = new CANSparkMax(rightToughboxID, MotorType.kBrushless);
 		
-		// boreEncoder = rightTuffbox.getAbsoluteEncoder(Type.kDutyCycle);
+		// boreEncoder = rightToughbox.getAbsoluteEncoder(Type.kDutyCycle);
 		
-		// leftTuffbox.setIdleMode(IdleMode.kBrake);
-		// rightTuffbox.setIdleMode(IdleMode.kBrake);
+		// leftToughbox.setIdleMode(IdleMode.kBrake);
+		// rightToughbox.setIdleMode(IdleMode.kBrake);
 		
 		// Set the motor to be inverted so that it rotates in the same direction
 		// as the other motor with the same input value.
-		// rightTuffbox.setInverted(true);
+		// rightToughbox.setInverted(true);
 		
 		anglePID = new PIDController(.01, 0, 0);
 		
@@ -39,8 +39,8 @@ public class Arm extends SubsystemBase {
 	
 	public void stop() {
 		
-		leftTuffbox.stopMotor();
-		rightTuffbox.stopMotor();
+		leftToughbox.stopMotor();
+		rightToughbox.stopMotor();
 		
 	}
 	
@@ -57,15 +57,15 @@ public class Arm extends SubsystemBase {
 		rotationSpeed = anglePID.calculate(getAngleDegrees(), angleInDegrees);
 		motorSpeeds = rotationSpeed / 2;
 		
-		leftTuffbox.set(motorSpeeds);
-		rightTuffbox.set(motorSpeeds);
+		leftToughbox.set(motorSpeeds);
+		rightToughbox.set(motorSpeeds);
         
 	}
 	
 	public void changeAngle(double speed) {
 		
-		leftTuffbox.set(speed);
-		rightTuffbox.set(speed);
+		leftToughbox.set(speed);
+		rightToughbox.set(speed);
         
 	}
 	
