@@ -17,10 +17,16 @@ import frc.robot.subsystems.swerve.Swerve;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class PickupAuton extends ParallelDeadlineGroup {
-  /** Creates a new PickupAuton. */
-  public PickupAuton(Intake intake, Swerve swerve) {
-    super(new IntakeAuton(intake));
-
-    addCommands(new OdometryAuton(swerve, swerve.getRobotPose(), 1));
-  }
+	
+	/**
+	 * Creates a new PickupAuton.
+	 */
+	public PickupAuton(Intake intake, Swerve swerve) {
+		
+		super(new IntakeAuton(intake));
+		
+		addCommands(new OdometryAuton(swerve, swerve.getRobotPose(), 1));
+		
+	}
+	
 }
