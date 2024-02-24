@@ -32,7 +32,11 @@ public enum DIODevice {
      *
      * This limit switch is normally closed.
      */
-    RIGHT_LOWER_ARM_LIMIT_SWITCH(6);
+    RIGHT_LOWER_ARM_LIMIT_SWITCH(6),
+    
+    INTAKE_LOWER_BEAM_BREAK_SENSOR(1),
+    
+    INTAKE_UPPER_BEAM_BREAK_SENSOR(0);
     
     /**
      * The ID of the port that this DIODevice is plugged in to.
