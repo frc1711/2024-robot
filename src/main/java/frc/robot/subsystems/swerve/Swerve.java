@@ -72,32 +72,55 @@ public class Swerve extends SubsystemBase {
 	
 	public Swerve(StartPosition startPosition) {
 		
+		// The following wheelbase calculations assume that the center of the
+		// robot is the average (centerpoint) of the swerve modules, although
+		// this is not necessarily the case, but is fine for the purposes of
+		// this project.
+		
+		double swerveModuleXOffsetFromCenterInMeters =
+			RobotDimensions.LENGTHWISE_WHEELBASE.in(Units.Meters) / 2;
+		
+		double swerveModuleYOffsetFromCenterInMeters =
+			RobotDimensions.WIDTHWISE_WHEELBASE.in(Units.Meters) / 2;
+		
 		this.frontLeftSwerveModule = new SwerveModule(
 			CANDevice.FRONT_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_ENCODER.id,
-			new Translation2d(.254, .269875)
+			new Translation2d(
+				swerveModuleXOffsetFromCenterInMeters,
+				swerveModuleYOffsetFromCenterInMeters
+			)
 		);
 		
 		this.frontRightSwerveModule = new SwerveModule(
 			CANDevice.FRONT_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_ENCODER.id,
-			new Translation2d(.254, -.269875)
+			new Translation2d(
+				swerveModuleXOffsetFromCenterInMeters,
+				-swerveModuleYOffsetFromCenterInMeters
+			)
 		);
 		
 		this.rearLeftSwerveModule = new SwerveModule(
 			CANDevice.REAR_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_ENCODER.id,
-			new Translation2d(-.254, .296875)
+			new Translation2d(
+				-swerveModuleXOffsetFromCenterInMeters,
+				swerveModuleYOffsetFromCenterInMeters
+			)
 		);
 		
 		this.rearRightSwerveModule = new SwerveModule(
 			CANDevice.REAR_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_ENCODER.id,
-			new Translation2d(-.254, -.269875)
+			new Translation2d(
+				-swerveModuleXOffsetFromCenterInMeters,
+				-swerveModuleYOffsetFromCenterInMeters
+			)
 		);
 		
 		this.gyro = new AHRS();;
