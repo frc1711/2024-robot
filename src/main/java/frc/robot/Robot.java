@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.ShooterCommand;
+import frc.robot.constants.DoublePreference;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,6 +28,9 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        
+        // Initialize preferences on the RoboRIO.
+        DoublePreference.init();
 		
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
