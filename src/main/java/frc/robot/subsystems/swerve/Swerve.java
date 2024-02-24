@@ -42,7 +42,7 @@ public class Swerve extends SubsystemBase {
 	
 	protected final SwerveDriveKinematics kinematics;
 	
-	public StartPosition startPosition;
+	public final StartPosition startPosition;
 	
 	// TODO: Find coordinates of start positions
 	public enum StartPosition {
