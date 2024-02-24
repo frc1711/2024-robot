@@ -24,20 +24,23 @@ import frc.robot.constants.CANDevice;
 
 public class Swerve extends SubsystemBase {
 	
-	private SwerveModule frontLeftSwerveModule;
-	private SwerveModule frontRightSwerveModule;
-	private SwerveModule rearLeftSwerveModule;
-	private SwerveModule rearRightSwerveModule;
+	protected final SwerveModule frontLeftSwerveModule;
+	
+	protected final SwerveModule frontRightSwerveModule;
+	
+	protected final SwerveModule rearLeftSwerveModule;
+	
+	protected final SwerveModule rearRightSwerveModule;
 	
 	// private Odometry odometry;
 	
-	private SwerveDriveOdometry swerveDriveOdometry;
+	protected final SwerveDriveOdometry swerveDriveOdometry;
 	
-	private SwerveModulePosition[] modulePositions;
+	protected final SwerveModulePosition[] modulePositions;
 	
-	private AHRS gyro;
+	protected final AHRS gyro;
 	
-	private SwerveDriveKinematics kinematics;
+	protected final SwerveDriveKinematics kinematics;
 	
 	public StartPosition startPosition;
 	
