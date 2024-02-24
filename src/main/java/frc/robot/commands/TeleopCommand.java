@@ -27,7 +27,7 @@ public class TeleopCommand extends ParallelCommandGroup {
                 driveController::getLeftY,
                 driveController::getLeftX,
                 driveController::getRightX,
-                () -> driveController.getRightTriggerAxis() >= .15,
+                driveController::getRightBumper,
                 driveController::getRightStickButton,
                 null,
                 null

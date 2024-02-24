@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.TeleopCommand;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
@@ -84,7 +85,18 @@ public class RobotContainer {
 		this.subsystemController.leftBumper().whileTrue(this.arm.commands.lowerArm());
 		this.subsystemController.rightBumper().whileTrue(this.arm.commands.raiseArm());
 		
-		teleopCommand.schedule();
+		swerveSubsystem.setDefaultCommand(
+			new DriveCommand(
+                swerveSubsystem,
+                driveController::getLeftY,
+                driveController::getLeftX,
+                driveController::getRightX,
+                driveController::getRightBumper,
+                driveController::getRightStickButton,
+                null,
+                null
+            )
+		);
 	
 	}
 	

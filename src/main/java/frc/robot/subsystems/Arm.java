@@ -173,15 +173,19 @@ public class Arm extends SubsystemBase {
         
 	}
 	
-//	public void setToAngle(double angleInDegrees) {
-//
-//		rotationSpeed = anglePID.calculate(getAngleDegrees(), angleInDegrees);
-//		motorSpeeds = rotationSpeed / 2;
-//
-//		leftMotorController.set(motorSpeeds);
-//		rightMotorController.set(motorSpeeds);
-//
-//	}
+	double rotationSpeed, motorSpeeds;
+	public void setToAngle(double angleInDegrees) {
+
+		// rotationSpeed = anglePID.calculate(getAngleDegrees(), angleInDegrees);
+		// motorSpeeds = rotationSpeed / 2;
+
+		// leftMotorController.set(motorSpeeds);
+		// rightMotorController.set(motorSpeeds);
+
+		while (angleInDegrees <= getAngleDegrees() - 1 || angleInDegrees >= getAngleDegrees() +1)
+		rotate(angleInDegrees < getAngleDegrees());
+
+	}
 	
 	public void rotate(boolean shouldRaise) {
 		
