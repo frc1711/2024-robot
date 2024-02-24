@@ -53,7 +53,7 @@ public class Shooter extends SubsystemBase {
 			
 			// Set the maximum rotational acceleration to ramp at a speed
 			// that would reach 100% speed from 0% speed in n seconds.
-			motorController.setOpenLoopRampRate(1);
+			motorController.setOpenLoopRampRate(0.5);
 			
 		});
 		
