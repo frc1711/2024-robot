@@ -29,8 +29,9 @@ public class Intake extends SubsystemBase {
             MotorType.kBrushless
         );
         
-        rightLowerMotorController.setInverted(true);
-        leftUpperMotorController.setInverted(false);
+        rightLowerMotorController.setInverted(false);
+        leftUpperMotorController.setInverted(true);
+        
         rightLowerMotorController.setIdleMode(IdleMode.kBrake);
         leftUpperMotorController.setIdleMode(IdleMode.kBrake);
 		
