@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANDevice;
 import frc.robot.constants.DoublePreference;
@@ -81,6 +82,16 @@ public class Shooter extends SubsystemBase {
 		
 		builder.addDoubleProperty("Left Motor Speed", leftShooterMotorController::get, null);
 		builder.addDoubleProperty("Right Motor Speed", rightShooterMotorController::get, null);
+		
+	}
+	
+	public class Commands {
+		
+		public Command shoot() {
+			
+			return Shooter.this.run(Shooter.this::shoot);
+			
+		}
 		
 	}
 	
