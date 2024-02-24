@@ -45,6 +45,14 @@ public class Shooter extends SubsystemBase {
 			// powered.
 			motorController.setIdleMode(IdleMode.kCoast);
 			
+			// Set the smart stall current limit at 60A, and
+			// the free speed smart current limit at 100A.
+			motorController.setSmartCurrentLimit(60, 100);
+			
+			// Set the maximum rotational acceleration to ramp at a speed
+			// that would reach 100% speed from 0% speed in n seconds.
+			motorController.setOpenLoopRampRate(1);
+			
 		});
 		
 	}
