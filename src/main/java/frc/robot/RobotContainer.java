@@ -27,21 +27,25 @@ import frc.robot.subsystems.swerve.SwerveModule;
 
 public class RobotContainer {
 	
-	private final Swerve swerveSubsystem;
+	protected final Swerve swerveSubsystem;
 	
-	public final Shooter shooter;
+	protected final Shooter shooter;
 	
-	public final Intake intake;
+	protected final Intake intake;
 	
-	public final Arm arm;
+	protected final Arm arm;
 	
-	private final TeleopCommand teleopCommand;
+	protected final TeleopCommand teleopCommand;
 	
-	public final XboxController driveController, subsystemController;
+	protected final XboxController driveController;
 	
-	private final SendableChooser<Supplier<Command>> autonChooser, testChooser;
+	protected final XboxController subsystemController;
 	
-	private final SendableChooser<Supplier<Swerve.StartPosition>> startPositionChooser;
+	protected final SendableChooser<Supplier<Command>> autonChooser;
+	
+	protected final SendableChooser<Supplier<Command>> testChooser;
+	
+	protected final SendableChooser<Supplier<Swerve.StartPosition>> startPositionChooser;
 	
 	public RobotContainer() {
 		
