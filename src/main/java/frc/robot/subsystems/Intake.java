@@ -13,31 +13,33 @@ import frc.robot.constants.CANDevice;
 
 public class Intake extends SubsystemBase {
     
-    CANSparkMax leftIntakeMotor, rightIntakeMotor;
+    protected final CANSparkMax leftUpperMotorController;
+
+    protected final CANSparkMax rightLowerMotorController;
     
     public Intake() {
-		
-        leftIntakeMotor = new CANSparkMax(
+        
+        leftUpperMotorController = new CANSparkMax(
             CANDevice.LEFT_UPPER_INTAKE_MOTOR_CONTROLLER.id,
             MotorType.kBrushless
         );
         
-        rightIntakeMotor = new CANSparkMax(
+        rightLowerMotorController = new CANSparkMax(
             CANDevice.RIGHT_LOWER_INTAKE_MOTOR_CONTROLLER.id,
             MotorType.kBrushless
         );
         
-        rightIntakeMotor.setInverted(true);
-        leftIntakeMotor.setInverted(false);
-        rightIntakeMotor.setIdleMode(IdleMode.kBrake);
-        leftIntakeMotor.setIdleMode(IdleMode.kBrake);
+        rightLowerMotorController.setInverted(true);
+        leftUpperMotorController.setInverted(false);
+        rightLowerMotorController.setIdleMode(IdleMode.kBrake);
+        leftUpperMotorController.setIdleMode(IdleMode.kBrake);
 		
     }
     
     public void stop () {
 		
-        leftIntakeMotor.stopMotor();
-        rightIntakeMotor.stopMotor();
+        leftUpperMotorController.stopMotor();
+        rightLowerMotorController.stopMotor();
 		
     }
     
@@ -49,8 +51,8 @@ public class Intake extends SubsystemBase {
         if (reverseMode) speedMultiplier = 1;
         else speedMultiplier = -1;
 		
-        leftIntakeMotor.set(speedMultiplier * intakeMotorSpeed);
-        rightIntakeMotor.set(speedMultiplier * intakeMotorSpeed);
+        leftUpperMotorController.set(speedMultiplier * intakeMotorSpeed);
+        rightLowerMotorController.set(speedMultiplier * intakeMotorSpeed);
 		
     }
     
