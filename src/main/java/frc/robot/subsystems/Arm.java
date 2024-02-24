@@ -44,6 +44,8 @@ public class Arm extends SubsystemBase {
 
 	protected final PIDController anglePID;
 	
+	public final Arm.Commands commands;
+	
 	public Arm() {
 
 		this.leftMotorController = new CANSparkMax(
@@ -94,6 +96,8 @@ public class Arm extends SubsystemBase {
 //		Shuffleboard.getTab("Subsystems").add(
 //			this.calibrateArmCommand().withName("Reset Arm Encoder Zero Offsets").ignoringDisable(true)
 //		);
+		
+		this.commands = new Arm.Commands();
 		
 		RobotContainer.putCommand("Reset Arm", new InstantCommand(this::calibrateArm, this), true);
 		
@@ -214,6 +218,28 @@ public class Arm extends SubsystemBase {
 		builder.addBooleanProperty("Is left reverse soft limit enabled", () -> this.leftMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kReverse), null);
 		builder.addBooleanProperty("Is right forward soft limit enabled", () -> this.rightMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kForward), null);
 		builder.addBooleanProperty("Is right reverse soft limit enabled", () -> this.rightMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kReverse), null);
+		
+	}
+	
+	public class Commands {
+		
+		public Command raiseArm() {
+			
+			return Arm.this.startEnd(
+				() -> Arm.this.rotate(true),
+				Arm.this::stop
+			);
+			
+		}
+		
+		public Command lowerArm() {
+			
+			return Arm.this.startEnd(
+				() -> Arm.this.rotate(false),
+				Arm.this::stop
+			);
+			
+		}
 		
 	}
 	
