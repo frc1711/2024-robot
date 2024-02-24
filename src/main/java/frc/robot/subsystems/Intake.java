@@ -37,7 +37,7 @@ public class Intake extends SubsystemBase {
 		
     }
     
-    public void stop () {
+    public void stop() {
 		
         leftUpperMotorController.stopMotor();
         rightLowerMotorController.stopMotor();
@@ -46,8 +46,8 @@ public class Intake extends SubsystemBase {
     
     double intakeMotorSpeed = .9;
     int speedMultiplier = 1;
-	
-    public void runIntake (boolean reverseMode) {
+    
+    public void runIntake(boolean reverseMode) {
 		
         if (reverseMode) speedMultiplier = 1;
         else speedMultiplier = -1;
@@ -57,19 +57,19 @@ public class Intake extends SubsystemBase {
 		
     }
     
-    public void increaseIntakeSpeed () {
+    public void increaseIntakeSpeed() {
 		
         if (intakeMotorSpeed <= 1) intakeMotorSpeed += .05;
 		
     }
     
-    public void decreaseIntakeSpeed () {
+    public void decreaseIntakeSpeed() {
 		
         if (intakeMotorSpeed >= -1) intakeMotorSpeed -= .05;
 	
     }
     
-    public boolean isHoldingNote () {
+    public boolean isHoldingNote() {
 		
         return false;
 		
