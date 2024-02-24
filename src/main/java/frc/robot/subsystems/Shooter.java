@@ -23,6 +23,8 @@ public class Shooter extends SubsystemBase {
 	
 	protected final CANSparkMax rightShooterMotorController;
 	
+	public final Shooter.Commands commands;
+	
 	public Shooter() {
 		
 		this.leftShooterMotorController = new CANSparkMax(
@@ -54,6 +56,8 @@ public class Shooter extends SubsystemBase {
 			motorController.setOpenLoopRampRate(1);
 			
 		});
+		
+		this.commands = new Shooter.Commands();
 		
 	}
 	
@@ -97,7 +101,10 @@ public class Shooter extends SubsystemBase {
 		
 		public Command shoot() {
 			
-			return Shooter.this.run(Shooter.this::shoot);
+			return Shooter.this.startEnd(
+				Shooter.this::shoot,
+				Shooter.this::stop
+			);
 			
 		}
 		
