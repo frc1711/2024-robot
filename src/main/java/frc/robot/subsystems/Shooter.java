@@ -15,79 +15,79 @@ import frc.robot.constants.CANDevice;
 public class Shooter extends SubsystemBase {
 	
 	protected final CANSparkMax leftShooterMotorController;
-    
-    protected final CANSparkMax rightShooterMotorController;
+	
+	protected final CANSparkMax rightShooterMotorController;
 	
 	public Shooter() {
-        
-        this.leftShooterMotorController = new CANSparkMax(
-            CANDevice.RIGHT_SHOOTER_MOTOR_CONTROLLER.id,
-            MotorType.kBrushless
-        );
-        
-        this.rightShooterMotorController = new CANSparkMax(
-            CANDevice.LEFT_SHOOTER_MOTOR_CONTROLLER.id,
-            MotorType.kBrushless
-        );
 		
-        this.rightShooterMotorController.setInverted(false);
-        this.leftShooterMotorController.setInverted(true);
-        
-        this.leftShooterMotorController.setIdleMode(IdleMode.kCoast);
-        this.rightShooterMotorController.setIdleMode(IdleMode.kCoast);
+		this.leftShooterMotorController = new CANSparkMax(
+			CANDevice.RIGHT_SHOOTER_MOTOR_CONTROLLER.id,
+			MotorType.kBrushless
+		);
 		
-    }
-    
-    public void stop () {
-        
-        this.leftShooterMotorController.stopMotor();
-        this.rightShooterMotorController.stopMotor();
+		this.rightShooterMotorController = new CANSparkMax(
+			CANDevice.LEFT_SHOOTER_MOTOR_CONTROLLER.id,
+			MotorType.kBrushless
+		);
 		
-    }
-    
-    public void runShooter (double leftMotorSpeed, double rightMotorSpeed) {
-        
-        this.leftShooterMotorController.set(leftMotorSpeed);
-        this.rightShooterMotorController.set(rightMotorSpeed);
+		this.rightShooterMotorController.setInverted(false);
+		this.leftShooterMotorController.setInverted(true);
 		
-    }
-        
-    double leftSpeed = .5, rightSpeed = .5;
+		this.leftShooterMotorController.setIdleMode(IdleMode.kCoast);
+		this.rightShooterMotorController.setIdleMode(IdleMode.kCoast);
+		
+	}
 	
-    public void runShooterTest () {
-        
-        this.leftShooterMotorController.set(leftSpeed);
-        this.rightShooterMotorController.set(rightSpeed);
+	public void stop() {
 		
-    }
-    
-    public void increaseShooterSpeed () {
+		this.leftShooterMotorController.stopMotor();
+		this.rightShooterMotorController.stopMotor();
 		
-        if (this.leftSpeed <= 1) this.leftSpeed += .05;
-        if (this.rightSpeed <= 1) this.rightSpeed += .05;
+	}
+	
+	public void runShooter(double leftMotorSpeed, double rightMotorSpeed) {
 		
-    }
-    
-    public void decreaseShooterSpeed () {
+		this.leftShooterMotorController.set(leftMotorSpeed);
+		this.rightShooterMotorController.set(rightMotorSpeed);
 		
-        if (this.leftSpeed >= -1) this.leftSpeed -= .05;
-        if (this.rightSpeed >= -1) this.rightSpeed -= .05;
+	}
+	
+	double leftSpeed = .5, rightSpeed = .5;
+	
+	public void runShooterTest() {
 		
-    }
-    
-    @Override
-    public void periodic() {
+		this.leftShooterMotorController.set(leftSpeed);
+		this.rightShooterMotorController.set(rightSpeed);
 		
-        // This method will be called once per scheduler run
+	}
+	
+	public void increaseShooterSpeed() {
 		
-    }
-    
-    @Override
-    public void initSendable (SendableBuilder builder) {
+		if (this.leftSpeed <= 1) this.leftSpeed += .05;
+		if (this.rightSpeed <= 1) this.rightSpeed += .05;
 		
-        builder.addDoubleProperty("Left Motor Speed", () -> this.leftSpeed, null);
-        builder.addDoubleProperty("Right Motor Speed", () -> this.rightSpeed, null);
+	}
+	
+	public void decreaseShooterSpeed() {
 		
-    }
+		if (this.leftSpeed >= -1) this.leftSpeed -= .05;
+		if (this.rightSpeed >= -1) this.rightSpeed -= .05;
+		
+	}
+	
+	@Override
+	public void periodic() {
+		
+		// This method will be called once per scheduler run
+		
+	}
+	
+	@Override
+	public void initSendable(SendableBuilder builder) {
+		
+		builder.addDoubleProperty("Left Motor Speed", () -> this.leftSpeed, null);
+		builder.addDoubleProperty("Right Motor Speed", () -> this.rightSpeed, null);
+		
+	}
 	
 }
