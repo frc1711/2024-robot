@@ -157,15 +157,23 @@ public class Swerve extends SubsystemBase {
 		RobotContainer.putCommand("Reset Odometry", new InstantCommand(this::resetOdometry, this), true);
 	}
 	
+	protected Stream<SwerveModule> getModuleStream() {
+		
+		return Stream.of(
+			frontLeftSwerveModule,
+			frontRightSwerveModule,
+			rearLeftSwerveModule,
+			rearRightSwerveModule
+		);
+		
+	}
+	
 	/**
 	 * Runs the stop() method on each module
 	 */
 	public void stop() {
 		
-		frontLeftSwerveModule.stop();
-		frontRightSwerveModule.stop();
-		rearLeftSwerveModule.stop();
-		rearRightSwerveModule.stop();
+		this.getModuleStream().forEach(SwerveModule::stop);
 		
 	}
 	
@@ -188,10 +196,7 @@ public class Swerve extends SubsystemBase {
 	
 	public void resetOdometry() {
 		
-		frontLeftSwerveModule.resetModuleDistance();
-		frontRightSwerveModule.resetModuleDistance();
-		rearLeftSwerveModule.resetModuleDistance();
-		rearRightSwerveModule.resetModuleDistance();
+		this.getModuleStream().forEach(SwerveModule::resetModuleDistance);
 		
 	}
 	
@@ -235,10 +240,7 @@ public class Swerve extends SubsystemBase {
 	 */
 	public void resetEncoders() {
 		
-		frontLeftSwerveModule.resetEncoder();
-		frontRightSwerveModule.resetEncoder();
-		rearLeftSwerveModule.resetEncoder();
-		rearRightSwerveModule.resetEncoder();
+		this.getModuleStream().forEach(SwerveModule::resetEncoder);
 		
 	}
 	
