@@ -19,28 +19,28 @@ public class Intake extends SubsystemBase {
     
     public Intake() {
         
-        leftUpperMotorController = new CANSparkMax(
+        this.leftUpperMotorController = new CANSparkMax(
             CANDevice.LEFT_UPPER_INTAKE_MOTOR_CONTROLLER.id,
             MotorType.kBrushless
         );
         
-        rightLowerMotorController = new CANSparkMax(
+        this.rightLowerMotorController = new CANSparkMax(
             CANDevice.RIGHT_LOWER_INTAKE_MOTOR_CONTROLLER.id,
             MotorType.kBrushless
         );
         
-        rightLowerMotorController.setInverted(false);
-        leftUpperMotorController.setInverted(true);
+        this.rightLowerMotorController.setInverted(false);
+        this.leftUpperMotorController.setInverted(true);
         
-        rightLowerMotorController.setIdleMode(IdleMode.kBrake);
-        leftUpperMotorController.setIdleMode(IdleMode.kBrake);
+        this.rightLowerMotorController.setIdleMode(IdleMode.kBrake);
+        this.leftUpperMotorController.setIdleMode(IdleMode.kBrake);
 		
     }
     
     public void stop() {
-		
-        leftUpperMotorController.stopMotor();
-        rightLowerMotorController.stopMotor();
+        
+        this.leftUpperMotorController.stopMotor();
+        this.rightLowerMotorController.stopMotor();
 		
     }
     
@@ -49,36 +49,17 @@ public class Intake extends SubsystemBase {
     
     public void runIntake(boolean reverseMode) {
 		
-        if (reverseMode) speedMultiplier = 1;
-        else speedMultiplier = -1;
+        if (reverseMode) this.speedMultiplier = 1;
+        else this.speedMultiplier = -1;
+        
+        this.leftUpperMotorController.set(this.speedMultiplier * this.intakeMotorSpeed);
+        this.rightLowerMotorController.set(this.speedMultiplier * this.intakeMotorSpeed);
 		
-        leftUpperMotorController.set(speedMultiplier * intakeMotorSpeed);
-        rightLowerMotorController.set(speedMultiplier * intakeMotorSpeed);
-		
-    }
-    
-    public void increaseIntakeSpeed() {
-		
-        if (intakeMotorSpeed <= 1) intakeMotorSpeed += .05;
-		
-    }
-    
-    public void decreaseIntakeSpeed() {
-		
-        if (intakeMotorSpeed >= -1) intakeMotorSpeed -= .05;
-	
     }
     
     public boolean isHoldingNote() {
 		
         return false;
-		
-    }
-    
-    @Override
-    public void periodic() {
-		
-        // This method will be called once per scheduler run
 		
     }
 	
