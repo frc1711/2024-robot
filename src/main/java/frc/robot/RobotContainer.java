@@ -69,6 +69,7 @@ public class RobotContainer {
 		);
 		
 		putSendable("Analysis Tab", "Odometry", swerveSubsystem);
+		Shuffleboard.getTab("Subsystems").add("Arm", arm);
 		
 		autonChooser = new SendableChooser<>();
 		testChooser = new SendableChooser<>();
