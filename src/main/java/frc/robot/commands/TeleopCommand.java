@@ -18,15 +18,10 @@ public class TeleopCommand extends ParallelCommandGroup {
     /**
      * Creates a new TeleopCommand.
      */
-    public TeleopCommand(Intake intake, Swerve swerve, Shooter shooter, Arm arm, XboxController driveController, XboxController subsystemController) {
+    public TeleopCommand(Swerve swerve, XboxController driveController) {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
         addCommands(
-            new ArmCommand(
-                arm,
-                subsystemController::getRightBumper,
-                subsystemController::getLeftBumper
-            ),
             new DriveCommand(
                 swerve,
                 driveController::getLeftY,
@@ -36,15 +31,6 @@ public class TeleopCommand extends ParallelCommandGroup {
                 driveController::getRightStickButton,
                 null,
                 null
-            ),
-            new ShooterCommand(
-                shooter,
-                subsystemController::getAButton
-            ),
-            new IntakeCommand(
-                intake,
-                subsystemController::getYButton,
-                subsystemController::getXButton
             )
         );
 

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TeleopCommand;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
@@ -36,7 +37,7 @@ public class RobotContainer {
 	
 	protected final XboxController driveController;
 	
-	protected final XboxController subsystemController;
+	protected final CommandXboxController subsystemController;
 	
 	protected final SendableChooser<Supplier<Command>> autonChooser;
 	
@@ -47,7 +48,7 @@ public class RobotContainer {
 	public RobotContainer() {
 		
 		driveController = new XboxController(0);
-		subsystemController = new XboxController(1);
+		subsystemController = new CommandXboxController(1);
 		startPositionChooser = new SendableChooser<>();
 		configStartPositionChooser();
 		
@@ -58,16 +59,14 @@ public class RobotContainer {
 		swerveSubsystem = new Swerve(startPositionChooser.getSelected().get());
 		
 		teleopCommand = new TeleopCommand(
-			intake,
 			swerveSubsystem,
-			shooter,
-			arm,
-			driveController,
-			subsystemController
+			driveController
 		);
 		
 		putSendable("Analysis Tab", "Odometry", swerveSubsystem);
 		Shuffleboard.getTab("Subsystems").add("Arm", arm);
+		Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
+		Shuffleboard.getTab("Subsystems").add("Intake", intake);
 		
 		autonChooser = new SendableChooser<>();
 		testChooser = new SendableChooser<>();
@@ -79,8 +78,14 @@ public class RobotContainer {
 	
 	public void initTeleop() {
 		
-		teleopCommand.schedule();
+		this.subsystemController.a().whileTrue(this.shooter.commands.shoot());
+		this.subsystemController.y().whileTrue(this.intake.commands.intake());
+		this.subsystemController.b().whileTrue(this.intake.commands.outtake());
+		this.subsystemController.leftBumper().whileTrue(this.arm.commands.lowerArm());
+		this.subsystemController.rightBumper().whileTrue(this.arm.commands.raiseArm());
 		
+		teleopCommand.schedule();
+	
 	}
 	
 	public Command getTestCommand() {
