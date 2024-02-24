@@ -14,62 +14,64 @@ import frc.robot.constants.CANDevice;
 
 public class Shooter extends SubsystemBase {
 	
-	CANSparkMax leftShooterMotor, rightShooterMotor;
+	protected final CANSparkMax leftShooterMotorController;
+    
+    protected final CANSparkMax rightShooterMotorController;
 	
 	public Shooter() {
         
-        leftShooterMotor = new CANSparkMax(
+        this.leftShooterMotorController = new CANSparkMax(
             CANDevice.RIGHT_SHOOTER_MOTOR_CONTROLLER.id,
             MotorType.kBrushless
         );
         
-        rightShooterMotor = new CANSparkMax(
+        this.rightShooterMotorController = new CANSparkMax(
             CANDevice.LEFT_SHOOTER_MOTOR_CONTROLLER.id,
             MotorType.kBrushless
         );
 		
-        rightShooterMotor.setInverted(false);
-        leftShooterMotor.setInverted(true);
-		
-        leftShooterMotor.setIdleMode(IdleMode.kCoast);
-        rightShooterMotor.setIdleMode(IdleMode.kCoast);
+        this.rightShooterMotorController.setInverted(false);
+        this.leftShooterMotorController.setInverted(true);
+        
+        this.leftShooterMotorController.setIdleMode(IdleMode.kCoast);
+        this.rightShooterMotorController.setIdleMode(IdleMode.kCoast);
 		
     }
     
     public void stop () {
-		
-        leftShooterMotor.stopMotor();
-        rightShooterMotor.stopMotor();
+        
+        this.leftShooterMotorController.stopMotor();
+        this.rightShooterMotorController.stopMotor();
 		
     }
     
     public void runShooter (double leftMotorSpeed, double rightMotorSpeed) {
-		
-        leftShooterMotor.set(leftMotorSpeed);
-        rightShooterMotor.set(rightMotorSpeed);
+        
+        this.leftShooterMotorController.set(leftMotorSpeed);
+        this.rightShooterMotorController.set(rightMotorSpeed);
 		
     }
         
     double leftSpeed = .5, rightSpeed = .5;
 	
     public void runShooterTest () {
-		
-        leftShooterMotor.set(leftSpeed);
-        rightShooterMotor.set(rightSpeed);
+        
+        this.leftShooterMotorController.set(leftSpeed);
+        this.rightShooterMotorController.set(rightSpeed);
 		
     }
     
     public void increaseShooterSpeed () {
 		
-        if (leftSpeed <= 1) leftSpeed += .05;
-        if (rightSpeed <= 1) rightSpeed += .05;
+        if (this.leftSpeed <= 1) this.leftSpeed += .05;
+        if (this.rightSpeed <= 1) this.rightSpeed += .05;
 		
     }
     
     public void decreaseShooterSpeed () {
 		
-        if (leftSpeed >= -1) leftSpeed -= .05;
-        if (rightSpeed >= -1) rightSpeed -= .05;
+        if (this.leftSpeed >= -1) this.leftSpeed -= .05;
+        if (this.rightSpeed >= -1) this.rightSpeed -= .05;
 		
     }
     
@@ -83,8 +85,8 @@ public class Shooter extends SubsystemBase {
     @Override
     public void initSendable (SendableBuilder builder) {
 		
-        builder.addDoubleProperty("Left Motor Speed", () -> leftSpeed, null);
-        builder.addDoubleProperty("Right Motor Speed", () -> rightSpeed, null);
+        builder.addDoubleProperty("Left Motor Speed", () -> this.leftSpeed, null);
+        builder.addDoubleProperty("Right Motor Speed", () -> this.rightSpeed, null);
 		
     }
 	
