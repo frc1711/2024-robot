@@ -10,43 +10,51 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 
 public class ShooterTest extends Command {
-  
-  Shooter shooter;
-
-  double rightMotorSpeed, leftMotorSpeed;
-
-  BooleanSupplier runShooter;
-
-  public ShooterTest(Shooter shooter, BooleanSupplier runShooter, double leftMotorSpeed, double rightMotorSpeed) {
-    this.shooter = shooter;
-    this.leftMotorSpeed = leftMotorSpeed;
-    this.rightMotorSpeed = rightMotorSpeed;
-    this.runShooter = runShooter;
-    addRequirements(shooter);    
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    shooter.stop();
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    if (runShooter.getAsBoolean())
-    shooter.runShooter(leftMotorSpeed, rightMotorSpeed);
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    shooter.stop();
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+	
+	protected final Shooter shooter;
+	
+	protected final BooleanSupplier shouldRunShooter;
+	
+	public ShooterTest(Shooter shooter, BooleanSupplier shouldRunShooter) {
+		
+		this.shooter = shooter;
+		this.shouldRunShooter = shouldRunShooter;
+		
+		addRequirements(shooter);
+		
+	}
+	
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+		
+		this.shooter.stop();
+		
+	}
+	
+	// Called every time the scheduler runs while the command is scheduled.
+	@Override
+	public void execute() {
+		
+		if (this.shouldRunShooter.getAsBoolean()) this.shooter.shoot();
+		else this.shooter.stop();
+		
+	}
+	
+	// Called once the command ends or is interrupted.
+	@Override
+	public void end(boolean interrupted) {
+		
+		this.shooter.stop();
+		
+	}
+	
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		
+		return false;
+		
+	}
+	
 }
