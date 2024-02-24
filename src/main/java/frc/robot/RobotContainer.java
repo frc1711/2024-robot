@@ -51,8 +51,6 @@ public class RobotContainer {
 		startPositionChooser = new SendableChooser<>();
 		configStartPositionChooser();
 		
-		// TODO: Update motor positions when using different robots
-		
 		shooter = new Shooter();
 		intake = new Intake();
 		arm = new Arm();
