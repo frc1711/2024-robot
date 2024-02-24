@@ -94,6 +94,8 @@ public class Shooter extends SubsystemBase {
 		
 		builder.addDoubleProperty("Left Motor Speed", leftShooterMotorController::get, null);
 		builder.addDoubleProperty("Right Motor Speed", rightShooterMotorController::get, null);
+		builder.addDoubleProperty("Left Motor Output Current", leftShooterMotorController::getOutputCurrent, null);
+		builder.addDoubleProperty("Right Motor Output Current", rightShooterMotorController::getOutputCurrent, null);
 		
 	}
 	
