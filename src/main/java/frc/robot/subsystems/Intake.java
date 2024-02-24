@@ -8,8 +8,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANDevice;
+import frc.robot.constants.DoublePreference;
 
 public class Intake extends SubsystemBase {
     
@@ -57,10 +61,109 @@ public class Intake extends SubsystemBase {
 		
     }
     
+    /**
+     * Runs the intake in the normative direction at the standard speed.
+     */
+    public void intake() {
+        
+        this.intake(false);
+        
+    }
+    
+    /**
+     * Runs the intake in the given direction at the standard speed.
+     *
+     * @param reversed Whether to run the intake in reverse.
+     */
+    public void intake(boolean reversed) {
+        
+        DoublePreference speedPreference = DoublePreference.INTAKE_SPEED;
+        
+        double speed = Preferences.getDouble(
+            speedPreference.key,
+            speedPreference.defaultValue
+        );
+        
+        this.intake(speed, reversed);
+        
+    }
+    
+    /**
+     * Runs the intake in the normative direction at the given relative speed.
+     *
+     * @param relativeSpeed The relative speed at which to run the intake (from
+     * -1 to 1).
+     */
+    public void intake(double relativeSpeed) {
+        
+        this.intake(relativeSpeed, false);
+        
+    }
+    
+    /**
+     * Runs the intake in the given direction at the given relative speed.
+     *
+     * @param relativeSpeed The relative speed at which to run the intake (from
+     * -1 to 1).
+     * @param reversed Whether to run the intake in reverse.
+     */
+    public void intake(double relativeSpeed, boolean reversed) {
+        
+        this.leftUpperMotorController.set(
+            reversed ? -relativeSpeed : relativeSpeed
+        );
+        
+        this.rightLowerMotorController.set(
+            reversed ? -relativeSpeed : relativeSpeed
+        );
+        
+    }
+    
+    /**
+     * Returns true if the robot is currently holding a note.
+     *
+     * @return true if the robot is currently holding a note.
+     */
     public boolean isHoldingNote() {
 		
+        // TODO - Implement this method.
         return false;
 		
+    }
+    
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        
+        super.initSendable(builder);
+        
+        builder.addDoubleProperty(
+            "Left Upper Motor Speed",
+            this.leftUpperMotorController::get,
+            null
+        );
+        
+        builder.addDoubleProperty(
+            "Right Lower Motor Speed",
+            this.rightLowerMotorController::get,
+            null
+        );
+        
+    }
+    
+    public class Commands {
+        
+        public Command intake() {
+            
+            return Intake.this.run(Intake.this::intake);
+            
+        }
+        
+        public Command outtake() {
+            
+            return Intake.this.run(() -> Intake.this.intake(true));
+            
+        }
+        
     }
 	
 }
