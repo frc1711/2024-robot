@@ -21,12 +21,12 @@ public class Shooter extends SubsystemBase {
 	public Shooter() {
 		
 		this.leftShooterMotorController = new CANSparkMax(
-			CANDevice.RIGHT_SHOOTER_MOTOR_CONTROLLER.id,
+			CANDevice.LEFT_SHOOTER_MOTOR_CONTROLLER.id,
 			MotorType.kBrushless
 		);
 		
 		this.rightShooterMotorController = new CANSparkMax(
-			CANDevice.LEFT_SHOOTER_MOTOR_CONTROLLER.id,
+			CANDevice.RIGHT_SHOOTER_MOTOR_CONTROLLER.id,
 			MotorType.kBrushless
 		);
 		
