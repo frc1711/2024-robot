@@ -21,6 +21,8 @@ public class Intake extends SubsystemBase {
 
     protected final CANSparkMax rightLowerMotorController;
     
+    public final Intake.Commands commands;
+    
     public Intake() {
         
         this.leftUpperMotorController = new CANSparkMax(
@@ -38,6 +40,8 @@ public class Intake extends SubsystemBase {
         
         this.rightLowerMotorController.setIdleMode(IdleMode.kBrake);
         this.leftUpperMotorController.setIdleMode(IdleMode.kBrake);
+        
+        this.commands = new Intake.Commands();
 		
     }
     
@@ -154,13 +158,19 @@ public class Intake extends SubsystemBase {
         
         public Command intake() {
             
-            return Intake.this.run(Intake.this::intake);
+            return Intake.this.startEnd(
+                Intake.this::intake,
+                Intake.this::stop
+            );
             
         }
         
         public Command outtake() {
             
-            return Intake.this.run(() -> Intake.this.intake(true));
+            return Intake.this.startEnd(
+                () -> Intake.this.intake(true),
+                Intake.this::stop
+            );
             
         }
         
