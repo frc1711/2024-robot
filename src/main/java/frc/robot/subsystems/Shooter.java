@@ -9,8 +9,12 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANDevice;
+import frc.robot.constants.DoublePreference;
+
+import java.util.stream.Stream;
 
 public class Shooter extends SubsystemBase {
 	
@@ -30,63 +34,53 @@ public class Shooter extends SubsystemBase {
 			MotorType.kBrushless
 		);
 		
-		this.rightShooterMotorController.setInverted(false);
 		this.leftShooterMotorController.setInverted(true);
+		this.rightShooterMotorController.setInverted(false);
 		
-		this.leftShooterMotorController.setIdleMode(IdleMode.kCoast);
-		this.rightShooterMotorController.setIdleMode(IdleMode.kCoast);
+		this.getMotorControllerStream().forEach((motorController) -> {
+			
+			// Set the idle mode to coast, so that the motors
+			// don't resist rotation when they're not being
+			// powered.
+			motorController.setIdleMode(IdleMode.kCoast);
+			
+		});
+		
+	}
+	
+	public Stream<CANSparkMax> getMotorControllerStream() {
+		
+		return Stream.of(this.leftShooterMotorController, this.rightShooterMotorController);
 		
 	}
 	
 	public void stop() {
 		
-		this.leftShooterMotorController.stopMotor();
-		this.rightShooterMotorController.stopMotor();
+		this.getMotorControllerStream().forEach(CANSparkMax::stopMotor);
 		
 	}
 	
-	public void runShooter(double leftMotorSpeed, double rightMotorSpeed) {
+	public void shoot() {
 		
-		this.leftShooterMotorController.set(leftMotorSpeed);
-		this.rightShooterMotorController.set(rightMotorSpeed);
+		DoublePreference preference = DoublePreference.SHOOTER_SPEED;
 		
-	}
-	
-	double leftSpeed = .5, rightSpeed = .5;
-	
-	public void runShooterTest() {
-		
-		this.leftShooterMotorController.set(leftSpeed);
-		this.rightShooterMotorController.set(rightSpeed);
+		this.shoot(Preferences.getDouble(preference.key, preference.defaultValue));
 		
 	}
 	
-	public void increaseShooterSpeed() {
+	public void shoot(double speed) {
 		
-		if (this.leftSpeed <= 1) this.leftSpeed += .05;
-		if (this.rightSpeed <= 1) this.rightSpeed += .05;
-		
-	}
-	
-	public void decreaseShooterSpeed() {
-		
-		if (this.leftSpeed >= -1) this.leftSpeed -= .05;
-		if (this.rightSpeed >= -1) this.rightSpeed -= .05;
-		
-	}
-	
-	@Override
-	public void periodic() {
-		
-		// This method will be called once per scheduler run
+		this.getMotorControllerStream().forEach(
+			(motorController) -> motorController.set(speed)
+		);
 		
 	}
 	
 	@Override
 	public void initSendable(SendableBuilder builder) {
 		
-		builder.addDoubleProperty("Left Motor Speed", () -> this.leftSpeed, null);
-		builder.addDoubleProperty("Right Motor Speed", () -> this.rightSpeed, null);
+		builder.addDoubleProperty("Left Motor Speed", leftShooterMotorController::get, null);
+		builder.addDoubleProperty("Right Motor Speed", rightShooterMotorController::get, null);
 		
 	}
 	
