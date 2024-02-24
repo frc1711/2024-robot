@@ -24,7 +24,10 @@ import frc.robot.constants.CANDevice;
 
 public class Swerve extends SubsystemBase {
 	
-	private SwerveModule flModule, frModule, rlModule, rrModule;
+	private SwerveModule frontLeftSwerveModule;
+	private SwerveModule frontRightSwerveModule;
+	private SwerveModule rearLeftSwerveModule;
+	private SwerveModule rearRightSwerveModule;
 	
 	// private Odometry odometry;
 	
@@ -66,28 +69,28 @@ public class Swerve extends SubsystemBase {
 	
 	public Swerve(StartPosition startPosition) {
 		
-		this.flModule = new SwerveModule(
+		this.frontLeftSwerveModule = new SwerveModule(
 			CANDevice.FRONT_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_ENCODER.id,
 			new Translation2d(.254, .269875)
 		);
 		
-		this.frModule = new SwerveModule(
+		this.frontRightSwerveModule = new SwerveModule(
 			CANDevice.FRONT_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_ENCODER.id,
 			new Translation2d(.254, -.269875)
 		);
 		
-		this.rlModule = new SwerveModule(
+		this.rearLeftSwerveModule = new SwerveModule(
 			CANDevice.REAR_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_ENCODER.id,
 			new Translation2d(-.254, .296875)
 		);
 		
-		this.rrModule = new SwerveModule(
+		this.rearRightSwerveModule = new SwerveModule(
 			CANDevice.REAR_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_ENCODER.id,
@@ -98,24 +101,24 @@ public class Swerve extends SubsystemBase {
 		
 		this.startPosition = startPosition;
 		modulePositions = new SwerveModulePosition[4];
-		modulePositions[0] = flModule.getPosition();
-		modulePositions[1] = frModule.getPosition();
-		modulePositions[2] = rlModule.getPosition();
-		modulePositions[3] = rrModule.getPosition();
+		modulePositions[0] = frontLeftSwerveModule.getPosition();
+		modulePositions[1] = frontRightSwerveModule.getPosition();
+		modulePositions[2] = rearLeftSwerveModule.getPosition();
+		modulePositions[3] = rearRightSwerveModule.getPosition();
 		// odometry = new Odometry(gyro, Odometry.StartPosition.STATION_ONE);
 		kinematics = new SwerveDriveKinematics(
-			flModule.motorMeters,
-			frModule.motorMeters,
-			rlModule.motorMeters,
-			rrModule.motorMeters
+			frontLeftSwerveModule.motorMeters,
+			frontRightSwerveModule.motorMeters,
+			rearLeftSwerveModule.motorMeters,
+			rearRightSwerveModule.motorMeters
 		);
 		swerveDriveOdometry = new SwerveDriveOdometry(kinematics, getGyroRotation(), modulePositions, new Pose2d(startPosition.translation, getGyroRotation()));
 		
 		// Create a new sendable field for each module
-		RobotContainer.putSendable("Analysis Tab", "fl-Module", flModule);
-		RobotContainer.putSendable("Analysis Tab", "fr-Module", frModule);
-		RobotContainer.putSendable("Analysis Tab", "rl-Module", rlModule);
-		RobotContainer.putSendable("Analysis Tab", "rr-Module", rrModule);
+		RobotContainer.putSendable("Analysis Tab", "fl-Module", frontLeftSwerveModule);
+		RobotContainer.putSendable("Analysis Tab", "fr-Module", frontRightSwerveModule);
+		RobotContainer.putSendable("Analysis Tab", "rl-Module", rearLeftSwerveModule);
+		RobotContainer.putSendable("Analysis Tab", "rr-Module", rearRightSwerveModule);
 		RobotContainer.putSendable("Analysis Tab", "gyro", gyro);
 		// RobotContainer.putSendable("kinematics", odometry);
 		
@@ -130,19 +133,19 @@ public class Swerve extends SubsystemBase {
 	 */
 	public void stop() {
 		
-		flModule.stop();
-		frModule.stop();
-		rlModule.stop();
-		rrModule.stop();
+		frontLeftSwerveModule.stop();
+		frontRightSwerveModule.stop();
+		rearLeftSwerveModule.stop();
+		rearRightSwerveModule.stop();
 		
 	}
 	
 	public Pose2d updateOdometry() {
 		
-		modulePositions[0] = flModule.getPosition();
-		modulePositions[1] = frModule.getPosition();
-		modulePositions[2] = rlModule.getPosition();
-		modulePositions[3] = rrModule.getPosition();
+		modulePositions[0] = frontLeftSwerveModule.getPosition();
+		modulePositions[1] = frontRightSwerveModule.getPosition();
+		modulePositions[2] = rearLeftSwerveModule.getPosition();
+		modulePositions[3] = rearRightSwerveModule.getPosition();
 		
 		return swerveDriveOdometry.update(getGyroRotation(), new SwerveDriveWheelPositions(modulePositions));
 		
@@ -156,19 +159,19 @@ public class Swerve extends SubsystemBase {
 	
 	public void resetOdometry() {
 		
-		flModule.resetModuleDistance();
-		frModule.resetModuleDistance();
-		rlModule.resetModuleDistance();
-		rrModule.resetModuleDistance();
+		frontLeftSwerveModule.resetModuleDistance();
+		frontRightSwerveModule.resetModuleDistance();
+		rearLeftSwerveModule.resetModuleDistance();
+		rearRightSwerveModule.resetModuleDistance();
 		
 	}
 	
 	public SwerveDriveWheelPositions getWheelPositions() {
 		
-		modulePositions[0] = flModule.getPosition();
-		modulePositions[1] = frModule.getPosition();
-		modulePositions[2] = rlModule.getPosition();
-		modulePositions[3] = rrModule.getPosition();
+		modulePositions[0] = frontLeftSwerveModule.getPosition();
+		modulePositions[1] = frontRightSwerveModule.getPosition();
+		modulePositions[2] = rearLeftSwerveModule.getPosition();
+		modulePositions[3] = rearRightSwerveModule.getPosition();
 		return new SwerveDriveWheelPositions(modulePositions);
 		
 	}
@@ -203,10 +206,10 @@ public class Swerve extends SubsystemBase {
 	 */
 	public void resetEncoders() {
 		
-		flModule.resetEncoder();
-		frModule.resetEncoder();
-		rlModule.resetEncoder();
-		rrModule.resetEncoder();
+		frontLeftSwerveModule.resetEncoder();
+		frontRightSwerveModule.resetEncoder();
+		rearLeftSwerveModule.resetEncoder();
+		rearRightSwerveModule.resetEncoder();
 		
 	}
 	
@@ -214,10 +217,10 @@ public class Swerve extends SubsystemBase {
 		
 		desiredVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(desiredVelocity, gyro.getRotation2d());
 		SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(desiredVelocity);
-		flModule.update(moduleStates[0], speedMultiplier);
-		frModule.update(moduleStates[1], speedMultiplier);
-		rlModule.update(moduleStates[2], speedMultiplier);
-		rrModule.update(moduleStates[3], speedMultiplier);
+		frontLeftSwerveModule.update(moduleStates[0], speedMultiplier);
+		frontRightSwerveModule.update(moduleStates[1], speedMultiplier);
+		rearLeftSwerveModule.update(moduleStates[2], speedMultiplier);
+		rearRightSwerveModule.update(moduleStates[3], speedMultiplier);
 		
 	}
 	
@@ -227,19 +230,19 @@ public class Swerve extends SubsystemBase {
 	public void updateModules(ChassisSpeeds desiredVelocity, double speedMultiplier) {
 		
 		SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(desiredVelocity);
-		flModule.update(moduleStates[0], speedMultiplier);
-		frModule.update(moduleStates[1], speedMultiplier);
-		rlModule.update(moduleStates[2], speedMultiplier);
-		rrModule.update(moduleStates[3], speedMultiplier);
+		frontLeftSwerveModule.update(moduleStates[0], speedMultiplier);
+		frontRightSwerveModule.update(moduleStates[1], speedMultiplier);
+		rearLeftSwerveModule.update(moduleStates[2], speedMultiplier);
+		rearRightSwerveModule.update(moduleStates[3], speedMultiplier);
 		
 	}
 	
 	public void xMode() {
 		
-		flModule.update(new SwerveModuleState(0, new Rotation2d(135)), 1);
-		frModule.update(new SwerveModuleState(0, new Rotation2d(-135)), 1);
-		rlModule.update(new SwerveModuleState(0, new Rotation2d(45)), 1);
-		rrModule.update(new SwerveModuleState(0, new Rotation2d(-45)), 1);
+		frontLeftSwerveModule.update(new SwerveModuleState(0, new Rotation2d(135)), 1);
+		frontRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-135)), 1);
+		rearLeftSwerveModule.update(new SwerveModuleState(0, new Rotation2d(45)), 1);
+		rearRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-45)), 1);
 		
 	}
 	
