@@ -123,7 +123,7 @@ public class Swerve extends SubsystemBase {
 			)
 		);
 		
-		this.gyro = new AHRS();;
+		this.gyro = new AHRS();
 		
 		this.startPosition = startPosition;
 		modulePositions = new SwerveModulePosition[4];
