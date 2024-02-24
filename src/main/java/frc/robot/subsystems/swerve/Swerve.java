@@ -126,11 +126,14 @@ public class Swerve extends SubsystemBase {
 		this.gyro = new AHRS();
 		
 		this.startPosition = startPosition;
-		modulePositions = new SwerveModulePosition[4];
-		modulePositions[0] = frontLeftSwerveModule.getPosition();
-		modulePositions[1] = frontRightSwerveModule.getPosition();
-		modulePositions[2] = rearLeftSwerveModule.getPosition();
-		modulePositions[3] = rearRightSwerveModule.getPosition();
+		
+		this.modulePositions = new SwerveModulePosition[] {
+			frontLeftSwerveModule.getPosition(),
+			frontRightSwerveModule.getPosition(),
+			rearLeftSwerveModule.getPosition(),
+			rearRightSwerveModule.getPosition()
+		};
+		
 		// odometry = new Odometry(gyro, Odometry.StartPosition.STATION_ONE);
 		kinematics = new SwerveDriveKinematics(
 			frontLeftSwerveModule.motorMeters,
