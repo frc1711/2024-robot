@@ -18,8 +18,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.IDMap;
 import frc.robot.RobotContainer;
+import frc.robot.constants.CANDevice;
 // import frc.robot.util.Odometry;
 
 public class Swerve extends SubsystemBase {
@@ -64,40 +64,33 @@ public class Swerve extends SubsystemBase {
 		
 	}
 	
-	public Swerve(
-		SwerveModule flModule,
-		SwerveModule frModule,
-		SwerveModule rlModule,
-		SwerveModule rrModule,
-		AHRS gyro,
-		StartPosition startPosition
-	) {
+	public Swerve(StartPosition startPosition) {
 		
 		this.flModule = new SwerveModule(
-			IDMap.FRONT_LEFT_STEER_MOTOR.id,
-			IDMap.FRONT_LEFT_DRIVE_MOTOR.id,
-			IDMap.FRONT_LEFT_ENCODER.id,
+			CANDevice.FRONT_LEFT_STEER_MOTOR_CONTROLLER.id,
+			CANDevice.FRONT_LEFT_DRIVE_MOTOR_CONTROLLER.id,
+			CANDevice.FRONT_LEFT_ENCODER.id,
 			new Translation2d(.254, .269875)
 		);
 		
 		this.frModule = new SwerveModule(
-			IDMap.FRONT_RIGHT_STEER_MOTOR.id,
-			IDMap.FRONT_RIGHT_DRIVE_MOTOR.id,
-			IDMap.FRONT_RIGHT_ENCODER.id,
+			CANDevice.FRONT_RIGHT_STEER_MOTOR_CONTROLLER.id,
+			CANDevice.FRONT_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
+			CANDevice.FRONT_RIGHT_ENCODER.id,
 			new Translation2d(.254, -.269875)
 		);
 		
 		this.rlModule = new SwerveModule(
-			IDMap.REAR_LEFT_STEER_MOTOR.id,
-			IDMap.REAR_LEFT_DRIVE_MOTOR.id,
-			IDMap.REAR_LEFT_ENCODER.id,
+			CANDevice.REAR_LEFT_STEER_MOTOR_CONTROLLER.id,
+			CANDevice.REAR_LEFT_DRIVE_MOTOR_CONTROLLER.id,
+			CANDevice.REAR_LEFT_ENCODER.id,
 			new Translation2d(-.254, .296875)
 		);
 		
 		this.rrModule = new SwerveModule(
-			IDMap.REAR_RIGHT_STEER_MOTOR.id,
-			IDMap.REAR_RIGHT_DRIVE_MOTOR.id,
-			IDMap.REAR_RIGHT_ENCODER.id,
+			CANDevice.REAR_RIGHT_STEER_MOTOR_CONTROLLER.id,
+			CANDevice.REAR_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
+			CANDevice.REAR_RIGHT_ENCODER.id,
 			new Translation2d(-.254, -.269875)
 		);
 		
@@ -117,7 +110,6 @@ public class Swerve extends SubsystemBase {
 			rrModule.motorMeters
 		);
 		swerveDriveOdometry = new SwerveDriveOdometry(kinematics, getGyroRotation(), modulePositions, new Pose2d(startPosition.translation, getGyroRotation()));
-		this.gyro = gyro;
 		
 		// Create a new sendable field for each module
 		RobotContainer.putSendable("Analysis Tab", "fl-Module", flModule);

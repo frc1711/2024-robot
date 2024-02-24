@@ -56,14 +56,7 @@ public class RobotContainer {
 		intake = new Intake();
 		arm = new Arm();
 		
-		swerveSubsystem = new Swerve(
-			flModule,
-			frModule,
-			rlModule,
-			rrModule,
-			gyro,
-			startPositionChooser.getSelected().get()
-		);
+		swerveSubsystem = new Swerve(startPositionChooser.getSelected().get());
 		
 		teleopCommand = new TeleopCommand(
 			intake,
