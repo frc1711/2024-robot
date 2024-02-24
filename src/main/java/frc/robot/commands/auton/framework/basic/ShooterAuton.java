@@ -10,15 +10,16 @@ import frc.robot.subsystems.Shooter;
 
 public class ShooterAuton extends Command {
 	
-	Shooter shooterSubsystem;
+	protected final Shooter shooter;
 	
-	Timer timer;
+	protected final Timer timer;
 	
-	public ShooterAuton(Shooter shooterSubsystem) {
+	public ShooterAuton(Shooter shooter) {
 		
-		this.shooterSubsystem = shooterSubsystem;
+		this.shooter = shooter;
 		this.timer = new Timer();
-		addRequirements(shooterSubsystem);
+		
+		addRequirements(shooter);
 		
 	}
 	
@@ -26,8 +27,8 @@ public class ShooterAuton extends Command {
 	@Override
 	public void initialize() {
 		
-		shooterSubsystem.stop();
-		timer.restart();
+		this.shooter.stop();
+		this.timer.restart();
 		
 	}
 	
@@ -35,7 +36,7 @@ public class ShooterAuton extends Command {
 	@Override
 	public void execute() {
 		
-		shooterSubsystem.runShooter(1, 1);
+		this.shooter.shoot();
 		
 	}
 	
@@ -43,8 +44,8 @@ public class ShooterAuton extends Command {
 	@Override
 	public void end(boolean interrupted) {
 		
-		shooterSubsystem.stop();
-		timer.stop();
+		this.shooter.stop();
+		this.timer.stop();
 		
 	}
 	
@@ -52,7 +53,7 @@ public class ShooterAuton extends Command {
 	@Override
 	public boolean isFinished() {
 		
-		return timer.hasElapsed(2);
+		return this.timer.hasElapsed(2);
 		
 	}
 	
