@@ -15,15 +15,39 @@ import frc.robot.subsystems.swerve.Swerve;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class TeleopCommand extends ParallelCommandGroup {
-  /** Creates a new TeleopCommand. */
-  public TeleopCommand(Intake intake, Swerve swerve, Shooter shooter, Arm arm, XboxController driveController, XboxController subsystemController) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
-    addCommands(
-      new ArmCommand(arm, () -> subsystemController.getRightBumper(), () -> subsystemController.getLeftBumper()),
-      new DriveCommand(swerve, () -> driveController.getLeftY(), () -> driveController.getLeftX(), () -> driveController.getRightX(), () -> driveController.getRightTriggerAxis() >= .15, () -> driveController.getRightStickButton(), null, null),
-      new ShooterCommand(shooter, () -> subsystemController.getAButton()),
-      new IntakeCommand(intake, () -> subsystemController.getYButton(), () -> subsystemController.getXButton())
-    );
-  }
+    /**
+     * Creates a new TeleopCommand.
+     */
+    public TeleopCommand(Intake intake, Swerve swerve, Shooter shooter, Arm arm, XboxController driveController, XboxController subsystemController) {
+        // Add your commands in the addCommands() call, e.g.
+        // addCommands(new FooCommand(), new BarCommand());
+        addCommands(
+            new ArmCommand(
+                arm,
+                subsystemController::getRightBumper,
+                subsystemController::getLeftBumper
+            ),
+            new DriveCommand(
+                swerve,
+                driveController::getLeftY,
+                driveController::getLeftX,
+                driveController::getRightX,
+                () -> driveController.getRightTriggerAxis() >= .15,
+                driveController::getRightStickButton,
+                null,
+                null
+            ),
+            new ShooterCommand(
+                shooter,
+                subsystemController::getAButton
+            ),
+            new IntakeCommand(
+                intake,
+                subsystemController::getYButton,
+                subsystemController::getXButton
+            )
+        );
+
+    }
+
 }
