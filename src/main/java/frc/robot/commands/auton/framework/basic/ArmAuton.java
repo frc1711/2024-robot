@@ -35,7 +35,7 @@ public class ArmAuton extends Command {
 	@Override
 	public void execute() {
 		
-		armSubsystem.setToAngle(angleInDegrees);
+//		armSubsystem.setToAngle(angleInDegrees);
 		
 	}
 	
