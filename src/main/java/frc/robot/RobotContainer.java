@@ -52,20 +52,10 @@ public class RobotContainer {
 		
 		// TODO: Update motor positions when using different robots
 		
-		shooter = new Shooter(
-			IDMap.LEFT_SHOOTER_MOTOR.id,
-			IDMap.RIGHT_SHOOTER_MOTOR.id
-		);
+		shooter = new Shooter();
+		intake = new Intake();
+		arm = new Arm();
 		
-		intake = new Intake(
-			IDMap.LEFT_LOWER_INTAKE_MOTOR.id,
-			IDMap.RIGHT_UPPER_INTAKE_MOTOR.id
-		);
-		
-		arm = new Arm(
-			IDMap.LEFT_PIVOT_MOTOR.id,
-			IDMap.RIGHT_PIVOT_MOTOR.id
-		);
 		swerveSubsystem = new Swerve(
 			flModule,
 			frModule,

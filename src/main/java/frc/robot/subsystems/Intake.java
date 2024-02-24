@@ -9,15 +9,24 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CANDevice;
 
 public class Intake extends SubsystemBase {
     
     CANSparkMax leftIntakeMotor, rightIntakeMotor;
     
-    public Intake(int intakeMotorLeftID, int intakeMotorRightID) {
+    public Intake() {
 		
-        leftIntakeMotor = new CANSparkMax(intakeMotorLeftID, MotorType.kBrushless);
-        rightIntakeMotor = new CANSparkMax(intakeMotorRightID, MotorType.kBrushless);
+        leftIntakeMotor = new CANSparkMax(
+            CANDevice.LEFT_UPPER_INTAKE_MOTOR_CONTROLLER.id,
+            MotorType.kBrushless
+        );
+        
+        rightIntakeMotor = new CANSparkMax(
+            CANDevice.RIGHT_LOWER_INTAKE_MOTOR_CONTROLLER.id,
+            MotorType.kBrushless
+        );
+        
         rightIntakeMotor.setInverted(true);
         leftIntakeMotor.setInverted(false);
         rightIntakeMotor.setIdleMode(IdleMode.kBrake);

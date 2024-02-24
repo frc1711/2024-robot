@@ -10,15 +10,23 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CANDevice;
 
 public class Shooter extends SubsystemBase {
 	
 	CANSparkMax leftShooterMotor, rightShooterMotor;
 	
-	public Shooter(int leftShooterID, int rightShooterID) {
-		
-        leftShooterMotor = new CANSparkMax(rightShooterID, MotorType.kBrushless);
-        rightShooterMotor = new CANSparkMax(leftShooterID, MotorType.kBrushless);
+	public Shooter() {
+        
+        leftShooterMotor = new CANSparkMax(
+            CANDevice.RIGHT_SHOOTER_MOTOR_CONTROLLER.id,
+            MotorType.kBrushless
+        );
+        
+        rightShooterMotor = new CANSparkMax(
+            CANDevice.LEFT_SHOOTER_MOTOR_CONTROLLER.id,
+            MotorType.kBrushless
+        );
 		
         rightShooterMotor.setInverted(false);
         leftShooterMotor.setInverted(true);

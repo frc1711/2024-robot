@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CANDevice;
 
 public class Arm extends SubsystemBase {
 	
@@ -19,10 +20,17 @@ public class Arm extends SubsystemBase {
 	
 	SparkAbsoluteEncoder boreEncoder;
 	
-	public Arm(int leftToughboxID, int rightToughboxID) {
+	public Arm() {
 		
-		leftToughbox = new CANSparkMax(leftToughboxID, MotorType.kBrushless);
-		rightToughbox = new CANSparkMax(rightToughboxID, MotorType.kBrushless);
+		leftToughbox = new CANSparkMax(
+			CANDevice.LEFT_PIVOT_MOTOR_CONTROLLER.id,
+			MotorType.kBrushless
+		);
+		
+		rightToughbox = new CANSparkMax(
+			CANDevice.RIGHT_PIVOT_MOTOR_CONTROLLER.id,
+			MotorType.kBrushless
+		);
 		
 		// boreEncoder = rightToughbox.getAbsoluteEncoder(Type.kDutyCycle);
 		
