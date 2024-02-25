@@ -51,11 +51,16 @@ public class Shooter extends SubsystemBase {
 			// the free speed smart current limit at 100A.
 			motorController.setSmartCurrentLimit(60, 100);
 			
-			// Set the maximum rotational acceleration to ramp at a speed
-			// that would reach 100% speed from 0% speed in n seconds.
-			motorController.setOpenLoopRampRate(0.5);
-			
 		});
+		
+		this.getMotorControllerStream()
+			.map(CANSparkMax::getPIDController)
+			.forEach((pidController) -> {
+				
+				pidController.setP(0.05);
+				pidController.setD(0);
+				
+			});
 		
 		this.commands = new Shooter.Commands();
 		
