@@ -5,11 +5,15 @@
 package frc.robot.commands.auton;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.auton.framework.basic.ArmAuton;
 import frc.robot.commands.auton.framework.basic.BellyUpSpeaker;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.ShooterAuton;
+import frc.robot.constants.DoublePreference;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
@@ -19,9 +23,9 @@ import frc.robot.subsystems.swerve.Swerve;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class BasicAuton extends SequentialCommandGroup {
   
-  public BasicAuton(Swerve swerve, Shooter shooter, Intake intake) {
+  public BasicAuton(Swerve swerve, Shooter shooter, Intake intake, Arm arm) {
     
     
-    addCommands(new BellyUpSpeaker(shooter, intake), new OdometryAuton(swerve, new Pose2d(swerve.getRobotPose().getX() + 1, swerve.getRobotPose().getY(), swerve.getGyroRotation()), .5), new ShooterAuton(shooter));
+    addCommands(new ArmAuton(arm, 55), new BellyUpSpeaker(shooter, intake), new OdometryAuton(swerve, new Pose2d(swerve.getRobotPose().getX() + 1, swerve.getRobotPose().getY(), swerve.getGyroRotation()), .5), new ShooterAuton(shooter));
   }
 }
