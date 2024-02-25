@@ -9,6 +9,20 @@ public class ControlsUtilities {
     // Prevent this class from being instantiated.
 	private ControlsUtilities() {}
 	
+	public static double normalizeToRange(double input, double minimum, double maximum) {
+		
+		double delta = maximum - minimum;
+		
+		return minimum + ((input + delta) % delta);
+		
+	}
+	
+	public static double signedPower(double input, double power) {
+		
+		return Math.copySign(Math.pow(input, power), input);
+		
+	}
+	
 	/**
 	 * Returns the input value so long as its absolute value is greater than the
 	 * specified deadband. If the absolute value of the input value is less than
