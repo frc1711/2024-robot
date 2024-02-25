@@ -164,7 +164,7 @@ public class Arm extends SubsystemBase {
 		
 	}
 	
-	public double getAngleDegrees() {
+	public double getAngle() {
 
 		return this.streamEncoders()
 			.mapToDouble(SparkAbsoluteEncoder::getPosition)

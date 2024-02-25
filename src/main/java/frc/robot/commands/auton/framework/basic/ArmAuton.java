@@ -52,8 +52,8 @@ public class ArmAuton extends Command {
 	public boolean isFinished() {
 		
 		return (
-			(angleInDegrees - acceptableError) <= armSubsystem.getAngleDegrees() &&
-			armSubsystem.getAngleDegrees() <= (angleInDegrees + acceptableError)
+			(angleInDegrees - acceptableError) <= armSubsystem.getAngle() &&
+			armSubsystem.getAngle() <= (angleInDegrees + acceptableError)
 		);
 		
 	}
