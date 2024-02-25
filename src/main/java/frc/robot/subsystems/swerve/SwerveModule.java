@@ -238,31 +238,31 @@ public class SwerveModule extends SubsystemBase {
 	public void initSendable(SendableBuilder builder) {
 		
 		builder.addDoubleProperty(
-			"unop-rotation",
+			"Unoptimized Rotation",
 			() -> unoptimizedRotation,
 			null
 		);
 		
 		builder.addDoubleProperty(
-			"op-rotation",
+			"Optimized Rotation",
 			() -> optimizedRotation,
 			null
 		);
 		
 		builder.addDoubleProperty(
-			"actual-rotation",
+			"Encoder Rotation (Degrees)",
 			() -> getEncoderRotation().getDegrees(),
 			null
 		);
 		
 		builder.addDoubleProperty(
-			"steer-Speed",
+			"Steer Speed",
 			() -> steerSpeed,
 			null
 		);
 		
 		builder.addDoubleProperty(
-			"drive-Speed",
+			"Drive Speed",
 			() -> driveSpeed,
 			null
 		);
