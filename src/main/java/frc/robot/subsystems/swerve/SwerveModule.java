@@ -41,28 +41,13 @@ public class SwerveModule extends SubsystemBase {
 	
 	double encoderOffset;
 	
-	// double encoderValue;
-	
 	double steerSpeed;
 	
 	double driveSpeed;
 	
 	double drivePercent;
 	
-	double initialVelocity = 0;
-	
-	/**
-	 * Uses the average RPM of the motor, along with the circumference of the
-	 * wheel, to calculate an approximate voltage value when given a speed in
-	 * meters per second.
-	 */
-	private double maxSpeed = 11.5;
-	
-	double finalAngle;
-	
 	double regulatedAngle;
-	
-	boolean hasBeenEnabled = false;
 	
 	private CANSparkMax initializeMotor(int motorID) {
 		
