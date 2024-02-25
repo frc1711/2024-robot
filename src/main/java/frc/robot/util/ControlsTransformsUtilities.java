@@ -19,7 +19,7 @@ public class ControlsTransformsUtilities {
 
             double hypotenuse = Math.sqrt(Math.pow(point.x, 2) + Math.pow(point.y, 2));
 
-            if (Math.abs(hypotenuse) < deadband) return point;
+            if (Math.abs(hypotenuse) >= deadband) return point;
             else return new Point(0, 0);
 
         };
