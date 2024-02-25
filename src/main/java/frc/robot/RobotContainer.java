@@ -15,14 +15,15 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.DriveCommand;
-import frc.robot.commands.TeleopCommand;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.util.ControlsTransformsUtilities;
+import frc.robot.util.ControlsUtilities;
+import frc.robot.util.Point;
 
 public class RobotContainer {
 	
@@ -33,8 +34,6 @@ public class RobotContainer {
 	protected final Intake intake;
 	
 	protected final Arm arm;
-	
-	protected final TeleopCommand teleopCommand;
 	
 	protected final XboxController driveController;
 	
@@ -56,13 +55,7 @@ public class RobotContainer {
 		shooter = new Shooter();
 		intake = new Intake();
 		arm = new Arm();
-		
 		swerveSubsystem = new Swerve(startPositionChooser.getSelected().get());
-		
-		teleopCommand = new TeleopCommand(
-			swerveSubsystem,
-			driveController
-		);
 		
 		putSendable("Analysis Tab", "Odometry", swerveSubsystem);
 		Shuffleboard.getTab("Subsystems").add("Arm", arm);
@@ -81,21 +74,29 @@ public class RobotContainer {
 		
 		this.subsystemController.a().whileTrue(this.shooter.commands.shoot());
 		this.subsystemController.y().whileTrue(this.intake.commands.intake());
-		this.subsystemController.b().whileTrue(this.intake.commands.outtake());
+		this.subsystemController.x().whileTrue(this.arm.commands.rotateToAngle(55));
+		this.subsystemController.b().whileTrue(this.arm.commands.rotateToAngle(95));
 		this.subsystemController.leftBumper().whileTrue(this.arm.commands.lowerArm());
 		this.subsystemController.rightBumper().whileTrue(this.arm.commands.raiseArm());
 		
-		swerveSubsystem.setDefaultCommand(
-			new DriveCommand(
-                swerveSubsystem,
-                driveController::getLeftY,
-                driveController::getLeftX,
-                driveController::getRightX,
-                driveController::getRightBumper,
-                driveController::getRightStickButton,
-                null,
-                null
-            )
+		double deadband = 0.02;
+		double power = 2;
+		
+		Supplier<Point> driveXYSupplier = () -> new Point(
+			-ControlsUtilities.signedPower(this.driveController.getLeftY(), power),
+			-ControlsUtilities.signedPower(this.driveController.getLeftX(), power)
+		);
+		
+		driveXYSupplier = ControlsTransformsUtilities.applyCircularDeadband(
+			driveXYSupplier,
+			deadband
+		);
+		
+		this.swerveSubsystem.setDefaultCommand(
+			this.swerveSubsystem.commands.drive(
+				driveXYSupplier,
+				ControlsTransformsUtilities.signedPower(this.driveController::getRightX, power)
+			)
 		);
 	
 	}
