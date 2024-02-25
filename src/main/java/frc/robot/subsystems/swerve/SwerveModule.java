@@ -15,7 +15,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.DoublePreference;
 
 public class SwerveModule extends SubsystemBase {
 	
@@ -34,6 +36,8 @@ public class SwerveModule extends SubsystemBase {
 	double unoptimizedRotation;
 	
 	double optimizedRotation;
+	
+	DoublePreference encoderOffsetPreference;
 	
 	double encoderOffset;
 	
@@ -77,6 +81,7 @@ public class SwerveModule extends SubsystemBase {
 		int steerMotorID,
 		int driveMotorID,
 		int encoderID,
+		DoublePreference encoderOffsetPreference,
 		Translation2d motorMeters
 	) {
 		
@@ -88,6 +93,8 @@ public class SwerveModule extends SubsystemBase {
 		steerPID.enableContinuousInput(-180, 180);
 		this.motorMeters = motorMeters;
 		steerPID.setTolerance(1);
+		this.encoderOffsetPreference = encoderOffsetPreference;
+		this.setEncoderOffsetFromPreference();
 		
 	}
 	
@@ -114,13 +121,35 @@ public class SwerveModule extends SubsystemBase {
 		
 	}
 	
+	public void setEncoderOffset(double encoderOffset) {
+		
+		Preferences.setDouble(
+			this.encoderOffsetPreference.key,
+			encoderOffset
+		);
+		
+		this.encoderOffset = encoderOffset;
+		
+	}
+	
+	public void setEncoderOffsetFromPreference() {
+		
+		this.encoderOffset = Preferences.getDouble(
+			this.encoderOffsetPreference.key,
+			this.encoderOffsetPreference.defaultValue
+		);
+		
+	}
+	
 	/**
 	 * Sets the encoderOffset to the current value of the CANcoder. This value
 	 * is later used to set a new zero position for the encoder.
 	 */
 	public void resetEncoder() {
 		
-		encoderOffset = encoder.getAbsolutePosition().getValueAsDouble() * 360;
+		this.setEncoderOffset(
+			encoder.getAbsolutePosition().getValueAsDouble() * 360
+		);
 		
 	}
 	

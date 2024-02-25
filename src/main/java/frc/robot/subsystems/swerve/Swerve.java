@@ -21,8 +21,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANDevice;
 import frc.robot.RobotContainer;
+import frc.robot.constants.DoublePreference;
 import frc.robot.constants.RobotDimensions;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 // import frc.robot.util.Odometry;
 
@@ -91,6 +94,7 @@ public class Swerve extends SubsystemBase {
 			CANDevice.FRONT_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_ENCODER.id,
+			DoublePreference.FRONT_LEFT_SWERVE_MODULE_ENCODER_OFFSET,
 			new Translation2d(
 				swerveModuleXOffsetFromCenterInMeters,
 				swerveModuleYOffsetFromCenterInMeters
@@ -101,6 +105,7 @@ public class Swerve extends SubsystemBase {
 			CANDevice.FRONT_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_ENCODER.id,
+			DoublePreference.FRONT_RIGHT_SWERVE_MODULE_ENCODER_OFFSET,
 			new Translation2d(
 				swerveModuleXOffsetFromCenterInMeters,
 				-swerveModuleYOffsetFromCenterInMeters
@@ -111,6 +116,7 @@ public class Swerve extends SubsystemBase {
 			CANDevice.REAR_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_ENCODER.id,
+			DoublePreference.REAR_LEFT_SWERVE_MODULE_ENCODER_OFFSET,
 			new Translation2d(
 				-swerveModuleXOffsetFromCenterInMeters,
 				swerveModuleYOffsetFromCenterInMeters
@@ -121,6 +127,7 @@ public class Swerve extends SubsystemBase {
 			CANDevice.REAR_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_ENCODER.id,
+			DoublePreference.REAR_RIGHT_SWERVE_MODULE_ENCODER_OFFSET,
 			new Translation2d(
 				-swerveModuleXOffsetFromCenterInMeters,
 				-swerveModuleYOffsetFromCenterInMeters
