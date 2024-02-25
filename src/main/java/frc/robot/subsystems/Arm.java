@@ -9,22 +9,30 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
+import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.constants.CANDevice;
 import frc.robot.constants.DIODevice;
 import frc.robot.constants.DoublePreference;
+import frc.robot.util.ControlsUtilities;
 
 import java.util.stream.Stream;
 
-public class Arm extends SubsystemBase {
+public class Arm extends PIDSubsystem {
+	
+	protected static final double ENCODER_POSITION_CONVERSION_FACTOR = 360;
+	
+	protected static final double ENCODER_CALIBRATION_ANGLE = 90;
+	
+	protected static final double MIN_ARM_ANGLE = 30;
+	
+	protected static final double MAX_ARM_ANGLE = 95;
 	
 	protected final CANSparkMax leftMotorController;
 
@@ -41,12 +49,14 @@ public class Arm extends SubsystemBase {
 //	protected final DigitalInput leftLowerLimitSwitch;
 
 //	protected final DigitalInput rightLowerLimitSwitch;
-
-	protected final PIDController anglePID;
 	
 	public final Arm.Commands commands;
 	
 	public Arm() {
+		
+		super(new PIDController(0.3, 0, 0.1));
+		
+		this.getController().setTolerance(3);
 
 		this.leftMotorController = new CANSparkMax(
 			CANDevice.LEFT_PIVOT_MOTOR_CONTROLLER.id,
@@ -58,6 +68,9 @@ public class Arm extends SubsystemBase {
 			MotorType.kBrushless
 		);
 		
+		this.leftMotorController.restoreFactoryDefaults();
+		this.rightMotorController.restoreFactoryDefaults();
+		
 		this.leftEncoder = leftMotorController.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
 		this.rightEncoder = rightMotorController.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
 
@@ -67,14 +80,43 @@ public class Arm extends SubsystemBase {
 //		rightLowerLimitSwitch = new DigitalInput(DIODevice.RIGHT_LOWER_ARM_LIMIT_SWITCH.id);
 		
 		this.leftMotorController.setInverted(false);
-		this.leftEncoder.setInverted(false);
 		this.rightMotorController.setInverted(true);
-		this.rightEncoder.setInverted(true);
 		
 		this.streamMotorControllers().forEach((motorController) -> {
 			
 			motorController.setOpenLoopRampRate(0.5);
 			motorController.setIdleMode(CANSparkBase.IdleMode.kBrake);
+			
+//			motorController.enableSoftLimit(
+//				CANSparkBase.SoftLimitDirection.kReverse,
+//				true
+//			);
+//
+//			motorController.enableSoftLimit(
+//				CANSparkBase.SoftLimitDirection.kForward,
+//				true
+//			);
+//
+//			motorController.setSoftLimit(
+//				CANSparkBase.SoftLimitDirection.kReverse,
+//				(float) Arm.MIN_ARM_ANGLE
+//			);
+//
+//			motorController.setSoftLimit(
+//				CANSparkBase.SoftLimitDirection.kForward,
+//				(float) Arm.MAX_ARM_ANGLE
+//			);
+			
+		});
+		
+		this.leftEncoder.setInverted(false);
+		this.rightEncoder.setInverted(true);
+		
+		this.streamEncoders().forEach((encoder) -> {
+			
+			encoder.setPositionConversionFactor(
+				Arm.ENCODER_POSITION_CONVERSION_FACTOR
+			);
 			
 		});
 		
@@ -91,18 +133,35 @@ public class Arm extends SubsystemBase {
 			rightEncoderZeroOffsetPreference.defaultValue
 		));
 		
-		this.anglePID = new PIDController(.01, 0, 0);
-		
-//		Shuffleboard.getTab("Subsystems").add(
-//			this.calibrateArmCommand().withName("Reset Arm Encoder Zero Offsets").ignoringDisable(true)
-//		);
-		
 		this.commands = new Arm.Commands();
 		
-		RobotContainer.putCommand("Reset Arm", new InstantCommand(this::calibrateArm, this), true);
+		Shuffleboard.getTab("Subsystems").add(this.commands.calibrateArm());
 		
 	}
-
+	
+	@Override
+	protected double getMeasurement() {
+		
+		return this.getAngle();
+		
+	}
+	
+	@Override
+	protected void useOutput(double output, double setpoint) {
+		
+		double currentAngle = this.getAngle();
+		boolean wouldOverrun = (
+			(output > 0 && currentAngle > Arm.MAX_ARM_ANGLE) ||
+			(output < 0 && currentAngle < Arm.MIN_ARM_ANGLE)
+		);
+		double effectiveOutput = wouldOverrun ? 0 : output;
+		
+		this.streamMotorControllers().forEach(
+			(motorController) -> motorController.setVoltage(effectiveOutput)
+		);
+	
+	}
+	
 	protected Stream<CANSparkMax> streamMotorControllers() {
 
 		return Stream.of(this.leftMotorController, this.rightMotorController);
@@ -115,6 +174,29 @@ public class Arm extends SubsystemBase {
 
 	}
 	
+	protected static void calibrateEncoder(
+		SparkAbsoluteEncoder encoder,
+		DoublePreference zeroOffsetPreference
+	) {
+		
+		// Calculate the new zero offset relative to the existing one.
+		double newZeroOffset = encoder.getZeroOffset() + encoder.getPosition();
+		
+		// Subtract the angle at which the arm is calibrated.
+		newZeroOffset -= Arm.ENCODER_CALIBRATION_ANGLE;
+		
+		newZeroOffset = ControlsUtilities.normalizeToRange(
+			newZeroOffset,
+			0,
+			Arm.ENCODER_POSITION_CONVERSION_FACTOR
+		);
+		
+		Preferences.setDouble(zeroOffsetPreference.key, newZeroOffset);
+		
+		encoder.setZeroOffset(newZeroOffset);
+		
+	}
+	
 	/**
 	 * Resets the 'zero angle' of the pivot encoders.
 	 *
@@ -122,25 +204,35 @@ public class Arm extends SubsystemBase {
 	 */
 	public void calibrateArm() {
 		
-		System.out.println("Calibrating arm encoders...");
+		Arm.calibrateEncoder(
+			this.leftEncoder,
+			DoublePreference.ARM_LEFT_ENCODER_ZERO_OFFSET
+		);
 		
-		this.leftEncoder.setZeroOffset(0);
-		this.rightEncoder.setZeroOffset(0);
-		
-		double newLeftZeroOffset = this.leftEncoder.getPosition();
-		double newRightZeroOffset = this.rightEncoder.getPosition();
-		
-		Preferences.setDouble(DoublePreference.ARM_LEFT_ENCODER_ZERO_OFFSET.key, newLeftZeroOffset);
-		Preferences.setDouble(DoublePreference.ARM_RIGHT_ENCODER_ZERO_OFFSET.key, newRightZeroOffset);
-		
-		this.leftEncoder.setZeroOffset(newLeftZeroOffset);
-		this.rightEncoder.setZeroOffset(newRightZeroOffset);
+		Arm.calibrateEncoder(
+			this.rightEncoder,
+			DoublePreference.ARM_RIGHT_ENCODER_ZERO_OFFSET
+		);
 		
 	}
 	
-	public Command calibrateArmCommand() {
+	protected boolean hasOverrun(boolean direction) {
 		
-		return this.runOnce(this::calibrateArm);
+		if (direction) {
+			
+			return (
+				this.areUpperLimitsTripped() ||
+				this.getAngle() > Arm.MAX_ARM_ANGLE
+			);
+			
+		} else {
+			
+			return (
+				this.areLowerLimitsTripped() ||
+				this.getAngle() < Arm.MIN_ARM_ANGLE
+			);
+			
+		}
 		
 	}
 
@@ -160,6 +252,7 @@ public class Arm extends SubsystemBase {
 	
 	public void stop() {
 
+		this.disable();
 		this.streamMotorControllers().forEach(CANSparkMax::stopMotor);
 		
 	}
@@ -173,20 +266,6 @@ public class Arm extends SubsystemBase {
         
 	}
 	
-	double rotationSpeed, motorSpeeds;
-	public void setToAngle(double angleInDegrees) {
-
-		// rotationSpeed = anglePID.calculate(getAngleDegrees(), angleInDegrees);
-		// motorSpeeds = rotationSpeed / 2;
-
-		// leftMotorController.set(motorSpeeds);
-		// rightMotorController.set(motorSpeeds);
-
-		while (angleInDegrees <= getAngleDegrees() - 1 || angleInDegrees >= getAngleDegrees() +1)
-		rotate(angleInDegrees < getAngleDegrees());
-
-	}
-	
 	public void rotate(boolean shouldRaise) {
 		
 		DoublePreference preference = DoublePreference.ARM_SPEED;
@@ -197,23 +276,34 @@ public class Arm extends SubsystemBase {
 	}
 
 	public void rotate(double speed) {
-
-		boolean wouldOverrunLimits = (
-			(speed > 0 && this.areUpperLimitsTripped()) ||
-			(speed < 0 && this.areLowerLimitsTripped())
+		
+		this.streamMotorControllers().forEach(
+			(motorController) -> motorController.set(speed)
 		);
 
-		double effectiveSpeed = wouldOverrunLimits ? 0 : speed;
-
-		this.streamMotorControllers().forEach((motorController) -> motorController.set(effectiveSpeed));
-
+	}
+	
+	public void rotateToAngle(double degrees) {
+		
+		double effectiveDegrees = MathUtil.clamp(
+			degrees,
+			Arm.MIN_ARM_ANGLE,
+			Arm.MAX_ARM_ANGLE
+		);
+		
+		this.setSetpoint(effectiveDegrees);
+		this.enable();
+		
 	}
 	
 	@Override
 	public void initSendable(SendableBuilder builder) {
 		
+		builder.addDoubleProperty("Arm Angle", this::getAngle, null);
 		builder.addDoubleProperty("Left Encoder", this.leftEncoder::getPosition, null);
 		builder.addDoubleProperty("Right Encoder", this.rightEncoder::getPosition, null);
+		builder.addDoubleProperty("Left Encoder Zero Offset", this.leftEncoder::getZeroOffset, null);
+		builder.addDoubleProperty("Right Encoder Zero Offset", this.rightEncoder::getZeroOffset, null);
 		builder.addBooleanProperty("Left Upper Limit Switch", this.leftUpperLimitSwitch::get, null);
 //		builder.addBooleanProperty("Right Upper Limit Switch", this.rightUpperLimitSwitch::get, null);
 //		builder.addBooleanProperty("Left Lower Limit Switch", this.leftLowerLimitSwitch::get, null);
@@ -222,6 +312,8 @@ public class Arm extends SubsystemBase {
 		builder.addBooleanProperty("Is left reverse soft limit enabled", () -> this.leftMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kReverse), null);
 		builder.addBooleanProperty("Is right forward soft limit enabled", () -> this.rightMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kForward), null);
 		builder.addBooleanProperty("Is right reverse soft limit enabled", () -> this.rightMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kReverse), null);
+		builder.addDoubleProperty("P constant", this.getController()::getP, this.getController()::setP);
+		builder.addDoubleProperty("D constant", this.getController()::getD, this.getController()::setD);
 		
 	}
 	
@@ -232,7 +324,9 @@ public class Arm extends SubsystemBase {
 			return Arm.this.startEnd(
 				() -> Arm.this.rotate(true),
 				Arm.this::stop
-			);
+			).onlyWhile(
+				() -> !Arm.this.hasOverrun(true)
+			).withName("Raise Arm");
 			
 		}
 		
@@ -240,6 +334,25 @@ public class Arm extends SubsystemBase {
 			
 			return Arm.this.startEnd(
 				() -> Arm.this.rotate(false),
+				Arm.this::stop
+			).onlyWhile(
+				() -> !Arm.this.hasOverrun(false)
+			).withName("Lower Arm");
+			
+		}
+		
+		public Command calibrateArm() {
+			
+			return Arm.this.runOnce(Arm.this::calibrateArm)
+				.withName("Calibrate Arm")
+				.ignoringDisable(true);
+			
+		}
+		
+		public Command rotateToAngle(double degrees) {
+			
+			return Arm.this.startEnd(
+				() -> Arm.this.rotateToAngle(degrees),
 				Arm.this::stop
 			);
 			
