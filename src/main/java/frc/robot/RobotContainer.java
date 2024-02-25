@@ -35,7 +35,7 @@ public class RobotContainer {
 	
 	protected final Arm arm;
 	
-	protected final XboxController driveController;
+	protected final CommandXboxController driveController;
 	
 	protected final CommandXboxController subsystemController;
 	
@@ -47,7 +47,7 @@ public class RobotContainer {
 	
 	public RobotContainer() {
 		
-		driveController = new XboxController(0);
+		driveController = new CommandXboxController(0);
 		subsystemController = new CommandXboxController(1);
 		startPositionChooser = new SendableChooser<>();
 		configStartPositionChooser();
@@ -78,6 +78,13 @@ public class RobotContainer {
 		this.subsystemController.b().whileTrue(this.arm.commands.rotateToAngle(95));
 		this.subsystemController.leftBumper().whileTrue(this.arm.commands.lowerArm());
 		this.subsystemController.rightBumper().whileTrue(this.arm.commands.raiseArm());
+		
+		double intakeTriggerThreshold = 0.5;
+		
+		this.subsystemController.leftTrigger(intakeTriggerThreshold).whileTrue(this.intake.commands.outtake());
+		this.subsystemController.rightTrigger(intakeTriggerThreshold).whileTrue(this.intake.commands.intake());
+		this.driveController.leftTrigger(intakeTriggerThreshold).whileTrue(this.intake.commands.outtake());
+		this.driveController.rightTrigger(intakeTriggerThreshold).whileTrue(this.intake.commands.intake());
 		
 		double deadband = 0.02;
 		double power = 2;
