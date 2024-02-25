@@ -4,6 +4,12 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class ControlsTransformsUtilities {
+    
+    public static DoubleSupplier signedPower(DoubleSupplier input, double power) {
+        
+        return () -> ControlsUtilities.signedPower(input.getAsDouble(), power);
+        
+    }
 
     public static DoubleSupplier applyDeadband(DoubleSupplier input, double deadband) {
 
@@ -23,6 +29,12 @@ public class ControlsTransformsUtilities {
             else return new Point(0, 0);
 
         };
+
+    }
+    
+    public static DoubleSupplier invert(DoubleSupplier input) {
+
+        return () -> -input.getAsDouble();
 
     }
 
