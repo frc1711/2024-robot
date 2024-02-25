@@ -3,6 +3,14 @@ package frc.robot.constants;
 import edu.wpi.first.wpilibj.Preferences;
 
 public enum DoublePreference {
+    
+    FRONT_LEFT_SWERVE_MODULE_ENCODER_OFFSET("Front Left Swerve Module Encoder Offset", 0),
+    
+    FRONT_RIGHT_SWERVE_MODULE_ENCODER_OFFSET("Front Right Swerve Module Encoder Offset", 0),
+    
+    REAR_LEFT_SWERVE_MODULE_ENCODER_OFFSET("Rear Left Swerve Module Encoder Offset", 0),
+    
+    REAR_RIGHT_SWERVE_MODULE_ENCODER_OFFSET("Rear Right Swerve Module Encoder Offset", 0),
 
     SHOOTER_SPEED("Shooter Speed", 1),
 
