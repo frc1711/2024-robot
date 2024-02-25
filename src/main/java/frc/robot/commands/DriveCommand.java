@@ -136,7 +136,7 @@ public class DriveCommand extends Command {
       this.currentYSpeed = nextYSpeed;
       this.currentThetaSpeed = nextThetaSpeed;
 
-      swerveSubsystem.updateModules(
+      swerveSubsystem.applyChassisSpeeds(
         ChassisSpeeds.fromFieldRelativeSpeeds(
           this.currentXSpeed,
           this.currentYSpeed,
@@ -153,7 +153,7 @@ public class DriveCommand extends Command {
       this.currentThetaSpeed = nextThetaSpeed;
 
       swerveSubsystem.stop();
-      swerveSubsystem.updateModules(
+      swerveSubsystem.applyChassisSpeeds(
         ChassisSpeeds.fromFieldRelativeSpeeds(
           0,
           0,

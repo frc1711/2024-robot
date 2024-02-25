@@ -35,7 +35,7 @@ public class TimedSwerveAuton extends Command {
 	@Override
 	public void execute() {
 		
-		swerveSubsystem.updateModules(
+		swerveSubsystem.applyChassisSpeeds(
 			new ChassisSpeeds(1, 0, 0), 
 			1
 		);

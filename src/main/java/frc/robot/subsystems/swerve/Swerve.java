@@ -17,12 +17,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANDevice;
 import frc.robot.RobotContainer;
 import frc.robot.constants.DoublePreference;
 import frc.robot.constants.RobotDimensions;
+import frc.robot.util.Point;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -50,6 +52,8 @@ public class Swerve extends SubsystemBase {
 	protected final SwerveDriveKinematics kinematics;
 	
 	public final StartPosition startPosition;
+	
+	public final Swerve.Commands commands;
 	
 	// TODO: Find coordinates of start positions
 	public enum StartPosition {
@@ -166,6 +170,9 @@ public class Swerve extends SubsystemBase {
 		RobotContainer.putCommand("Reset Encoders", new InstantCommand(this::resetEncoders, this), true);
 		RobotContainer.putCommand("Reset Gyro", new InstantCommand(this::resetGyro, this), true);
 		RobotContainer.putCommand("Reset Odometry", new InstantCommand(this::resetOdometry, this), true);
+		
+		this.commands = new Swerve.Commands();
+		
 	}
 	
 	protected Stream<SwerveModule> getModuleStream() {
@@ -255,27 +262,36 @@ public class Swerve extends SubsystemBase {
 		
 	}
 	
-	public void updateModulesFieldRelative(ChassisSpeeds desiredVelocity, double speedMultiplier) {
+	public void drive(double x, double y, double rotation) {
 		
-		desiredVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(desiredVelocity, gyro.getRotation2d());
-		SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(desiredVelocity);
-		frontLeftSwerveModule.update(moduleStates[0], speedMultiplier);
-		frontRightSwerveModule.update(moduleStates[1], speedMultiplier);
-		rearLeftSwerveModule.update(moduleStates[2], speedMultiplier);
-		rearRightSwerveModule.update(moduleStates[3], speedMultiplier);
+		this.applyFieldRelativeChassisSpeeds(
+			new ChassisSpeeds(x, y, rotation),
+			1
+		);
 		
 	}
 	
-	/**
-	 * Updates each module using the reverse kinematics feature from SwerveDriveKinematics
-	 */
-	public void updateModules(ChassisSpeeds desiredVelocity, double speedMultiplier) {
+	public void applyChassisSpeeds(ChassisSpeeds desiredVelocity, double speedMultiplier) {
 		
-		SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(desiredVelocity);
-		frontLeftSwerveModule.update(moduleStates[0], speedMultiplier);
-		frontRightSwerveModule.update(moduleStates[1], speedMultiplier);
-		rearLeftSwerveModule.update(moduleStates[2], speedMultiplier);
-		rearRightSwerveModule.update(moduleStates[3], speedMultiplier);
+		SwerveModuleState[] moduleStates =
+			kinematics.toSwerveModuleStates(desiredVelocity);
+		
+		this.frontLeftSwerveModule.update(moduleStates[0], speedMultiplier);
+		this.frontRightSwerveModule.update(moduleStates[1], speedMultiplier);
+		this.rearLeftSwerveModule.update(moduleStates[2], speedMultiplier);
+		this.rearRightSwerveModule.update(moduleStates[3], speedMultiplier);
+		
+	}
+	
+	public void applyFieldRelativeChassisSpeeds(ChassisSpeeds desiredVelocity, double speedMultiplier) {
+		
+		this.applyChassisSpeeds(
+			ChassisSpeeds.fromFieldRelativeSpeeds(
+				desiredVelocity,
+				gyro.getRotation2d()
+			),
+			speedMultiplier
+		);
 		
 	}
 	
@@ -300,6 +316,32 @@ public class Swerve extends SubsystemBase {
 		
 		builder.addDoubleProperty("Swerve Odometry X Component", () -> updateOdometry().getX(), null);
 		builder.addDoubleProperty("Swerve Odometry Y Component", () -> updateOdometry().getY(), null);
+		
+	}
+	
+	public class Commands {
+		
+		public Command drive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rotation) {
+			
+			return Swerve.this.run(() -> Swerve.this.drive(
+				x.getAsDouble(),
+				y.getAsDouble(),
+				rotation.getAsDouble()
+			));
+			
+		}
+		
+		public Command drive(Supplier<Point> xy, DoubleSupplier rotation) {
+			
+			return Swerve.this.run(() -> {
+				
+				Point xyPoint = xy.get();
+				
+				Swerve.this.drive(xyPoint.x, xyPoint.y, rotation.getAsDouble());
+				
+			});
+			
+		}
 		
 	}
 	

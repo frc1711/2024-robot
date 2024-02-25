@@ -60,7 +60,7 @@ public class OdometryAuton extends Command {
 		speedY = xDistancePID.calculate(displacementY, targetPose.getY());
 		speedTheta = yDistancePID.calculate(swerveDrive.getGyroRotation().getDegrees(), targetPose.getRotation().getDegrees());
 		
-		swerveDrive.updateModules(ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, speedTheta, swerveDrive.getGyroRotation()), speedMultiplier);
+		swerveDrive.applyChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, speedTheta, swerveDrive.getGyroRotation()), speedMultiplier);
 		
 	}
 	
