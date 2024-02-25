@@ -39,7 +39,7 @@ public class ControlsUtilities {
 
 	}
 
-	public static double applyCircularDeadband (double xInput, double yInput, double deadband, boolean valueToRetrieve) {
+	public static double applyCircularDeadband(double xInput, double yInput, double deadband, boolean valueToRetrieve) {
 
 		double hypotenuse = Math.sqrt(Math.pow(xInput, 2) + Math.pow(yInput, 2));
 
