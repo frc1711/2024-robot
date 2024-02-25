@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.DriveCommand;
+import frc.robot.commands.TeleopCommand;
+import frc.robot.commands.auton.BasicAuton;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
 import frc.robot.subsystems.Arm;
@@ -135,6 +138,7 @@ public class RobotContainer {
 	
 	private void configAutonChooser() {
 		
+		autonChooser.addOption("Basic Auton", () -> new BasicAuton(swerveSubsystem, shooter));
 		autonChooser.addOption("Odometry Test Auton", () -> new OdometryAuton(swerveSubsystem, new Pose2d(new Translation2d(swerveSubsystem.getStartPosition().getTranslation().getX() + .5, swerveSubsystem.getStartPosition().getTranslation().getY()), new Rotation2d(Math.PI)), .5));
 		autonChooser.addOption("Timed Swerve Auton", () -> new TimedSwerveAuton(swerveSubsystem));
 		
