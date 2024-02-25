@@ -53,7 +53,7 @@ public class ShooterAuton extends Command {
 	@Override
 	public boolean isFinished() {
 		
-		return this.timer.hasElapsed(2);
+		return this.timer.hasElapsed(3);
 		
 	}
 	

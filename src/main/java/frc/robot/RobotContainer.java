@@ -138,7 +138,7 @@ public class RobotContainer {
 	
 	private void configAutonChooser() {
 		
-		autonChooser.addOption("Basic Auton", () -> new BasicAuton(swerveSubsystem, shooter));
+		autonChooser.addOption("Basic Auton", () -> new BasicAuton(swerveSubsystem, shooter, intake));
 		autonChooser.addOption("Odometry Test Auton", () -> new OdometryAuton(swerveSubsystem, new Pose2d(new Translation2d(swerveSubsystem.getStartPosition().getTranslation().getX() + .5, swerveSubsystem.getStartPosition().getTranslation().getY()), new Rotation2d(Math.PI)), .5));
 		autonChooser.addOption("Timed Swerve Auton", () -> new TimedSwerveAuton(swerveSubsystem));
 		
