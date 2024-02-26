@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANDevice;
 import frc.robot.constants.DoublePreference;
 
+import java.util.stream.Stream;
+
 public class Intake extends SubsystemBase {
     
     protected final CANSparkMax leftUpperMotorController;
@@ -38,11 +40,25 @@ public class Intake extends SubsystemBase {
         this.rightLowerMotorController.setInverted(true);
         this.leftUpperMotorController.setInverted(false);
         
-        this.rightLowerMotorController.setIdleMode(IdleMode.kBrake);
-        this.leftUpperMotorController.setIdleMode(IdleMode.kBrake);
+        this.getMotorControllerStream().forEach((motorController) -> {
+            
+            motorController.setIdleMode(IdleMode.kBrake);
+            motorController.setOpenLoopRampRate(1);
+            motorController.setSmartCurrentLimit(30);
+            
+        });
         
         this.commands = new Intake.Commands();
 		
+    }
+    
+    protected Stream<CANSparkMax> getMotorControllerStream() {
+        
+        return Stream.of(
+            this.leftUpperMotorController,
+            this.rightLowerMotorController
+        );
+        
     }
     
     public void stop() {

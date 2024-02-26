@@ -13,14 +13,12 @@ import frc.robot.subsystems.Shooter;
 public class BellyUpSpeaker extends Command {
 
   Shooter shooter;
-  Arm arm;
   Intake intake;
   Timer timer;
 
   public BellyUpSpeaker(Arm arm, Shooter shooter, Intake intake) {
     this.shooter = shooter;
     this.intake = intake;
-    this.arm = arm;
     this.timer = new Timer();
   }
 
@@ -29,14 +27,12 @@ public class BellyUpSpeaker extends Command {
   public void initialize() {
     shooter.stop();
     intake.stop();
-    arm.stop();
     timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.rotateToAngle(55);
     shooter.shoot();
     if (timer.hasElapsed(3)) intake.intake();
   }

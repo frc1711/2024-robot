@@ -10,13 +10,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.DriveCommand;
-import frc.robot.commands.TeleopCommand;
 import frc.robot.commands.auton.BasicAuton;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
@@ -77,8 +74,10 @@ public class RobotContainer {
 		
 		this.subsystemController.a().whileTrue(this.shooter.commands.shoot());
 		this.subsystemController.y().whileTrue(this.intake.commands.intake());
-		this.subsystemController.x().whileTrue(this.arm.commands.rotateToAngle(55));
-		this.subsystemController.b().whileTrue(this.arm.commands.rotateToAngle(95));
+		this.subsystemController.x().onTrue(this.arm.commands.rotateToAngle(55));
+		this.subsystemController.x().onFalse(this.arm.commands.stop());
+		this.subsystemController.b().onTrue(this.arm.commands.rotateToAngle(95));
+		this.subsystemController.b().onFalse(this.arm.commands.stop());
 		this.subsystemController.leftBumper().whileTrue(this.arm.commands.lowerArm());
 		this.subsystemController.rightBumper().whileTrue(this.arm.commands.raiseArm());
 		

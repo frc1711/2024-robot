@@ -54,7 +54,7 @@ public class Arm extends PIDSubsystem {
 	
 	public Arm() {
 		
-		super(new PIDController(0.3, 0, 0.1));
+		super(new PIDController(0.15, 0, 0.05));
 		
 		this.getController().setTolerance(3);
 
@@ -351,10 +351,17 @@ public class Arm extends PIDSubsystem {
 		
 		public Command rotateToAngle(double degrees) {
 			
-			return Arm.this.startEnd(
-				() -> Arm.this.rotateToAngle(degrees),
-				Arm.this::stop
+			return Arm.this.run(
+				() -> Arm.this.rotateToAngle(degrees)
+			).until(
+				() -> Arm.this.getController().atSetpoint()
 			);
+			
+		}
+		
+		public Command stop() {
+			
+			return Arm.this.runOnce(Arm.this::stop);
 			
 		}
 		
