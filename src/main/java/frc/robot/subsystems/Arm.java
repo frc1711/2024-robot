@@ -375,9 +375,8 @@ public class Arm extends PIDSubsystem {
 			return Arm.this.startEnd(
 				() -> Arm.this.rotate(true),
 				Arm.this::stop
-			).onlyWhile(
-				() -> !Arm.this.hasOverrun(true)
-			).withName("Raise Arm");
+			).onlyWhile(Arm.this::isArmInsideLimits)
+				.withName("Raise Arm");
 			
 		}
 		
@@ -386,9 +385,7 @@ public class Arm extends PIDSubsystem {
 			return Arm.this.startEnd(
 				() -> Arm.this.rotate(false),
 				Arm.this::stop
-			).onlyWhile(
-				() -> !Arm.this.hasOverrun(false)
-			).withName("Lower Arm");
+			).onlyWhile(Arm.this::isArmInsideLimits).withName("Lower Arm");
 			
 		}
 		
