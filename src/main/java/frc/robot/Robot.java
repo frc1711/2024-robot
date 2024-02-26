@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.ShooterCommand;
 import frc.robot.constants.DoublePreference;
 
 /**
@@ -110,8 +109,6 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
         
         // m_testCommand = m_robotContainer.getTestCommand();
-        
-//        new ShooterCommand(m_robotContainer.shooter, () -> m_robotContainer.driveController.getAButton()).schedule();
 		
     }
     

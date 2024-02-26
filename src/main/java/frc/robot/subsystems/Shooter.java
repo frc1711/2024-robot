@@ -12,6 +12,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.CANDevice;
 import frc.robot.constants.DoublePreference;
 
@@ -112,6 +113,16 @@ public class Shooter extends SubsystemBase {
 				Shooter.this::shoot,
 				Shooter.this::stop
 			);
+			
+		}
+		
+	}
+	
+	public class Triggers {
+		
+		public Trigger isAtSpeed() {
+			
+			return 
 			
 		}
 		
