@@ -216,38 +216,89 @@ public class Arm extends PIDSubsystem {
 		
 	}
 	
-	protected boolean hasOverrun(boolean direction) {
+	public boolean areUpperLimitsSwitchesTripped() {
 		
-		if (direction) {
-			
-			return (
-				this.areUpperLimitsTripped() ||
-				this.getAngle() > Arm.MAX_ARM_ANGLE
-			);
-			
-		} else {
-			
-			return (
-				this.areLowerLimitsTripped() ||
-				this.getAngle() < Arm.MIN_ARM_ANGLE
-			);
-			
-		}
+		return this.leftUpperLimitSwitch.get();
+		
+		// return (
+		// 	this.leftUpperLimitSwitch.get() ||
+		// 	this.rightUpperLimitSwitch.get()
+		// );
 		
 	}
-
-	protected boolean areUpperLimitsTripped() {
-
-		return this.leftUpperLimitSwitch.get()/* || this.rightUpperLimitSwitch.get()*/;
-
-	}
-
-	protected boolean areLowerLimitsTripped() {
-
-		// return this.leftLowerLimitSwitch.get() || this.rightLowerLimitSwitch.get();
-
+	
+	public boolean areLowerLimitsSwitchesTripped() {
+		
 		return false;
-
+		
+		// return (
+		// 	this.leftLowerLimitSwitch.get() ||
+		// 	this.rightLowerLimitSwitch.get()
+		// );
+		
+	}
+	
+	public boolean areLimitSwitchesTripped() {
+		
+		return (
+			this.areUpperLimitsSwitchesTripped() ||
+			this.areLowerLimitsSwitchesTripped()
+		);
+		
+	}
+	
+	public boolean isArmOutsideUpperAngularLimit() {
+		
+		return this.getAngle() > Arm.MAX_ARM_ANGLE;
+		
+	}
+	
+	public boolean isArmOutsideLowerAngularLimit() {
+		
+		return this.getAngle() < Arm.MIN_ARM_ANGLE;
+		
+	}
+	
+	public boolean isArmOutsideAngularLimits() {
+		
+		return (
+			this.isArmOutsideLowerAngularLimit() ||
+			this.isArmOutsideUpperAngularLimit()
+		);
+		
+	}
+	
+	public boolean isArmOutsideUpperLimit() {
+		
+		return (
+			this.areUpperLimitsSwitchesTripped() ||
+			this.isArmOutsideUpperAngularLimit()
+		);
+		
+	}
+	
+	public boolean isArmOutsideLowerLimit() {
+		
+		return (
+			this.areLowerLimitsSwitchesTripped() ||
+			this.isArmOutsideLowerAngularLimit()
+		);
+		
+	}
+	
+	public boolean isArmOutsideLimits() {
+		
+		return (
+			this.isArmOutsideLowerLimit() ||
+			this.isArmOutsideUpperLimit()
+		);
+		
+	}
+	
+	public boolean isArmInsideLimits() {
+		
+		return !this.isArmOutsideLimits();
+		
 	}
 	
 	public void stop() {
