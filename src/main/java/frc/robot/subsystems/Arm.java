@@ -389,27 +389,25 @@ public class Arm extends PIDSubsystem {
 			
 		}
 		
-		public Command calibrateArm() {
-			
-			return Arm.this.runOnce(Arm.this::calibrateArm)
-				.withName("Calibrate Arm")
-				.ignoringDisable(true);
-			
-		}
-		
 		public Command rotateToAngle(double degrees) {
 			
 			return Arm.this.run(
 				() -> Arm.this.rotateToAngle(degrees)
-			).until(
-				() -> Arm.this.getController().atSetpoint()
-			);
+			).until(Arm.this.getController()::atSetpoint);
 			
 		}
 		
 		public Command stop() {
 			
 			return Arm.this.runOnce(Arm.this::stop);
+			
+		}
+		
+		public Command calibrateArm() {
+			
+			return Arm.this.runOnce(Arm.this::calibrateArm)
+				.withName("Calibrate Arm")
+				.ignoringDisable(true);
 			
 		}
 		
