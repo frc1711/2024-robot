@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.CANDevice;
 import frc.robot.constants.DIODevice;
 import frc.robot.constants.DoublePreference;
@@ -408,6 +409,16 @@ public class Arm extends PIDSubsystem {
 			return Arm.this.runOnce(Arm.this::calibrateArm)
 				.withName("Calibrate Arm")
 				.ignoringDisable(true);
+			
+		}
+		
+	}
+	
+	public class Triggers {
+		
+		public Trigger armHasReachedSetpoint() {
+			
+			return new Trigger(Arm.this.getController()::atSetpoint);
 			
 		}
 		
