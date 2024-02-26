@@ -27,23 +27,23 @@ import frc.robot.util.Point;
 
 public class RobotContainer {
 	
-	protected final Swerve swerveSubsystem;
+	public final Swerve swerveSubsystem;
 	
-	protected final Shooter shooter;
+	public final Shooter shooter;
 	
-	protected final Intake intake;
+	public final Intake intake;
 	
-	protected final Arm arm;
+	public final Arm arm;
 	
-	protected final CommandXboxController driveController;
+	public final CommandXboxController driveController;
 	
-	protected final CommandXboxController subsystemController;
+	public final CommandXboxController subsystemController;
 	
-	protected final SendableChooser<Supplier<Command>> autonChooser;
+	public final SendableChooser<Supplier<Command>> autonChooser;
 	
-	protected final SendableChooser<Supplier<Command>> testChooser;
+	public final SendableChooser<Supplier<Command>> testChooser;
 	
-	protected final SendableChooser<Supplier<Swerve.StartPosition>> startPositionChooser;
+	public final SendableChooser<Supplier<Swerve.StartPosition>> startPositionChooser;
 	
 	public RobotContainer() {
 		
