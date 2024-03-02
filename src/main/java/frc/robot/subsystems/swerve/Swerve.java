@@ -265,8 +265,7 @@ public class Swerve extends SubsystemBase {
 	public void drive(double x, double y, double rotation) {
 		
 		this.applyFieldRelativeChassisSpeeds(
-			new ChassisSpeeds(x, y, rotation),
-			1
+			new ChassisSpeeds(x, y, rotation)
 		);
 		
 	}
@@ -276,31 +275,30 @@ public class Swerve extends SubsystemBase {
 		SwerveModuleState[] moduleStates =
 			kinematics.toSwerveModuleStates(desiredVelocity);
 		
-		this.frontLeftSwerveModule.update(moduleStates[0], speedMultiplier);
-		this.frontRightSwerveModule.update(moduleStates[1], speedMultiplier);
-		this.rearLeftSwerveModule.update(moduleStates[2], speedMultiplier);
-		this.rearRightSwerveModule.update(moduleStates[3], speedMultiplier);
+		this.frontLeftSwerveModule.update(moduleStates[0]);
+		this.frontRightSwerveModule.update(moduleStates[1]);
+		this.rearLeftSwerveModule.update(moduleStates[2]);
+		this.rearRightSwerveModule.update(moduleStates[3]);
 		
 	}
 	
-	public void applyFieldRelativeChassisSpeeds(ChassisSpeeds desiredVelocity, double speedMultiplier) {
+	public void applyFieldRelativeChassisSpeeds(ChassisSpeeds desiredVelocity) {
 		
 		this.applyChassisSpeeds(
 			ChassisSpeeds.fromFieldRelativeSpeeds(
 				desiredVelocity,
 				gyro.getRotation2d()
-			),
-			speedMultiplier
+			)
 		);
 		
 	}
 	
 	public void xMode() {
 		
-		frontLeftSwerveModule.update(new SwerveModuleState(0, new Rotation2d(135)), 1);
-		frontRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-135)), 1);
-		rearLeftSwerveModule.update(new SwerveModuleState(0, new Rotation2d(45)), 1);
-		rearRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-45)), 1);
+		frontLeftSwerveModule.update(new SwerveModuleState(0, new Rotation2d(135)));
+		frontRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-135)));
+		rearLeftSwerveModule.update(new SwerveModuleState(0, new Rotation2d(45)));
+		rearRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-45)));
 		
 	}
 	

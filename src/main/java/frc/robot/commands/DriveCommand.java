@@ -142,8 +142,7 @@ public class DriveCommand extends Command {
           this.currentYSpeed,
           this.currentThetaSpeed + oneEighty,
           swerveSubsystem.getGyroRotation()
-        ),
-        speedMultiplier
+        )
       );
 
     } else {
@@ -159,8 +158,7 @@ public class DriveCommand extends Command {
           0,
           oneEighty, 
           swerveSubsystem.getGyroRotation()
-        ),
-        1
+        )
       );
 
   }

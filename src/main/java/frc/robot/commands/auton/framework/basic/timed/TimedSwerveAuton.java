@@ -36,8 +36,7 @@ public class TimedSwerveAuton extends Command {
 	public void execute() {
 		
 		swerveSubsystem.applyChassisSpeeds(
-			new ChassisSpeeds(1, 0, 0), 
-			1
+			new ChassisSpeeds(1, 0, 0)
 		);
 		
 	}

@@ -48,7 +48,7 @@ public class SwerveAuton extends Command {
 	public void execute() {
 		
 		thetaSpeed = rotationalPID.calculate(swerveSubsystem.getGyroRotation().getDegrees(), desiredRotation);
-		swerveSubsystem.applyChassisSpeeds(new ChassisSpeeds(xSpeed, ySpeed, desiredRotation), 1);
+		swerveSubsystem.applyChassisSpeeds(new ChassisSpeeds(xSpeed, ySpeed, desiredRotation));
 		
 	}
 	

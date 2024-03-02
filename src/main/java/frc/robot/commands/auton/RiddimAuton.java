@@ -25,12 +25,12 @@ public class RiddimAuton extends SequentialCommandGroup {
     //TODO: Decide which notes to pick up in autons to determine angle to the speaker's AprilTag and their positions relative to the robot
     addCommands(
       new SpeakerAuton(swerveSubsystem, shooterSubsystem, armSubsystem, 0),
-      new OdometryAuton(swerveSubsystem, new Pose2d(2.1, 6.8, new Rotation2d()), 1),
+      new OdometryAuton(swerveSubsystem, new Pose2d(2.1, 6.8, new Rotation2d())),
       new PickupAuton(intakeSubsystem, swerveSubsystem),
       new SpeakerAuton(swerveSubsystem, shooterSubsystem, armSubsystem, -153),
-      new OdometryAuton(swerveSubsystem, new Pose2d(3.1, 6, new Rotation2d(-110)), 1),
+      new OdometryAuton(swerveSubsystem, new Pose2d(3.1, 6, new Rotation2d(-110))),
       new PickupAuton(intakeSubsystem, swerveSubsystem),
-      new OdometryAuton(swerveSubsystem, new Pose2d(), 1), //TODO: Find position of amp
+      new OdometryAuton(swerveSubsystem, new Pose2d()), //TODO: Find position of amp
       new ArmAuton(armSubsystem, 90));
   }
 }

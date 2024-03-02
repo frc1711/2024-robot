@@ -28,7 +28,7 @@ public class BasicAuton extends SequentialCommandGroup {
     addCommands(
         arm.commands.rotateToAngle(55),
         new BellyUpSpeaker(arm, shooter, intake),
-        new OdometryAuton(swerve, new Pose2d(swerve.getRobotPose().getX() + 1, swerve.getRobotPose().getY(), swerve.getGyroRotation()), .5),
+        new OdometryAuton(swerve, new Pose2d(swerve.getRobotPose().getX() + 1, swerve.getRobotPose().getY(), swerve.getGyroRotation())),
         new ShooterAuton(shooter)
     );
     

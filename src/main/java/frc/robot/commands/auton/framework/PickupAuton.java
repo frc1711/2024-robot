@@ -22,7 +22,7 @@ public class PickupAuton extends ParallelDeadlineGroup {
 		
 		super(new IntakeAuton(intake));
 		
-		addCommands(new OdometryAuton(swerve, swerve.getRobotPose(), 1));
+		addCommands(new OdometryAuton(swerve, swerve.getRobotPose()));
 		
 	}
 	

@@ -166,7 +166,7 @@ public class SwerveModule extends SubsystemBase {
 	 * <p>
 	 * WIP
 	 */
-	public void update(SwerveModuleState desiredState, double speedMultiplier) {
+	public void update(SwerveModuleState desiredState) {
 		
 		unoptimizedRotation = desiredState.angle.getDegrees();
 		
