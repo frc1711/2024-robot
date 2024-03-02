@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -91,16 +90,6 @@ public class Shooter extends SubsystemBase {
 		this.getMotorControllerStream().forEach(
 			(motorController) -> motorController.set(speed)
 		);
-		
-	}
-	
-	@Override
-	public void initSendable(SendableBuilder builder) {
-		
-		builder.addDoubleProperty("Left Motor Speed", leftShooterMotorController::get, null);
-		builder.addDoubleProperty("Right Motor Speed", rightShooterMotorController::get, null);
-		builder.addDoubleProperty("Left Motor Output Current", leftShooterMotorController::getOutputCurrent, null);
-		builder.addDoubleProperty("Right Motor Output Current", rightShooterMotorController::getOutputCurrent, null);
 		
 	}
 	
