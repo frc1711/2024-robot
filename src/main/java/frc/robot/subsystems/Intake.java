@@ -43,8 +43,7 @@ public class Intake extends SubsystemBase {
         this.getMotorControllerStream().forEach((motorController) -> {
             
             motorController.setIdleMode(IdleMode.kBrake);
-            motorController.setOpenLoopRampRate(1);
-            motorController.setSmartCurrentLimit(30);
+            motorController.setSmartCurrentLimit(60);
             
         });
         
