@@ -58,10 +58,10 @@ public class RobotContainer {
 		arm = new Arm();
 		swerveSubsystem = new Swerve(startPositionChooser.getSelected().get());
 		
-		putSendable("Analysis Tab", "Odometry", swerveSubsystem);
-		Shuffleboard.getTab("Subsystems").add("Arm", arm);
-		Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
-		Shuffleboard.getTab("Subsystems").add("Intake", intake);
+		// Shuffleboard.getTab("Subsystems").add("Arm", arm);
+		// Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
+		// Shuffleboard.getTab("Subsystems").add("Intake", intake);
+		// Shuffleboard.getTab("Subsystems").add("Swerve", this.swerveSubsystem);
 		
 		autonChooser = new SendableChooser<>();
 		testChooser = new SendableChooser<>();
