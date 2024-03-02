@@ -13,7 +13,7 @@ public class ControlsUtilities {
 		
 		double delta = maximum - minimum;
 		
-		return minimum + ((input + delta) % delta);
+		return minimum + ((input - minimum + delta) % delta);
 		
 	}
 	
