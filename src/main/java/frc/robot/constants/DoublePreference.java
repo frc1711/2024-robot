@@ -42,5 +42,27 @@ public enum DoublePreference {
         }
 
     }
-
+    
+    /**
+     * Returns the value of the preference.
+     *
+     * @return The value of the preference.
+     */
+    public double get() {
+        
+        return Preferences.getDouble(this.key, this.defaultValue);
+        
+    }
+    
+    /**
+     * Sets the value of the preference.
+     *
+     * @param value The value to set the preference to.
+     */
+    public void set(double value) {
+        
+        Preferences.setDouble(this.key, value);
+        
+    }
+    
 }
