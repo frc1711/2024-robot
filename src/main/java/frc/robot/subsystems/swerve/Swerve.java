@@ -98,7 +98,7 @@ public class Swerve extends SubsystemBase {
 			CANDevice.FRONT_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_ENCODER.id,
-			DoublePreference.FRONT_LEFT_SWERVE_MODULE_ENCODER_OFFSET,
+			DoublePreference.FRONT_LEFT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES,
 			new Translation2d(
 				swerveModuleXOffsetFromCenterInMeters,
 				swerveModuleYOffsetFromCenterInMeters
@@ -109,7 +109,7 @@ public class Swerve extends SubsystemBase {
 			CANDevice.FRONT_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_ENCODER.id,
-			DoublePreference.FRONT_RIGHT_SWERVE_MODULE_ENCODER_OFFSET,
+			DoublePreference.FRONT_RIGHT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES,
 			new Translation2d(
 				swerveModuleXOffsetFromCenterInMeters,
 				-swerveModuleYOffsetFromCenterInMeters
@@ -120,7 +120,7 @@ public class Swerve extends SubsystemBase {
 			CANDevice.REAR_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_ENCODER.id,
-			DoublePreference.REAR_LEFT_SWERVE_MODULE_ENCODER_OFFSET,
+			DoublePreference.REAR_LEFT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES,
 			new Translation2d(
 				-swerveModuleXOffsetFromCenterInMeters,
 				swerveModuleYOffsetFromCenterInMeters
@@ -131,7 +131,7 @@ public class Swerve extends SubsystemBase {
 			CANDevice.REAR_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_ENCODER.id,
-			DoublePreference.REAR_RIGHT_SWERVE_MODULE_ENCODER_OFFSET,
+			DoublePreference.REAR_RIGHT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES,
 			new Translation2d(
 				-swerveModuleXOffsetFromCenterInMeters,
 				-swerveModuleYOffsetFromCenterInMeters
