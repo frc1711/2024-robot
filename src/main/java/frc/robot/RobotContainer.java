@@ -112,9 +112,29 @@ public class RobotContainer {
 	
 	private void configAutonChooser() {
 		
-		autonChooser.addOption("Basic Auton", () -> new BasicAuton(swerveSubsystem, shooter, intake, arm));
-		autonChooser.addOption("Odometry Test Auton", () -> new OdometryAuton(swerveSubsystem, new Pose2d(new Translation2d(swerveSubsystem.getStartPosition().getTranslation().getX() + .5, swerveSubsystem.getStartPosition().getTranslation().getY()), new Rotation2d(Math.PI)), .5));
-		autonChooser.addOption("Timed Swerve Auton", () -> new TimedSwerveAuton(swerveSubsystem));
+		autonChooser.addOption(
+			"Basic Auton",
+			() -> new BasicAuton(swerveSubsystem, shooter, intake, arm)
+		);
+		
+		autonChooser.addOption(
+			"Odometry Test Auton",
+			() -> new OdometryAuton(
+				swerveSubsystem,
+				new Pose2d(
+					new Translation2d(
+						swerveSubsystem.getStartPosition().getTranslation().getX() + .5,
+						swerveSubsystem.getStartPosition().getTranslation().getY()
+					),
+					new Rotation2d(Math.PI)
+				)
+			)
+		);
+		
+		autonChooser.addOption(
+			"Timed Swerve Auton",
+			() -> new TimedSwerveAuton(swerveSubsystem)
+		);
 		
 		putSendable("Pre-match Tab", "Auton Chooser", autonChooser);
 		
