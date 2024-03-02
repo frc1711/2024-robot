@@ -351,21 +351,17 @@ public class Arm extends PIDSubsystem {
 	@Override
 	public void initSendable(SendableBuilder builder) {
 		
-		builder.addDoubleProperty("Arm Angle", this::getAngle, null);
-		builder.addDoubleProperty("Left Encoder", this.leftEncoder::getPosition, null);
-		builder.addDoubleProperty("Right Encoder", this.rightEncoder::getPosition, null);
-		builder.addDoubleProperty("Left Encoder Zero Offset", this.leftEncoder::getZeroOffset, null);
-		builder.addDoubleProperty("Right Encoder Zero Offset", this.rightEncoder::getZeroOffset, null);
-		builder.addBooleanProperty("Left Upper Limit Switch", this.leftUpperLimitSwitch::get, null);
-//		builder.addBooleanProperty("Right Upper Limit Switch", this.rightUpperLimitSwitch::get, null);
-//		builder.addBooleanProperty("Left Lower Limit Switch", this.leftLowerLimitSwitch::get, null);
-//		builder.addBooleanProperty("Right Lower Limit Switch", this.rightLowerLimitSwitch::get, null);
-		builder.addBooleanProperty("Is left forward soft limit enabled", () -> this.leftMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kForward), null);
-		builder.addBooleanProperty("Is left reverse soft limit enabled", () -> this.leftMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kReverse), null);
-		builder.addBooleanProperty("Is right forward soft limit enabled", () -> this.rightMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kForward), null);
-		builder.addBooleanProperty("Is right reverse soft limit enabled", () -> this.rightMotorController.isSoftLimitEnabled(CANSparkBase.SoftLimitDirection.kReverse), null);
-		builder.addDoubleProperty("P constant", this.getController()::getP, this.getController()::setP);
-		builder.addDoubleProperty("D constant", this.getController()::getD, this.getController()::setD);
+		builder.addDoubleProperty(
+			"Arm Angle (Degrees)",
+			() -> this.getAngle().in(Degrees),
+			null
+		);
+		
+		builder.addDoubleProperty(
+			"Arm Angle Setpoint (Degrees)",
+			() -> this.getController().getSetpoint(),
+			this.getController()::setSetpoint
+		);
 		
 	}
 	
