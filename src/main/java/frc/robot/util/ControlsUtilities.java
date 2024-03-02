@@ -17,9 +17,18 @@ public class ControlsUtilities {
 		
 	}
 	
-	public static double signedPower(double input, double power) {
+	/**
+	 * Applies an exponential curve to the input value, raising it to the
+	 * specified exponent and preserving its sign.
+	 *
+	 * @param input The input value.
+	 * @param exponent The exponent to which to raise the input value.
+	 * @return The input value raised to the specified exponent, preserving its
+	 * sign.
+	 */
+	public static double applyExponentialCurve(double input, double exponent) {
 		
-		return Math.copySign(Math.pow(input, power), input);
+		return Math.copySign(Math.pow(input, exponent), input);
 		
 	}
 	

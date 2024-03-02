@@ -5,9 +5,9 @@ import java.util.function.Supplier;
 
 public class ControlsTransformsUtilities {
     
-    public static DoubleSupplier signedPower(DoubleSupplier input, double power) {
+    public static DoubleSupplier applyExponentialCurve(DoubleSupplier input, double power) {
         
-        return () -> ControlsUtilities.signedPower(input.getAsDouble(), power);
+        return () -> ControlsUtilities.applyExponentialCurve(input.getAsDouble(), power);
         
     }
 
