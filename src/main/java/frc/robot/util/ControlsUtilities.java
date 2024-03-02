@@ -47,17 +47,35 @@ public class ControlsUtilities {
 		return Math.abs(input) < deadband ? 0 : input;
 
 	}
-
-	public static double applyCircularDeadband(double xInput, double yInput, double deadband, boolean valueToRetrieve) {
-
-		double hypotenuse = Math.sqrt(Math.pow(xInput, 2) + Math.pow(yInput, 2));
-
-		if (Math.abs(hypotenuse) < deadband) {
-			if (valueToRetrieve) return xInput;
-			else return yInput;
-		}
+	
+	public static Point applyDeadband(Point point, double deadband) {
 		
-		else return 0;
+		double hypotenuse = Math.sqrt(Math.pow(point.x, 2) + Math.pow(point.y, 2));
+		
+		if (Math.abs(hypotenuse) < deadband) return new Point(0, 0);
+		else return point;
+		
+	}
+	
+	public static double applyScaledDeadband(double input, double deadband) {
+		
+		return Math.abs(input) < deadband ? 0 : Math.copySign(
+			(Math.abs(input) - deadband) / (1 - deadband),
+			input
+		);
+		
+	}
+	
+	public static double applyClamp(
+		double input,
+		double minimum,
+		double maximum
+	) {
+		
+		if (input < minimum) return minimum;
+		else if (input > maximum) return maximum;
+		else return input;
+		
 	}
     
 	/**
