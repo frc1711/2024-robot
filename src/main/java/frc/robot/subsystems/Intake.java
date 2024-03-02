@@ -151,25 +151,6 @@ public class Intake extends SubsystemBase {
 		
     }
     
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        
-        super.initSendable(builder);
-        
-        builder.addDoubleProperty(
-            "Left Upper Motor Speed",
-            this.leftUpperMotorController::get,
-            null
-        );
-        
-        builder.addDoubleProperty(
-            "Right Lower Motor Speed",
-            this.rightLowerMotorController::get,
-            null
-        );
-        
-    }
-    
     public class Commands {
         
         public Command intake() {
