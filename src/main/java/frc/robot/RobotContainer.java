@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.auton.BasicAuton;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
+import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -72,42 +73,12 @@ public class RobotContainer {
 	
 	public void initTeleop() {
 		
-		this.subsystemController.a().whileTrue(this.shooter.commands.shoot());
-		this.subsystemController.y().whileTrue(this.intake.commands.intake());
-		this.subsystemController.x().onTrue(this.arm.commands.rotateToAngle(55));
-		this.subsystemController.x().onFalse(this.arm.commands.stop());
-		this.subsystemController.b().onTrue(this.arm.commands.rotateToAngle(95));
-		this.subsystemController.b().onFalse(this.arm.commands.stop());
-		this.subsystemController.leftBumper().whileTrue(this.arm.commands.lowerArm());
-		this.subsystemController.rightBumper().whileTrue(this.arm.commands.raiseArm());
-		
-		double intakeTriggerThreshold = 0.5;
-		
-		this.subsystemController.leftTrigger(intakeTriggerThreshold).whileTrue(this.intake.commands.outtake());
-		this.subsystemController.rightTrigger(intakeTriggerThreshold).whileTrue(this.intake.commands.intake());
-		this.driveController.leftTrigger(intakeTriggerThreshold).whileTrue(this.intake.commands.outtake());
-		this.driveController.rightTrigger(intakeTriggerThreshold).whileTrue(this.intake.commands.intake());
-		
-		double deadband = 0.02;
-		double power = 2;
-		
-		Supplier<Point> driveXYSupplier = () -> new Point(
-			-ControlsUtilities.signedPower(this.driveController.getLeftY(), power),
-			-ControlsUtilities.signedPower(this.driveController.getLeftX(), power)
+		(new StandardTeleoperativeControlsScheme()).configureControls(
+			this,
+			this.driveController,
+			this.subsystemController
 		);
 		
-		driveXYSupplier = ControlsTransformsUtilities.applyCircularDeadband(
-			driveXYSupplier,
-			deadband
-		);
-		
-		this.swerveSubsystem.setDefaultCommand(
-			this.swerveSubsystem.commands.drive(
-				driveXYSupplier,
-				ControlsTransformsUtilities.signedPower(this.driveController::getRightX, power)
-			)
-		);
-	
 	}
 	
 	public Command getTestCommand() {
