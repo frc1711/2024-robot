@@ -15,34 +15,7 @@ public class TestModeControlsScheme implements ControlsScheme {
 		CommandXboxController controller2
 	) {
 		
-		Arm arm = robotContainer.arm;
-		
-		controller1.leftBumper().whileTrue(arm.commands.lowerArm());
-		controller1.rightBumper().whileTrue(arm.commands.raiseArm());
-		
-		controller1.x().whileTrue(
-			arm.commands.runSysIdDynamicVoltageTest(
-				SysIdRoutine.Direction.kForward
-			)
-		);
-		
-		controller1.y().whileTrue(
-			arm.commands.runSysIdQuasistaticVoltageTest(
-				SysIdRoutine.Direction.kForward
-			)
-		);
-		
-		controller1.a().whileTrue(
-			arm.commands.runSysIdDynamicVoltageTest(
-				SysIdRoutine.Direction.kReverse
-			)
-		);
-		
-		controller1.b().whileTrue(
-			arm.commands.runSysIdQuasistaticVoltageTest(
-				SysIdRoutine.Direction.kReverse
-			)
-		);
+	
 		
 	}
 	
