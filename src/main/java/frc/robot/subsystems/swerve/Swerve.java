@@ -7,6 +7,8 @@ package frc.robot.subsystems.swerve;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,17 +18,21 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.constants.CANDevice;
 import frc.robot.RobotContainer;
 import frc.robot.constants.DoublePreference;
 import frc.robot.constants.RobotDimensions;
 import frc.robot.util.Point;
 
+import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -35,8 +41,7 @@ import static edu.wpi.first.units.Units.*;
 
 public class Swerve extends SubsystemBase {
 	
-	// TODO make protected once it is no longer needed for testing
-	public final SwerveModule frontLeftSwerveModule;
+	protected final SwerveModule frontLeftSwerveModule;
 	
 	protected final SwerveModule frontRightSwerveModule;
 	
@@ -51,10 +56,14 @@ public class Swerve extends SubsystemBase {
 	protected final SwerveDriveOdometry swerveDriveOdometry;
 	
 	protected final SwerveModulePosition[] modulePositions;
+
+	protected final Consumer<SwerveModuleState[]> moduleStates;
 	
 	protected final AHRS gyro;
 	
 	protected final SwerveDriveKinematics kinematics;
+
+	protected final HolonomicDriveController controller;
 	
 	public final StartPosition startPosition;
 	
@@ -165,6 +174,12 @@ public class Swerve extends SubsystemBase {
 		);
 		swerveDriveOdometry = new SwerveDriveOdometry(kinematics, getGyroRotation(), modulePositions, new Pose2d(startPosition.translation, getGyroRotation()));
 		
+		controller = new HolonomicDriveController(
+			new PIDController(0.01, 0, 0),
+			new PIDController(0.01, 0, 0),
+			new ProfiledPIDController(0.01, 0, 0, new Constraints(2 * Math.PI, .5))
+		);
+
 		// Create a new sendable field for each module
 //		RobotContainer.putSendable("Analysis Tab", "fl-Module", frontLeftSwerveModule);
 //		RobotContainer.putSendable("Analysis Tab", "fr-Module", frontRightSwerveModule);
@@ -327,7 +342,7 @@ public class Swerve extends SubsystemBase {
 	
 	@Override
 	public void initSendable(SendableBuilder builder) {
-		
+	
 //		builder.addDoubleProperty(
 //			"P term",
 //			this.frontLeftSwerveModule.steerPIDController::getP,
@@ -362,7 +377,7 @@ public class Swerve extends SubsystemBase {
 //				)
 //			)
 //		);
-		
+
 //		builder.addDoubleProperty("Swerve Odometry X Component", () -> updateOdometry().getX(), null);
 //		builder.addDoubleProperty("Swerve Odometry Y Component", () -> updateOdometry().getY(), null);
 		
@@ -405,6 +420,20 @@ public class Swerve extends SubsystemBase {
 				);
 				
 			});
+			
+		}
+		
+		public SwerveControllerCommand drive(Trajectory trajectory, Rotation2d rotation) {
+			
+			return new SwerveControllerCommand(
+				trajectory,
+				Swerve.this::getRobotPose,
+				Swerve.this.kinematics,
+				Swerve.this.controller,
+				() -> rotation,
+				(outputModuleStates) -> {},
+				Swerve.this
+			);
 			
 		}
 		

@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.auton.BasicAuton;
+import frc.robot.commands.auton.Fellowship;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
 import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
@@ -114,7 +114,7 @@ public class RobotContainer {
 		
 		autonChooser.addOption(
 			"Basic Auton",
-			() -> new BasicAuton(swerveSubsystem, shooter, intake, arm)
+			() -> new Fellowship(swerveSubsystem, shooter, intake, arm)
 		);
 		
 		autonChooser.addOption(

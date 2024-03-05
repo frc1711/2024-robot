@@ -4,18 +4,22 @@
 
 package frc.robot.commands.auton.framework.basic;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake;
 
 public class IntakeAuton extends Command {
 	
 	Intake intakeSubsystem;
+
+	Timer timer;
 	
 	public IntakeAuton(Intake intakeSubsystem) {
 		
 		this.intakeSubsystem = intakeSubsystem;
 		addRequirements(intakeSubsystem);
 		
+		timer = new Timer();
 	}
 	
 	// Called when the command is initially scheduled.
@@ -23,6 +27,8 @@ public class IntakeAuton extends Command {
 	public void initialize() {
 		
 		intakeSubsystem.stop();
+
+		timer.start();
 		
 	}
 	
@@ -46,7 +52,7 @@ public class IntakeAuton extends Command {
 	@Override
 	public boolean isFinished() {
 		
-		return intakeSubsystem.isHoldingNote();
+		return intakeSubsystem.isHoldingNote() || timer.hasElapsed(3);
 		
 	}
 	
