@@ -6,6 +6,7 @@ package frc.robot.subsystems.swerve;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,17 +30,21 @@ import frc.robot.util.Point;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-// import frc.robot.util.Odometry;
+
+import static edu.wpi.first.units.Units.*;
 
 public class Swerve extends SubsystemBase {
 	
-	protected final SwerveModule frontLeftSwerveModule;
+	// TODO make protected once it is no longer needed for testing
+	public final SwerveModule frontLeftSwerveModule;
 	
 	protected final SwerveModule frontRightSwerveModule;
 	
 	protected final SwerveModule rearLeftSwerveModule;
 	
 	protected final SwerveModule rearRightSwerveModule;
+	
+	protected final PIDController headingPIDController;
 	
 	// private Odometry odometry;
 	
@@ -138,6 +143,8 @@ public class Swerve extends SubsystemBase {
 			)
 		);
 		
+		this.headingPIDController = new PIDController(0.25, 0, 0);
+		
 		this.gyro = new AHRS();
 		
 		this.startPosition = startPosition;
@@ -159,15 +166,15 @@ public class Swerve extends SubsystemBase {
 		swerveDriveOdometry = new SwerveDriveOdometry(kinematics, getGyroRotation(), modulePositions, new Pose2d(startPosition.translation, getGyroRotation()));
 		
 		// Create a new sendable field for each module
-		RobotContainer.putSendable("Analysis Tab", "fl-Module", frontLeftSwerveModule);
-		RobotContainer.putSendable("Analysis Tab", "fr-Module", frontRightSwerveModule);
-		RobotContainer.putSendable("Analysis Tab", "rl-Module", rearLeftSwerveModule);
-		RobotContainer.putSendable("Analysis Tab", "rr-Module", rearRightSwerveModule);
-		RobotContainer.putSendable("Analysis Tab", "gyro", gyro);
+//		RobotContainer.putSendable("Analysis Tab", "fl-Module", frontLeftSwerveModule);
+//		RobotContainer.putSendable("Analysis Tab", "fr-Module", frontRightSwerveModule);
+//		RobotContainer.putSendable("Analysis Tab", "rl-Module", rearLeftSwerveModule);
+//		RobotContainer.putSendable("Analysis Tab", "rr-Module", rearRightSwerveModule);
+//		RobotContainer.putSendable("Analysis Tab", "gyro", gyro);
 		// RobotContainer.putSendable("kinematics", odometry);
 		
 		// Create a new sendable command to reset the encoders
-		RobotContainer.putCommand("Reset Encoders", new InstantCommand(this::resetEncoders, this), true);
+		RobotContainer.putCommand("Reset Encoders", new InstantCommand(this::calibrateSteeringHeadings, this), true);
 		RobotContainer.putCommand("Reset Gyro", new InstantCommand(this::resetGyro, this), true);
 		RobotContainer.putCommand("Reset Odometry", new InstantCommand(this::resetOdometry, this), true);
 		
@@ -230,7 +237,7 @@ public class Swerve extends SubsystemBase {
 	
 	public void resetGyro() {
 		
-		gyro.reset();
+		this.gyro.reset();
 		swerveDriveOdometry.resetPosition(getGyroRotation(), modulePositions, updateOdometry());
 		
 	}
@@ -247,22 +254,19 @@ public class Swerve extends SubsystemBase {
 		
 	}
 	
-	public float getGyroPitch() {
-		
-		return gyro.getPitch();
-		
-	}
-	
 	/**
 	 * Runs the resetEncoder() method on each module
 	 */
-	public void resetEncoders() {
+	public void calibrateSteeringHeadings() {
 		
-		this.getModuleStream().forEach(SwerveModule::resetEncoder);
+		this.getModuleStream().forEach(
+			(swerveModule) ->
+				swerveModule.calibrateSteeringHeading(Degrees.of(0))
+		);
 		
 	}
 	
-	public void drive(double x, double y, double rotation) {
+	public void driveFieldRelative(double x, double y, double rotation) {
 		
 		this.applyFieldRelativeChassisSpeeds(
 			new ChassisSpeeds(x, y, rotation)
@@ -270,7 +274,15 @@ public class Swerve extends SubsystemBase {
 		
 	}
 	
-	public void applyChassisSpeeds(ChassisSpeeds desiredVelocity, double speedMultiplier) {
+	public void driveRobotRelative(double x, double y, double rotation) {
+		
+		this.applyChassisSpeeds(
+			new ChassisSpeeds(x, y, rotation)
+		);
+		
+	}
+	
+	public void applyChassisSpeeds(ChassisSpeeds desiredVelocity) {
 		
 		SwerveModuleState[] moduleStates =
 			kinematics.toSwerveModuleStates(desiredVelocity);
@@ -305,6 +317,10 @@ public class Swerve extends SubsystemBase {
 	@Override
 	public void periodic() {
 		
+		this.headingPIDController.calculate(
+			this.getGyroRotation().getDegrees()
+		);
+		
 		updateOdometry();
 		
 	}
@@ -312,30 +328,81 @@ public class Swerve extends SubsystemBase {
 	@Override
 	public void initSendable(SendableBuilder builder) {
 		
-		builder.addDoubleProperty("Swerve Odometry X Component", () -> updateOdometry().getX(), null);
-		builder.addDoubleProperty("Swerve Odometry Y Component", () -> updateOdometry().getY(), null);
+//		builder.addDoubleProperty(
+//			"P term",
+//			this.frontLeftSwerveModule.steerPIDController::getP,
+//			(kP) -> this.getModuleStream().forEach(
+//				(module) -> module.steerPIDController.setP(kP)
+//			)
+//		);
+//
+//		builder.addDoubleProperty(
+//			"D term",
+//			this.frontLeftSwerveModule.steerPIDController::getD,
+//			(kD) -> this.getModuleStream().forEach(
+//				(module) -> module.steerPIDController.setD(kD)
+//			)
+//		);
+//
+//		builder.addDoubleProperty(
+//			"Steering tolerance",
+//			this.frontLeftSwerveModule.steerPIDController::getPositionTolerance,
+//			(tolerance) -> this.getModuleStream().forEach(
+//				(module) -> module.steerPIDController.setTolerance(tolerance)
+//			)
+//		);
+//
+//		builder.addDoubleProperty(
+//			"Steering kS",
+//			() -> this.frontLeftSwerveModule.steerFeedforward.ks,
+//			(kS) -> this.getModuleStream().forEach(
+//				(module) -> module.steerFeedforward = new SimpleMotorFeedforward(
+//					kS,
+//					module.steerFeedforward.kv
+//				)
+//			)
+//		);
+		
+//		builder.addDoubleProperty("Swerve Odometry X Component", () -> updateOdometry().getX(), null);
+//		builder.addDoubleProperty("Swerve Odometry Y Component", () -> updateOdometry().getY(), null);
 		
 	}
 	
 	public class Commands {
 		
-		public Command drive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rotation) {
+		public Command resetGyro() {
 			
-			return Swerve.this.run(() -> Swerve.this.drive(
-				x.getAsDouble(),
-				y.getAsDouble(),
-				rotation.getAsDouble()
-			));
+			return Swerve.this.runOnce(Swerve.this::resetGyro);
 			
 		}
 		
-		public Command drive(Supplier<Point> xy, DoubleSupplier rotation) {
+		public Command driveFieldRelative(Supplier<Point> xy, DoubleSupplier rotation) {
 			
 			return Swerve.this.run(() -> {
 				
 				Point xyPoint = xy.get();
 				
-				Swerve.this.drive(xyPoint.x, xyPoint.y, rotation.getAsDouble());
+				Swerve.this.driveFieldRelative(
+					xyPoint.x,
+					xyPoint.y,
+					rotation.getAsDouble()
+				);
+				
+			});
+			
+		}
+		
+		public Command driveRobotRelative(Supplier<Point> xy, DoubleSupplier rotation) {
+			
+			return Swerve.this.run(() -> {
+				
+				Point xyPoint = xy.get();
+				
+				Swerve.this.driveRobotRelative(
+					xyPoint.x,
+					xyPoint.y,
+					rotation.getAsDouble()
+				);
 				
 			});
 			
