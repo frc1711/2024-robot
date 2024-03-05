@@ -36,22 +36,18 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 		controller2.a().whileTrue(shooter.shoot());
 		
 		robotContainer.arm.setDefaultCommand(
-			arm.rotateToAngle(Degrees.of(0))
+			arm.holdAtRestingAngle(Degrees.of(0))
 		);
 		
 		// Move the arm towards the amp shooting angle while the 'B' button is
 		// pressed on controller #2.
-		controller2.b().whileTrue(arm.rotateToAngle(Degrees.of(95)));
+		controller2.b().whileTrue(arm.holdAtAngle(Degrees.of(100)));
 		
 		// Move the arm towards the speaker shooting angle while the 'X' button
 		// is pressed on controller #2.
-		controller2.x().whileTrue(arm.rotateToAngle(Degrees.of(55)));
+		controller2.x().whileTrue(arm.holdAtAngle(Degrees.of(55)));
 		
-		// Lower the arm while the left bumper is pressed on controller #2.
-		controller2.leftBumper().whileTrue(arm.lowerArm());
-		
-		// Raise the arm while the right bumper is pressed on controller #2.
-		controller2.rightBumper().whileTrue(arm.raiseArm());
+		controller2.y().whileTrue(shooter.shoot(0.1));
 		
 		// Configure controls common to both controllers...
 		Stream.of(controller1, controller2).forEach((controller) -> {
