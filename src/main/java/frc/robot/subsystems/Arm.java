@@ -9,11 +9,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.units.*;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
@@ -22,28 +21,25 @@ import frc.robot.constants.CANDevice;
 import frc.robot.constants.DIODevice;
 import frc.robot.constants.DoublePreference;
 import frc.robot.util.ControlsUtilities;
+import frc.robot.devicewrappers.RaptorsSparkAbsoluteEncoder;
 
 import java.util.stream.Stream;
 
+import static edu.wpi.first.units.Units.*;
+
 public class Arm extends PIDSubsystem {
 	
-	protected static final double ENCODER_POSITION_CONVERSION_FACTOR = 360;
-	
-	protected static final double ENCODER_CALIBRATION_ANGLE = 90;
-	
-	protected static final double MIN_ARM_ANGLE = 30;
-	
-	protected static final double MAX_ARM_ANGLE = 95;
+	protected static final Unit<Angle> ANGLE_UNITS = Degrees;
 	
 	protected final CANSparkMax leftMotorController;
 
 	protected final CANSparkMax rightMotorController;
+	
+	protected final RaptorsSparkAbsoluteEncoder leftEncoder;
+	
+	protected final RaptorsSparkAbsoluteEncoder rightEncoder;
 
 	protected final DigitalInput leftUpperLimitSwitch;
-
-	protected final SparkAbsoluteEncoder leftEncoder;
-
-	protected final SparkAbsoluteEncoder rightEncoder;
 
 //	protected final DigitalInput rightUpperLimitSwitch;
 
@@ -51,15 +47,19 @@ public class Arm extends PIDSubsystem {
 
 //	protected final DigitalInput rightLowerLimitSwitch;
 	
+	protected Measure<Angle> restingAngle;
+	
 	public final Arm.Commands commands;
 	
 	public final Arm.Triggers triggers;
 	
 	public Arm() {
 		
-		super(new PIDController(0.15, 0, 0.05));
-		
-		this.getController().setTolerance(3);
+		super(new PIDController(
+			DoublePreference.ARM_PID_KP.get(),
+			0,
+			DoublePreference.ARM_PID_KD.get()
+		));
 
 		this.leftMotorController = new CANSparkMax(
 			CANDevice.LEFT_PIVOT_MOTOR_CONTROLLER.id,
@@ -74,13 +74,32 @@ public class Arm extends PIDSubsystem {
 		this.leftMotorController.restoreFactoryDefaults();
 		this.rightMotorController.restoreFactoryDefaults();
 		
-		this.leftEncoder = leftMotorController.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
-		this.rightEncoder = rightMotorController.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+		this.leftEncoder = new RaptorsSparkAbsoluteEncoder(
+			this.leftMotorController.getAbsoluteEncoder(
+				SparkAbsoluteEncoder.Type.kDutyCycle
+			),
+			DoublePreference.ARM_LEFT_ENCODER_ZERO_OFFSET,
+			Degrees,
+			false
+		);
+		
+		this.rightEncoder = new RaptorsSparkAbsoluteEncoder(
+			this.rightMotorController.getAbsoluteEncoder(
+				SparkAbsoluteEncoder.Type.kDutyCycle
+			),
+			DoublePreference.ARM_RIGHT_ENCODER_ZERO_OFFSET,
+			Degrees,
+			true
+		);
+		
 
 		leftUpperLimitSwitch = new DigitalInput(DIODevice.LEFT_UPPER_ARM_LIMIT_SWITCH.id);
 //		rightUpperLimitSwitch = new DigitalInput(DIODevice.RIGHT_UPPER_ARM_LIMIT_SWITCH.id);
 //		leftLowerLimitSwitch = new DigitalInput(DIODevice.LEFT_LOWER_ARM_LIMIT_SWITCH.id);
 //		rightLowerLimitSwitch = new DigitalInput(DIODevice.RIGHT_LOWER_ARM_LIMIT_SWITCH.id);
+		
+		this.commands = new Arm.Commands();
+		this.triggers = new Arm.Triggers();
 		
 		this.leftMotorController.setInverted(false);
 		this.rightMotorController.setInverted(true);
@@ -112,31 +131,16 @@ public class Arm extends PIDSubsystem {
 			
 		});
 		
-		this.leftEncoder.setInverted(false);
-		this.rightEncoder.setInverted(true);
+		PIDController armAnglePIDController = this.getController();
 		
-		this.streamEncoders().forEach((encoder) -> {
-			
-			encoder.setPositionConversionFactor(
-				Arm.ENCODER_POSITION_CONVERSION_FACTOR
-			);
-			
-		});
+		armAnglePIDController.setTolerance(
+			DoublePreference.ARM_PID_TOLERANCE_DEGREES.get()
+		);
 		
-		DoublePreference leftEncoderZeroOffsetPreference = DoublePreference.ARM_LEFT_ENCODER_ZERO_OFFSET;
-		DoublePreference rightEncoderZeroOffsetPreference = DoublePreference.ARM_RIGHT_ENCODER_ZERO_OFFSET;
-		
-		this.leftEncoder.setZeroOffset(Preferences.getDouble(
-			leftEncoderZeroOffsetPreference.key,
-			leftEncoderZeroOffsetPreference.defaultValue
-		));
-		
-		this.rightEncoder.setZeroOffset(Preferences.getDouble(
-			rightEncoderZeroOffsetPreference.key,
-			rightEncoderZeroOffsetPreference.defaultValue
-		));
-		
-		this.commands = new Arm.Commands();
+		// Set the natural resting angle of the arm.
+		armAnglePIDController.setSetpoint(
+			DoublePreference.ARM_MIN_ANGLE_DEGREES.get()
+		);
 		
 		Shuffleboard.getTab("Subsystems").add(this.commands.calibrateArm());
 		
@@ -145,17 +149,26 @@ public class Arm extends PIDSubsystem {
 	@Override
 	protected double getMeasurement() {
 		
-		return this.getAngle();
+		return this.getAngle().in(Arm.ANGLE_UNITS);
 		
 	}
 	
 	@Override
 	protected void useOutput(double output, double setpoint) {
 		
-		double currentAngle = this.getAngle();
+		if (this.getController().atSetpoint()) {
+			
+			this.streamMotorControllers().forEach(
+				(motorController) -> motorController.setVoltage(0)
+			);
+			return;
+			
+		}
+		
+		double currentAngle = this.getAngle().in(Arm.ANGLE_UNITS);
 		boolean wouldOverrun = (
-			(output > 0 && currentAngle > Arm.MAX_ARM_ANGLE) ||
-			(output < 0 && currentAngle < Arm.MIN_ARM_ANGLE)
+			(output > 0 && currentAngle > DoublePreference.ARM_MAX_ANGLE_DEGREES.get()) ||
+			(output < 0 && currentAngle < DoublePreference.ARM_MIN_ANGLE_DEGREES.get())
 		);
 		double effectiveOutput = wouldOverrun ? 0 : output;
 		
@@ -171,50 +184,24 @@ public class Arm extends PIDSubsystem {
 
 	}
 
-	protected Stream<SparkAbsoluteEncoder> streamEncoders() {
+	protected Stream<RaptorsSparkAbsoluteEncoder> streamEncoders() {
 
 		return Stream.of(this.leftEncoder, this.rightEncoder);
 
 	}
 	
-	protected static void calibrateEncoder(
-		SparkAbsoluteEncoder encoder,
-		DoublePreference zeroOffsetPreference
-	) {
-		
-		// Calculate the new zero offset relative to the existing one.
-		double newZeroOffset = encoder.getZeroOffset() + encoder.getPosition();
-		
-		// Subtract the angle at which the arm is calibrated.
-		newZeroOffset -= Arm.ENCODER_CALIBRATION_ANGLE;
-		
-		newZeroOffset = ControlsUtilities.normalizeToRange(
-			newZeroOffset,
-			0,
-			Arm.ENCODER_POSITION_CONVERSION_FACTOR
-		);
-		
-		Preferences.setDouble(zeroOffsetPreference.key, newZeroOffset);
-		
-		encoder.setZeroOffset(newZeroOffset);
-		
-	}
-	
 	/**
-	 * Resets the 'zero angle' of the pivot encoders.
+	 * Calibrates the arm by informing the encoders that their current angle is
+	 * the angle at which the arm is calibrated.
 	 *
-	 * Should be used when the arm is level with the chassis of the robot.
+	 * @see DoublePreference#ARM_CALIBRATION_ANGLE_DEGREES
 	 */
 	public void calibrateArm() {
 		
-		Arm.calibrateEncoder(
-			this.leftEncoder,
-			DoublePreference.ARM_LEFT_ENCODER_ZERO_OFFSET
-		);
-		
-		Arm.calibrateEncoder(
-			this.rightEncoder,
-			DoublePreference.ARM_RIGHT_ENCODER_ZERO_OFFSET
+		this.streamEncoders().forEach(
+			(encoder) -> encoder.calibrate(
+				Degrees.of(DoublePreference.ARM_CALIBRATION_ANGLE_DEGREES.get())
+			)
 		);
 		
 	}
@@ -252,13 +239,15 @@ public class Arm extends PIDSubsystem {
 	
 	public boolean isArmOutsideUpperAngularLimit() {
 		
-		return this.getAngle() > Arm.MAX_ARM_ANGLE;
+		return this.getAngle().in(Degrees) >
+			DoublePreference.ARM_MAX_ANGLE_DEGREES.get();
 		
 	}
 	
 	public boolean isArmOutsideLowerAngularLimit() {
 		
-		return this.getAngle() < Arm.MIN_ARM_ANGLE;
+		return this.getAngle().in(Degrees) <
+			DoublePreference.ARM_MIN_ANGLE_DEGREES.get();
 		
 	}
 	
@@ -311,19 +300,30 @@ public class Arm extends PIDSubsystem {
 		
 	}
 	
-	public double getAngle() {
+	public Measure<Angle> getAngle() {
 
-		return this.streamEncoders()
-			.mapToDouble(SparkAbsoluteEncoder::getPosition)
-			.average()
-			.orElse(0);
+		return BaseUnits.Angle.of(
+			this.streamEncoders()
+				.mapToDouble((encoder) -> encoder.getPosition().baseUnitMagnitude())
+				.average()
+				.orElse(0)
+		);
         
+	}
+	
+	public void setRestingAngle(Measure<Angle> angle) {
+		
+		this.restingAngle = Degrees.of(ControlsUtilities.applyClamp(
+			angle.in(Degrees),
+			DoublePreference.ARM_MIN_ANGLE_DEGREES.get(),
+			DoublePreference.ARM_MAX_ANGLE_DEGREES.get()
+		));
+		
 	}
 	
 	public void rotate(boolean shouldRaise) {
 		
-		DoublePreference preference = DoublePreference.ARM_SPEED;
-		double speed = Preferences.getDouble(preference.key, preference.defaultValue);
+		double speed = DoublePreference.ARM_SPEED.get();
 		
 		this.rotate(shouldRaise ? speed : -speed);
 		
@@ -337,12 +337,12 @@ public class Arm extends PIDSubsystem {
 
 	}
 	
-	public void rotateToAngle(double degrees) {
+	public void rotateToAngle(Measure<Angle> angle) {
 		
-		double effectiveDegrees = MathUtil.clamp(
-			degrees,
-			Arm.MIN_ARM_ANGLE,
-			Arm.MAX_ARM_ANGLE
+		double effectiveDegrees = ControlsUtilities.applyClamp(
+			angle.in(Degrees),
+			DoublePreference.ARM_MIN_ANGLE_DEGREES.get(),
+			DoublePreference.ARM_MAX_ANGLE_DEGREES.get()
 		);
 		
 		this.setSetpoint(effectiveDegrees);
@@ -374,7 +374,7 @@ public class Arm extends PIDSubsystem {
 			return Arm.this.startEnd(
 				() -> Arm.this.rotate(true),
 				Arm.this::stop
-			).onlyWhile(Arm.this::isArmInsideLimits)
+			).onlyWhile(() -> !Arm.this.isArmOutsideUpperLimit())
 				.withName("Raise Arm");
 			
 		}
@@ -384,15 +384,104 @@ public class Arm extends PIDSubsystem {
 			return Arm.this.startEnd(
 				() -> Arm.this.rotate(false),
 				Arm.this::stop
-			).onlyWhile(Arm.this::isArmInsideLimits).withName("Lower Arm");
+			).onlyWhile(() -> !Arm.this.isArmOutsideLowerLimit())
+				.withName("Lower Arm");
 			
 		}
 		
-		public Command rotateToAngle(double degrees) {
+		/**
+		 * Returns a Command that moves the arm to the resting angle and does
+		 * not finish until interrupted.
+		 *
+		 * @return A Command that moves the arm to the resting angle and does
+		 * not finish until interrupted.
+		 */
+		public Command holdAtRestingAngle() {
 			
-			return Arm.this.run(
-				() -> Arm.this.rotateToAngle(degrees)
-			).until(Arm.this.getController()::atSetpoint);
+			return Arm.this.startEnd(
+				() -> Arm.this.rotateToAngle(Arm.this.restingAngle),
+				() -> {}
+			).handleInterrupt(Arm.this::stop);
+			
+		}
+		
+		/**
+		 * Returns a Command that sets the resting angle of the arm and moves to
+		 * the newly set resting angle, and remains active until interrupted.
+		 *
+		 * @param angle The angle to set as the new resting angle of the arm.
+		 * @return A Command that sets the resting angle of the arm and moves to
+		 * the newly set resting angle, and remains active until interrupted.
+		 */
+		public Command holdAtRestingAngle(Measure<Angle> angle) {
+			
+			return Arm.this.runOnce(
+				() -> Arm.this.setRestingAngle(angle)
+			).andThen(this.holdAtRestingAngle());
+			
+		}
+		
+		/**
+		 * Returns a Command that moves the arm to the resting angle and
+		 * finishes once the resting angle has been reached.
+		 *
+		 * @return A Command that moves the arm to the resting angle and
+		 * finishes once the resting angle has been reached.
+		 */
+		public Command goToRestingAngle() {
+			
+			return this.holdAtRestingAngle()
+				.until(Arm.this.triggers.armHasReachedSetpoint());
+			
+		}
+		
+		/**
+		 * Returns a Command that sets the resting angle of the arm and moves to
+		 * the newly set resting angle, finishing once the resting angle has
+		 * been reached.
+		 *
+		 * @param angle The angle to set as the new resting angle of the arm.
+		 * @return A Command that sets the resting angle of the arm and moves to
+		 * the newly set resting angle, finishing once the resting angle has
+		 * been reached.
+		 */
+		public Command goToRestingAngle(Measure<Angle> angle) {
+			
+			return Arm.this.runOnce(
+				() -> Arm.this.setRestingAngle(angle)
+			).andThen(this.goToRestingAngle());
+			
+		}
+		
+		/**
+		 * Returns a Command that moves the arm to the specified angle and does
+		 * not finish until interrupted.
+		 *
+		 * @param angle The angle to rotate the arm to.
+		 * @return A Command that moves the arm to the specified angle and does
+		 * not finish until interrupted.
+		 */
+		public Command holdAtAngle(Measure<Angle> angle) {
+			
+			return Arm.this.startEnd(
+				() -> Arm.this.rotateToAngle(angle),
+				() -> {}
+			).handleInterrupt(Arm.this::stop);
+			
+		}
+		
+		/**
+		 * Returns a Command that moves the arm to the specified angle and
+		 * finishes once the specified angle has been reached.
+		 *
+		 * @param angle The angle to rotate the arm to.
+		 * @return A Command that moves the arm to the specified angle and
+		 * finishes once the specified angle has been reached.
+		 */
+		public Command goToAngle(Measure<Angle> angle) {
+			
+			return this.holdAtAngle(angle)
+				.until(Arm.this.triggers.armHasReachedSetpoint());
 			
 		}
 		
