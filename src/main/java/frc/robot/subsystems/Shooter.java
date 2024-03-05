@@ -10,7 +10,9 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.CANDevice;
 import frc.robot.constants.DoublePreference;
 
@@ -24,6 +26,8 @@ public class Shooter extends SubsystemBase {
 	
 	public final Shooter.Commands commands;
 	
+	public final Shooter.Triggers triggers;
+	
 	public Shooter() {
 		
 		this.leftShooterMotorController = new CANSparkMax(
@@ -35,6 +39,9 @@ public class Shooter extends SubsystemBase {
 			CANDevice.RIGHT_SHOOTER_MOTOR_CONTROLLER.id,
 			MotorType.kBrushless
 		);
+		
+		this.commands = new Shooter.Commands();
+		this.triggers = new Shooter.Triggers();
 		
 		this.leftShooterMotorController.setInverted(true);
 		this.rightShooterMotorController.setInverted(false);
@@ -60,8 +67,6 @@ public class Shooter extends SubsystemBase {
 				pidController.setD(0);
 				
 			});
-		
-		this.commands = new Shooter.Commands();
 		
 	}
 	
@@ -100,6 +105,70 @@ public class Shooter extends SubsystemBase {
 			return Shooter.this.startEnd(
 				Shooter.this::shoot,
 				Shooter.this::stop
+			);
+			
+		}
+		
+		public Command shoot(double speed) {
+			
+			return Shooter.this.startEnd(
+				() -> Shooter.this.shoot(speed),
+				Shooter.this::stop
+			);
+			
+		}
+		
+		public Command spinUp() {
+			
+			return new FunctionalCommand(
+				Shooter.this::shoot,
+				() -> {},
+				(Boolean wasInterrupted) -> {
+					if (wasInterrupted) Shooter.this.stop();
+				},
+				() ->
+					Shooter.this.leftShooterMotorController.getAppliedOutput() >= 1 &&
+						Shooter.this.rightShooterMotorController.getAppliedOutput() >= 1,
+				Shooter.this
+			);
+			
+		}
+		
+		public Command spinUp(double speed) {
+			
+			return new FunctionalCommand(
+				() -> Shooter.this.shoot(speed),
+				() -> {},
+				(wasInterrupted) -> {},
+				() ->
+					Shooter.this.leftShooterMotorController.getAppliedOutput() >= 1 &&
+					Shooter.this.rightShooterMotorController.getAppliedOutput() >= 1,
+				Shooter.this
+			);
+			
+		}
+		
+		public Command stop() {
+			
+			return Shooter.this.runOnce(Shooter.this::stop);
+			
+		}
+		
+	}
+	
+	public class Triggers {
+		
+		public Trigger isAtSpeed() {
+			
+			return this.isAtSpeed(1);
+			
+		}
+		
+		public Trigger isAtSpeed(double speed) {
+			
+			return new Trigger(() ->
+				Shooter.this.leftShooterMotorController.getAppliedOutput() >= speed &&
+				Shooter.this.rightShooterMotorController.getAppliedOutput() >= speed
 			);
 			
 		}
