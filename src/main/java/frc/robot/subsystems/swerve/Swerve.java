@@ -363,7 +363,7 @@ public class Swerve extends SubsystemBase {
 			
 		}
 		
-		public SwerveControllerCommand drive(Trajectory trajectory, Rotation2d rotation) {
+		public SwerveControllerCommand drive(Trajectory trajectory, Rotation2d rotation) { //TODO: Figure out how consumers work
 
 			return new SwerveControllerCommand(trajectory, () -> Swerve.this.getRobotPose(), Swerve.this.kinematics, Swerve.this.controller, () -> rotation, Swerve.this.moduleStates, Swerve.this);
 		}

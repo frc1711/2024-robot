@@ -12,12 +12,18 @@ import frc.robot.subsystems.swerve.Swerve;
 public class TimedSwerveAuton extends Command {
 	
 	Swerve swerveSubsystem;
+
+	ChassisSpeeds speed;
+
+	double time;
 	
 	Timer timer;
 	
-	public TimedSwerveAuton(Swerve swerveSubsystem) {
+	public TimedSwerveAuton(Swerve swerveSubsystem, ChassisSpeeds speed, double time) {
 		
 		this.swerveSubsystem = swerveSubsystem;
+		this.speed = speed;
+		this.time = time;
 		timer = new Timer();
 		timer.start();
 		
@@ -36,7 +42,7 @@ public class TimedSwerveAuton extends Command {
 	public void execute() {
 		
 		swerveSubsystem.applyChassisSpeeds(
-			new ChassisSpeeds(1, 0, 0), 
+			speed, 
 			1
 		);
 		
@@ -55,7 +61,7 @@ public class TimedSwerveAuton extends Command {
 	@Override
 	public boolean isFinished() {
 		
-		return timer.hasElapsed(10);
+		return timer.hasElapsed(time);
 		
 	}
 	

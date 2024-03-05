@@ -21,15 +21,14 @@ import frc.robot.subsystems.swerve.Swerve;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class BasicAuton extends SequentialCommandGroup {
+public class Fellowship extends SequentialCommandGroup {
   
-  public BasicAuton(Swerve swerve, Shooter shooter, Intake intake, Arm arm) {
+  public Fellowship(Swerve swerve, Shooter shooter, Intake intake, Arm arm) {
     
     addCommands(
         arm.commands.rotateToAngle(55),
         new BellyUpSpeaker(arm, shooter, intake),
-        new OdometryAuton(swerve, new Pose2d(swerve.getRobotPose().getX() + 1, swerve.getRobotPose().getY(), swerve.getGyroRotation()), .5),
-        new ShooterAuton(shooter)
+        new OdometryAuton(swerve, new Pose2d(swerve.getRobotPose().getX() + 1, swerve.getRobotPose().getY(), swerve.getGyroRotation()), .5)
     );
     
   }

@@ -4,9 +4,12 @@
 
 package frc.robot.commands.auton.framework;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.commands.auton.framework.basic.IntakeAuton;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
+import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.swerve.Swerve;
 
@@ -15,14 +18,22 @@ import frc.robot.subsystems.swerve.Swerve;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class PickupAuton extends ParallelDeadlineGroup {
 	
+	double xVariable, yVariable;
+
+	Pose2d robotPose;
+
 	/**
 	 * Creates a new PickupAuton.
 	 */
 	public PickupAuton(Intake intake, Swerve swerve) {
 		
 		super(new IntakeAuton(intake));
+
+		xVariable = Math.cos(swerve.getGyroRotation().getRadians());
+		yVariable = Math.sin(swerve.getGyroRotation().getRadians());
+		robotPose = swerve.getRobotPose();
 		
-		addCommands(new OdometryAuton(swerve, swerve.getRobotPose(), 1));
+		addCommands(new TimedSwerveAuton(swerve, new ChassisSpeeds(xVariable, yVariable, 0), 2));
 		
 	}
 	
