@@ -7,6 +7,8 @@ package frc.robot.commands.auton.framework.basic;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 public class ArmAuton extends Command {
 	
 	Arm armSubsystem;
@@ -52,8 +54,8 @@ public class ArmAuton extends Command {
 	public boolean isFinished() {
 		
 		return (
-			(angleInDegrees - acceptableError) <= armSubsystem.getAngle() &&
-			armSubsystem.getAngle() <= (angleInDegrees + acceptableError)
+			(angleInDegrees - acceptableError) <= armSubsystem.getAngle().in(Degrees) &&
+			armSubsystem.getAngle().in(Degrees) <= (angleInDegrees + acceptableError)
 		);
 		
 	}
