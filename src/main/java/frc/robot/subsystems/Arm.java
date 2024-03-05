@@ -53,6 +53,8 @@ public class Arm extends PIDSubsystem {
 	
 	public final Arm.Commands commands;
 	
+	public final Arm.Triggers triggers;
+	
 	public Arm() {
 		
 		super(new PIDController(0.15, 0, 0.05));
