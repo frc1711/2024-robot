@@ -5,81 +5,109 @@
 package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.*;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DoublePreference;
+import frc.robot.devicewrappers.RaptorsSparkMaxNEO;
+import frc.robot.util.ControlsUtilities;
+
+import static edu.wpi.first.units.Units.*;
 
 public class SwerveModule extends SubsystemBase {
 	
-	CANcoder encoder;
+	protected static final Unit<Angle> ANGULAR_HEADING_UNITS = Degrees;
 	
-	CANSparkMax driveMotor;
+	protected static final Measure<Velocity<Angle>> STEER_SPEED = DegreesPerSecond.of(30);
 	
-	CANSparkMax steerMotor;
+	protected final RaptorsSparkMaxNEO steerMotorController;
 	
-	Translation2d motorMeters;
+	protected final RaptorsSparkMaxNEO driveMotorController;
 	
-	PIDController steerPID = new PIDController(.01, 0, 0);
+	public final CANcoder steerEncoder;
 	
-	RelativeEncoder driveEncoder;
+	protected final RelativeEncoder driveEncoder;
 	
-	double unoptimizedRotation;
+	public  SimpleMotorFeedforward steerFeedforward;
+
+//	protected final SimpleMotorFeedforward driveFeedforward;
 	
-	double optimizedRotation;
+	protected final PIDController steerPIDController;
 	
-	DoublePreference encoderOffsetPreference;
+	protected final PIDController drivePIDController;
 	
-	double encoderOffset;
+	protected final DoublePreference steeringEncoderOffsetPreference;
 	
-	double steerSpeed;
+	protected final Translation2d motorMeters;
 	
-	double driveSpeed;
-	
-	double drivePercent;
-	
-	double regulatedAngle;
-	
-	private CANSparkMax initializeMotor(int motorID) {
-		
-		CANSparkMax motor = new CANSparkMax(motorID, MotorType.kBrushless);
-		motor.setIdleMode(com.revrobotics.CANSparkBase.IdleMode.kBrake);
-		
-		return motor;
-		
-	}
-	
-	// private CANCoder initializeEncoder(int encoderID) {
-	// 	return new CANCoder(encoderID);
-	// }
+	public final SwerveModule.Commands commands;
 	
 	public SwerveModule(
-		int steerMotorID,
-		int driveMotorID,
-		int encoderID,
+		int steerMotorControllerCANID,
+		int driveMotorControllerCANID,
+		int encoderCANID,
 		DoublePreference encoderOffsetPreference,
 		Translation2d motorMeters
 	) {
 		
-		encoder = new CANcoder(encoderID);
-		driveMotor = initializeMotor(driveMotorID);
-		steerMotor = initializeMotor(steerMotorID);
-		driveEncoder = driveMotor.getEncoder();
-		driveEncoder.setPositionConversionFactor(1 / 6.12);
-		steerPID.enableContinuousInput(-180, 180);
+		this.steerMotorController =
+			new RaptorsSparkMaxNEO(steerMotorControllerCANID)
+				.inBrakeMode()
+				.withoutInvertedOutput()
+				.withSmartCurrentLimit(Amps.of(40));
+		
+		this.driveMotorController =
+			new RaptorsSparkMaxNEO(driveMotorControllerCANID)
+				.inBrakeMode()
+				.withInvertedOutput()
+				.withSmartCurrentLimit(Amps.of(40));
+		
+		this.steerEncoder = new CANcoder(encoderCANID);
+		this.driveEncoder = this.driveMotorController.getEncoder();
+		
+		// 0.005 volts/degree ~= 1.7 volts/rotation divided by 360 degrees/rotation
+		this.steerFeedforward = new SimpleMotorFeedforward(0.5, 0.005);
+//		this.driveFeedforward = new SimpleMotorFeedforward(0, 0);
+		
+		this.steerPIDController = new PIDController(
+			DoublePreference.SWERVE_STEER_PID_KP.get(),
+			0,
+			DoublePreference.SWERVE_STEER_PID_KD.get()
+		);
+		
+		this.drivePIDController = new PIDController(
+			DoublePreference.SWERVE_DRIVE_PID_KP.get(),
+			0,
+			DoublePreference.SWERVE_DRIVE_PID_KD.get()
+		);
+		
+		this.steeringEncoderOffsetPreference = encoderOffsetPreference;
 		this.motorMeters = motorMeters;
-		steerPID.setTolerance(1);
-		this.encoderOffsetPreference = encoderOffsetPreference;
-		this.setEncoderOffsetFromPreference();
+		this.commands = new SwerveModule.Commands();
+		
+		// Configure the steering encoder.
+		
+		this.driveEncoder.setPositionConversionFactor(1 / (2 * Math.PI));
+		
+		// Configure the steering PID controller.
+		
+		// This PID controller's reference is a measurement of the error between
+		// the actual current steering heading vs the setpoint, so the setpoint
+		// is always 0.
+		this.steerPIDController.setSetpoint(0);
+		this.steerPIDController.setTolerance(2);
+		this.steerPIDController.enableContinuousInput(-180, 180);
 		
 	}
 	
@@ -87,7 +115,7 @@ public class SwerveModule extends SubsystemBase {
 		
 		return new SwerveModulePosition(
 			driveEncoder.getPosition() * .1,
-			getEncoderRotation()
+			new Rotation2d(this.getSteeringHeading())
 		);
 		
 	}
@@ -100,62 +128,92 @@ public class SwerveModule extends SubsystemBase {
 		
 	}
 	
-	private double metersPerSecondToPercentage(double metersPerSecond) {
-		
-		return metersPerSecond;
-		
-	}
-	
-	public void setEncoderOffset(double encoderOffset) {
+	/**
+	 * Sets the current angular offset of the steering heading for this swerve
+	 * module.
+	 *
+	 * @param offset The new angular offset of the steering heading for this
+	 * swerve module.
+	 */
+	public void setSteeringEncoderOffset(Measure<Angle> offset) {
 		
 		Preferences.setDouble(
-			this.encoderOffsetPreference.key,
-			encoderOffset
-		);
-		
-		this.encoderOffset = encoderOffset;
-		
-	}
-	
-	public void setEncoderOffsetFromPreference() {
-		
-		this.encoderOffset = Preferences.getDouble(
-			this.encoderOffsetPreference.key,
-			this.encoderOffsetPreference.defaultValue
+			this.steeringEncoderOffsetPreference.key,
+			offset.in(SwerveModule.ANGULAR_HEADING_UNITS)
 		);
 		
 	}
 	
 	/**
-	 * Sets the encoderOffset to the current value of the CANcoder. This value
-	 * is later used to set a new zero position for the encoder.
+	 * Returns the current angular offset of the steering heading for this
+	 * swerve module.
+	 *
+	 * @return The current angular offset of the steering heading for this
+	 * swerve module.
 	 */
-	public void resetEncoder() {
+	public Measure<Angle> getSteeringEncoderOffset() {
 		
-		this.setEncoderOffset(
-			encoder.getAbsolutePosition().getValueAsDouble() * 360
-		);
-		
-	}
-	
-	public double getDriveMotorPercentage() {
-		
-		return drivePercent;
+		return Degrees.of(this.steeringEncoderOffsetPreference.get());
 		
 	}
 	
 	/**
-	 * Uses the encoder offset, which is set using the resetEncoders() method,
-	 * to determine the current position of the CANcoder.
+	 * Calibrates the steering heading for this swerve module such that it will
+	 * return the given angle in its current physical position after this method
+	 * is called.
+	 *
+	 * @param currentHeading The heading to calibrate this swerve module at.
 	 */
-	public Rotation2d getEncoderRotation() {
+	public void calibrateSteeringHeading(Measure<Angle> currentHeading) {
 		
-		regulatedAngle = (encoder.getAbsolutePosition().getValueAsDouble() * 360) - encoderOffset;
+		this.setSteeringEncoderOffset(
+			this.getSteeringEncoderOffset()
+				.minus(this.getSteeringHeading().minus(currentHeading))
+		);
 		
-		if (regulatedAngle < -180) regulatedAngle += 360;
-		else if (regulatedAngle > 180) regulatedAngle -= 360;
+	}
+	
+	/**
+	 * Returns the current heading of this swerve module, oriented in the
+	 * standard FRC 'northwest-up' ('NWU') coordinate system.
+	 *
+	 * @return The current heading of this swerve module.
+	 */
+	public Measure<Angle> getSteeringHeading() {
 		
-		return Rotation2d.fromDegrees(regulatedAngle);
+		// Get the raw heading value from the CANcoder.
+		Measure<Angle> rawSteeringAngle = Rotations.of(
+			this.steerEncoder.getAbsolutePosition().getValueAsDouble()
+		);
+		
+		// Correct for the encoder offset.
+		Measure<Angle> correctedSteeringAngle = rawSteeringAngle.plus(
+			Degrees.of(this.steeringEncoderOffsetPreference.get())
+		);
+		
+		// Normalize the steering angle value to the range [-180, 180].
+		return Degrees.of(
+			ControlsUtilities.normalizeToRange(
+				correctedSteeringAngle.in(Degrees),
+				-180,
+				180
+			)
+		);
+		
+	}
+	
+	public Measure<Angle> getSteeringHeadingError() {
+		
+		Measure<Angle> steerHeadingError =
+			this.getSteeringHeading().minus(Degrees.of(
+				this.steerPIDController.getSetpoint()
+			));
+		
+		return Degrees.of(ControlsUtilities.normalizeToRange(
+			steerHeadingError.in(Degrees),
+			-180,
+			180
+		));
 		
 	}
 	
@@ -168,54 +226,63 @@ public class SwerveModule extends SubsystemBase {
 	 */
 	public void update(SwerveModuleState desiredState) {
 		
-		unoptimizedRotation = desiredState.angle.getDegrees();
+		Measure<Angle> currentSteeringHeading = this.getSteeringHeading();
 		
 		SwerveModuleState optimizedState = SwerveModuleState.optimize(
 			desiredState,
-			getEncoderRotation()
+			new Rotation2d(currentSteeringHeading)
 		);
 		
-		optimizedRotation = optimizedState.angle.getDegrees();
-		
-		double encoderRotation = getEncoderRotation().getDegrees();
-		double desiredRotation = optimizedState.angle.getDegrees();
-		double angularTolerance = 5.0;
-		
-		if ((Math.abs(encoderRotation - desiredRotation) < angularTolerance)) {
-			
-			this.steerSpeed = 0;
-			
-		} else {
-			
-			this.steerSpeed = steerPID.calculate(
-				encoderRotation,
-				desiredRotation
-			);
-			
-		}
-		
-		this.drivePercent = metersPerSecondToPercentage(
-			optimizedState.speedMetersPerSecond * speedMultiplier
+		this.steerPIDController.setSetpoint(optimizedState.angle.getDegrees());
+		this.drivePIDController.setSetpoint(
+			optimizedState.speedMetersPerSecond
 		);
-		
-		this.driveSpeed = optimizedState.speedMetersPerSecond;
-		
-		driveMotor.set(this.drivePercent);
-		steerMotor.set(this.steerSpeed);
-		
-	}
-	
-	public void stop() {
-		
-		driveMotor.set(0);
-		steerMotor.set(0);
 		
 	}
 	
 	@Override
 	public void periodic() {
+
+		double pidVoltage = this.steerPIDController.calculate(
+			this.getSteeringHeading().in(Degrees)
+		);
+
+		if (steerPIDController.atSetpoint()) {
+
+			this.steerMotorController.stopMotor();
+
+		} else {
+
+			double feedforwardVoltage = this.steerFeedforward.calculate(
+				Math.copySign(
+					SwerveModule.STEER_SPEED.in(DegreesPerSecond),
+					pidVoltage
+				)
+
+			);
+
+			this.steerMotorController.sparkMax.setVoltage(
+				pidVoltage + feedforwardVoltage
+			);
+
+		}
 		
-		// This method will be called once per scheduler run
+		double driveSpeed = this.drivePIDController.getSetpoint();
+		
+		if (Math.abs(driveSpeed) > 0.05) {
+			
+			this.driveMotorController.set(
+				Math.min(this.drivePIDController.getSetpoint(), 1)
+			);
+			
+		} else this.driveMotorController.stopMotor();
+		
+	}
+	
+	public void stop() {
+		
+		this.driveMotorController.stopMotor();
+		this.steerMotorController.stopMotor();
 		
 	}
 	
@@ -223,46 +290,92 @@ public class SwerveModule extends SubsystemBase {
 	public void initSendable(SendableBuilder builder) {
 		
 		builder.addDoubleProperty(
-			"Unoptimized Rotation",
-			() -> unoptimizedRotation,
+			"heading",
+			() -> this.getSteeringHeading().in(Degrees),
 			null
+		);
+//
+//		builder.addDoubleProperty(
+//			"drive speed",
+//			this.driveMotorController::get,
+//			null
+//		);
+//
+		builder.addDoubleProperty(
+			"heading setpoint",
+			this.steerPIDController::getSetpoint,
+			this.steerPIDController::setSetpoint
 		);
 		
 		builder.addDoubleProperty(
-			"Optimized Rotation",
-			() -> optimizedRotation,
+			"heading error",
+			() -> this.getSteeringHeadingError().in(Degrees),
 			null
 		);
+//
+//		builder.addDoubleProperty(
+//			"drive speed setpoint",
+//			() -> this.drivePIDController.getSetpoint(),
+//			null
+//		);
+//
+//		builder.addDoubleProperty(
+//			"Encoder Rotation (Degrees)",
+//			() -> getEncoderRotation().getDegrees(),
+//			null
+//		);
+//
+//		builder.addDoubleProperty(
+//			"Steer Speed",
+//			() -> steerSpeed,
+//			null
+//		);
+//
+//		builder.addDoubleProperty(
+//			"Drive Speed",
+//			() -> driveSpeed,
+//			null
+//		);
+//
+//		builder.addDoubleProperty(
+//			"distance-Readout",
+//			() -> driveEncoder.getPosition() * .1 - distanceOffset,
+//			null
+//		);
+//
+//		builder.addDoubleProperty(
+//			"distance-Offset",
+//			() -> distanceOffset,
+//			null
+//		);
 		
-		builder.addDoubleProperty(
-			"Encoder Rotation (Degrees)",
-			() -> getEncoderRotation().getDegrees(),
-			null
-		);
+	}
+	
+	public class Commands {
 		
-		builder.addDoubleProperty(
-			"Steer Speed",
-			() -> steerSpeed,
-			null
-		);
+		public Command steerWithVoltage() {
+			
+			return new FunctionalCommand(
+				() -> {
+					double steerVoltage = Preferences.getDouble("steer voltage", 0);
+					System.out.printf("driving steer at %f volts%n", steerVoltage);
+					SwerveModule.this.steerMotorController.sparkMax.setVoltage(steerVoltage);
+				},
+				() -> {},
+				(a) -> SwerveModule.this.steerMotorController.stopMotor(),
+				() -> false,
+				SwerveModule.this
+			);
+			
+		}
 		
-		builder.addDoubleProperty(
-			"Drive Speed",
-			() -> driveSpeed,
-			null
-		);
-		
-		builder.addDoubleProperty(
-			"distance-Readout",
-			() -> driveEncoder.getPosition() * .1 - distanceOffset,
-			null
-		);
-		
-		builder.addDoubleProperty(
-			"distance-Offset",
-			() -> distanceOffset,
-			null
-		);
+		public Command stopSteerMotor() {
+			
+			return SwerveModule.this.runOnce(
+				SwerveModule.this.steerMotorController::stopMotor
+			);
+			
+		}
 		
 	}
 	
