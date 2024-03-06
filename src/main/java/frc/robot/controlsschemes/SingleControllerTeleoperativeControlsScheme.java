@@ -1,5 +1,6 @@
 package frc.robot.controlsschemes;
 
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.ComplexCommands;
 import frc.robot.RobotContainer;
@@ -35,11 +36,27 @@ public class SingleControllerTeleoperativeControlsScheme implements ControlsSche
 		// Spin up the shooter while the 'A' button is pressed on controller #2.
 		controller1.a().whileTrue(shooter.shoot());
 		
-//		robotContainer.arm.setDefaultCommand(
-//			arm.holdAtAngle(Degrees.of(0))
-//		);
+		robotContainer.arm.setDefaultCommand(
+			arm.holdAtAngle(Degrees.of(0))
+		);
 		
-		controller1.x().onTrue(ComplexCommands.prepareToShootAtAngle(
+		robotContainer.shooter.setDefaultCommand(new FunctionalCommand(
+			robotContainer.shooter::stop,
+			() -> {},
+			(wasInterrupted) -> {},
+			() -> false,
+			robotContainer.shooter
+		));
+		
+		robotContainer.intake.setDefaultCommand(new FunctionalCommand(
+			robotContainer.intake::stop,
+			() -> {},
+			(wasInterrupted) -> {},
+			() -> false,
+			robotContainer.intake
+		));
+		
+		controller1.x().whileTrue(ComplexCommands.prepareToShootAtAngle(
 			robotContainer.arm,
 			robotContainer.shooter,
 			Degrees.of(55),
@@ -52,7 +69,7 @@ public class SingleControllerTeleoperativeControlsScheme implements ControlsSche
 			1
 		)));
 		
-		controller1.b().onTrue(ComplexCommands.prepareToShootAtAngle(
+		controller1.b().whileTrue(ComplexCommands.prepareToShootAtAngle(
 			robotContainer.arm,
 			robotContainer.shooter,
 			Degrees.of(100),
