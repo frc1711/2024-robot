@@ -100,22 +100,25 @@ public class SingleControllerTeleoperativeControlsScheme implements ControlsSche
 //		controller1.leftBumper().whileTrue(robotContainer.arm.sysIdDynamicVoltageTest(SysIdRoutine.Direction.kReverse));
 //		controller1.rightBumper().whileTrue(robotContainer.arm.sysIdDynamicVoltageTest(SysIdRoutine.Direction.kForward));
 		
-		controller1.back().onTrue(swerve.resetGyro());
+		controller1.back().onTrue(swerve.calibrateFieldRelativeHeading());
 		
-		robotContainer.swerveSubsystem.setDefaultCommand(
-			swerve.driveFieldRelative(
-				PointSupplierBuilder.fromLeftJoystick(controller1)
-					.normalizeXboxJoystickToNWU()
-					.withClamp(-1, 1)
-					.withScaledDeadband(JOYSTICK_DEADBAND)
-					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
-					.withScaling(0.5),
-				DoubleSupplierBuilder.fromRightX(controller1)
-					.withScaling(-1)
-					.withClamp(-1, 1)
-					.withScaledDeadband(JOYSTICK_DEADBAND)
-					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
-			)
+		controller1.povUp().onTrue(swerve.setFieldRelativeHeading(Degrees.of(0)));
+		controller1.povLeft().onTrue(swerve.setFieldRelativeHeading(Degrees.of(90)));
+		controller1.povDown().onTrue(swerve.setFieldRelativeHeading(Degrees.of(180)));
+		controller1.povRight().onTrue(swerve.setFieldRelativeHeading(Degrees.of(270)));
+		
+		robotContainer.swerveSubsystem.configureChassisSpeedInputs(
+			PointSupplierBuilder.fromLeftJoystick(controller1)
+				.normalizeXboxJoystickToNWU()
+				.withClamp(-1, 1)
+				.withScaledDeadband(JOYSTICK_DEADBAND)
+				.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
+				.withScaling(0.6),
+			DoubleSupplierBuilder.fromRightX(controller1)
+				.withScaling(-1)
+				.withClamp(-1, 1)
+				.withScaledDeadband(JOYSTICK_DEADBAND)
+				.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
 		);
 		
 	}
