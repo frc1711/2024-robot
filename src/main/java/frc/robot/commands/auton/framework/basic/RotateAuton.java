@@ -45,7 +45,10 @@ public class RotateAuton extends Command {
 	@Override
 	public void execute() {
 		
-		rotationSpeed = rotationalPID.calculate(swerveSubsystem.getGyroRotation().getDegrees(), rotation.getDegrees());
+		rotationSpeed = rotationalPID.calculate(
+			swerveSubsystem.getFieldRelativeHeadingRotation2d().getDegrees(),
+			rotation.getDegrees()
+		);
 		
 		swerveSubsystem.applyChassisSpeeds(new ChassisSpeeds(0, 0, rotationSpeed));
 		

@@ -28,8 +28,8 @@ public class PickupAuton extends ParallelDeadlineGroup {
 		
 		super(new IntakeAuton(intake));
 
-		xVariable = Math.cos(swerve.getGyroRotation().getRadians());
-		yVariable = Math.sin(swerve.getGyroRotation().getRadians());
+		xVariable = Math.cos(swerve.getFieldRelativeHeadingRotation2d().getRadians());
+		yVariable = Math.sin(swerve.getFieldRelativeHeadingRotation2d().getRadians());
 		robotPose = swerve.getRobotPose();
 		
 		addCommands(new TimedSwerveAuton(swerve, new ChassisSpeeds(xVariable, yVariable, 0), 2));

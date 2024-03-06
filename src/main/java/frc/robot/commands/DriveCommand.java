@@ -123,7 +123,7 @@ public class DriveCommand extends Command {
 
     // }
 
-    if (resetGyro.getAsBoolean()) swerveSubsystem.resetGyro();
+    if (resetGyro.getAsBoolean()) swerveSubsystem.calibrateFieldRelativeHeading();
 
     // if (xMode.getAsBoolean()) swerveSubsystem.xMode();
     if (
@@ -135,15 +135,12 @@ public class DriveCommand extends Command {
       this.currentXSpeed = nextXSpeed;
       this.currentYSpeed = nextYSpeed;
       this.currentThetaSpeed = nextThetaSpeed;
-
-      swerveSubsystem.applyChassisSpeeds(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-          this.currentXSpeed,
-          this.currentYSpeed,
-          this.currentThetaSpeed + oneEighty,
-          swerveSubsystem.getGyroRotation()
-        )
-      );
+      
+      swerveSubsystem.applyFieldRelativeChassisSpeeds(new ChassisSpeeds(
+        this.currentXSpeed,
+        this.currentYSpeed,
+        this.currentThetaSpeed
+      ));
 
     } else {
 
@@ -152,14 +149,11 @@ public class DriveCommand extends Command {
       this.currentThetaSpeed = nextThetaSpeed;
 
       swerveSubsystem.stop();
-      swerveSubsystem.applyChassisSpeeds(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
+      swerveSubsystem.applyFieldRelativeChassisSpeeds(new ChassisSpeeds(
           0,
           0,
-          oneEighty, 
-          swerveSubsystem.getGyroRotation()
-        )
-      );
+          0
+      ));
 
   }
 

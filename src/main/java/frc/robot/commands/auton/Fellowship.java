@@ -30,7 +30,14 @@ public class Fellowship extends SequentialCommandGroup {
     addCommands(
         arm.commands.holdAtAngle(Degrees.of(55)),
         new BellyUpSpeaker(arm, shooter, intake),
-        new OdometryAuton(swerve, new Pose2d(swerve.getRobotPose().getX() + 1, swerve.getRobotPose().getY(), swerve.getGyroRotation())),
+        new OdometryAuton(
+			swerve,
+			new Pose2d(
+				swerve.getRobotPose().getX() + 1,
+				swerve.getRobotPose().getY(),
+				swerve.getFieldRelativeHeadingRotation2d()
+			)
+		),
 		new ShooterAuton(shooter)
     );
     
