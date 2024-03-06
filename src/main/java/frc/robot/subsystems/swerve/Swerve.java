@@ -57,7 +57,7 @@ public class Swerve extends SubsystemBase {
 	
 	protected final SwerveModulePosition[] modulePositions;
 
-	protected final Consumer<SwerveModuleState[]> moduleStates;
+	// protected final Consumer<SwerveModuleState[]> moduleStates;
 	
 	protected final AHRS gyro;
 	
