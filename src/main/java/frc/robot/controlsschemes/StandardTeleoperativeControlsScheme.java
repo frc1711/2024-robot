@@ -72,7 +72,7 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 					.withClamp(-1, 1)
 					.withScaledDeadband(JOYSTICK_DEADBAND)
 					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
-					.withScaling(0.5),
+					.withScaling(0.6),
 				DoubleSupplierBuilder.fromRightX(controller1)
 					.withScaling(-1)
 					.withClamp(-1, 1)
