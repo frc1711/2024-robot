@@ -10,13 +10,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.auton.Fellowship;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
-import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
+import frc.robot.constants.DIODevice;
 import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -32,6 +33,10 @@ public class RobotContainer {
 	public final Intake intake;
 	
 	public final Arm arm;
+	
+	public final DigitalInput upperBeamBreakSensor;
+	
+	public final DigitalInput lowerBeamBreakSensor;
 	
 	public final CommandXboxController driveController;
 	
@@ -50,10 +55,18 @@ public class RobotContainer {
 		startPositionChooser = new SendableChooser<>();
 		configStartPositionChooser();
 		
+		swerveSubsystem = new Swerve(startPositionChooser.getSelected().get());
 		shooter = new Shooter();
 		intake = new Intake();
 		arm = new Arm();
-		swerveSubsystem = new Swerve(startPositionChooser.getSelected().get());
+		
+		this.upperBeamBreakSensor = new DigitalInput(
+			DIODevice.INTAKE_UPPER_BEAM_BREAK_SENSOR.id
+		);
+		
+		this.lowerBeamBreakSensor = new DigitalInput(
+			DIODevice.INTAKE_LOWER_BEAM_BREAK_SENSOR.id
+		);
 		
 		// Shuffleboard.getTab("Subsystems").add("Arm", arm);
 		// Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
@@ -65,6 +78,11 @@ public class RobotContainer {
 		
 		configTestTab();
 		configAutonChooser();
+		
+		Shuffleboard.getTab("Subsystems").addBoolean(
+			"Upper Beam Break",
+			this.upperBeamBreakSensor::get
+		);
 		
 	}
 	
@@ -131,10 +149,10 @@ public class RobotContainer {
 			)
 		);
 		
-		autonChooser.addOption(
-			"Timed Swerve Auton",
-			() -> new TimedSwerveAuton(swerveSubsystem)
-		);
+//		autonChooser.addOption(
+//			"Timed Swerve Auton",
+//			() -> new TimedSwerveAuton(swerveSubsystem)
+//		);
 		
 		putSendable("Pre-match Tab", "Auton Chooser", autonChooser);
 		
