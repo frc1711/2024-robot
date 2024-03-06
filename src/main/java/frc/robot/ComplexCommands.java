@@ -43,10 +43,10 @@ public class ComplexCommands {
 	) {
 		
 		return intake.commands.intake().raceWith(new WaitCommand(1))
-			.onlyIf(
+			/*.onlyIf(
 				arm.triggers.armHasReachedSetpoint()
-					.and(shooter.triggers.isAtSpeed(shooterSpeed))
-			).andThen(
+//					.and(shooter.triggers.isAtSpeed(shooterSpeed))
+			)*/.andThen(
 				arm.commands.goToRestingAngle(Degrees.of(0))
 					.alongWith(shooter.commands.stop())
 			);
