@@ -5,6 +5,7 @@
 package frc.robot.commands.auton;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -12,6 +13,9 @@ import frc.robot.commands.auton.framework.basic.ArmAuton;
 import frc.robot.commands.auton.framework.basic.BellyUpSpeaker;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
 import frc.robot.commands.auton.framework.basic.ShooterAuton;
+import frc.robot.commands.auton.framework.basic.SwerveAuton;
+import frc.robot.commands.auton.framework.basic.timed.TimeBasedSwerveAuton;
+import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
 import frc.robot.constants.DoublePreference;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -28,10 +32,9 @@ public class Fellowship extends SequentialCommandGroup {
   public Fellowship(Swerve swerve, Shooter shooter, Intake intake, Arm arm) {
     
     addCommands(
-        arm.commands.holdAtAngle(Degrees.of(55)),
+        arm.commands.goToAngle(Degrees.of(55)),
         new BellyUpSpeaker(arm, shooter, intake),
-        new OdometryAuton(swerve, new Pose2d(swerve.getRobotPose().getX() + 1, swerve.getRobotPose().getY(), swerve.getGyroRotation())),
-		new ShooterAuton(shooter)
+        new TimeBasedSwerveAuton(new SwerveAuton(swerve, .25, 0, swerve.getGyroRotation()), 1.5)
     );
     
   }

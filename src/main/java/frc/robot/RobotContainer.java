@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -133,7 +134,7 @@ public class RobotContainer {
 		
 		autonChooser.addOption(
 			"Timed Swerve Auton",
-			() -> new TimedSwerveAuton(swerveSubsystem)
+			() -> new TimedSwerveAuton(swerveSubsystem, new ChassisSpeeds(.25, 0, 0), 5)
 		);
 		
 		putSendable("Pre-match Tab", "Auton Chooser", autonChooser);
