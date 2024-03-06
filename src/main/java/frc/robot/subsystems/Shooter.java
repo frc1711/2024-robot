@@ -141,8 +141,8 @@ public class Shooter extends SubsystemBase {
 				() -> {},
 				(wasInterrupted) -> {},
 				() ->
-					Shooter.this.leftShooterMotorController.getAppliedOutput() >= 1 &&
-					Shooter.this.rightShooterMotorController.getAppliedOutput() >= 1,
+					Shooter.this.leftShooterMotorController.getAppliedOutput() >= (speed * 0.95) &&
+					Shooter.this.rightShooterMotorController.getAppliedOutput() >= (speed * 0.95),
 				Shooter.this
 			);
 			
@@ -167,8 +167,8 @@ public class Shooter extends SubsystemBase {
 		public Trigger isAtSpeed(double speed) {
 			
 			return new Trigger(() ->
-				Shooter.this.leftShooterMotorController.getAppliedOutput() >= speed &&
-				Shooter.this.rightShooterMotorController.getAppliedOutput() >= speed
+				Shooter.this.leftShooterMotorController.getAppliedOutput() >= (speed * 0.95) &&
+				Shooter.this.rightShooterMotorController.getAppliedOutput() >= (speed * 0.95)
 			);
 			
 		}
