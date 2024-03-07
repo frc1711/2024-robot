@@ -1,7 +1,9 @@
 package frc.robot.controlsschemes;
 
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.ComplexCommands;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -34,22 +36,51 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 		Shooter.Commands shooter = robotContainer.shooter.commands;
 		Arm.Commands arm = robotContainer.arm.commands;
 		
-		// Spin up the shooter while the 'A' button is pressed on controller #2.
-		controller2.a().whileTrue(shooter.shoot());
-		
 		robotContainer.arm.setDefaultCommand(
-			arm.holdAtRestingAngle(Degrees.of(0))
+			arm.holdAtAngle(Degrees.of(0))
 		);
 		
-		// Move the arm towards the amp shooting angle while the 'B' button is
-		// pressed on controller #2.
-		controller2.b().whileTrue(arm.holdAtAngle(Degrees.of(100)));
+		robotContainer.shooter.setDefaultCommand(new FunctionalCommand(
+			robotContainer.shooter::stop,
+			() -> {},
+			(wasInterrupted) -> {},
+			() -> false,
+			robotContainer.shooter
+		));
 		
-		// Move the arm towards the speaker shooting angle while the 'X' button
-		// is pressed on controller #2.
-		controller2.x().whileTrue(arm.holdAtAngle(Degrees.of(55)));
+		robotContainer.intake.setDefaultCommand(new FunctionalCommand(
+			robotContainer.intake::stop,
+			() -> {},
+			(wasInterrupted) -> {},
+			() -> false,
+			robotContainer.intake
+		));
 		
-		controller2.y().whileTrue(shooter.shoot(0.1));
+		controller2.x().whileTrue(ComplexCommands.prepareToShootAtAngle(
+			robotContainer.arm,
+			robotContainer.shooter,
+			Degrees.of(55),
+			1
+		).andThen(ComplexCommands.finishShootingAtAngle(
+			robotContainer.arm,
+			robotContainer.shooter,
+			robotContainer.intake,
+			Degrees.of(55),
+			1
+		)));
+		
+		controller2.b().whileTrue(ComplexCommands.prepareToShootAtAngle(
+			robotContainer.arm,
+			robotContainer.shooter,
+			Degrees.of(98),
+			0.12
+		).andThen(ComplexCommands.finishShootingAtAngle(
+			robotContainer.arm,
+			robotContainer.shooter,
+			robotContainer.intake,
+			Degrees.of(100),
+			0.12
+		)));
 		
 		// Configure controls common to both controllers...
 		Stream.of(controller1, controller2).forEach((controller) -> {
@@ -66,9 +97,6 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 			), robotContainer.upperBeamBreakSensor::get));
 			
 		});
-		
-//		controller1.leftBumper().whileTrue(robotContainer.arm.sysIdDynamicVoltageTest(SysIdRoutine.Direction.kReverse));
-//		controller1.rightBumper().whileTrue(robotContainer.arm.sysIdDynamicVoltageTest(SysIdRoutine.Direction.kForward));
 		
 		controller1.back().onTrue(swerve.calibrateFieldRelativeHeading());
 		
