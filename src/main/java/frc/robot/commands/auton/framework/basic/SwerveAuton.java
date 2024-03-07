@@ -5,6 +5,7 @@
 package frc.robot.commands.auton.framework.basic;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,13 +15,15 @@ public class SwerveAuton extends Command {
 	
 	Swerve swerveSubsystem;
 	
-	double xSpeed, ySpeed, desiredRotation;
+	double xSpeed, ySpeed;
+	
+	Rotation2d desiredRotation;
 	
 	PIDController rotationalPID;
 	
 	Timer timer;
 	
-	public SwerveAuton(Swerve swerveSubsystem, double xSpeed, double ySpeed, double desiredRotation) {
+	public SwerveAuton(Swerve swerveSubsystem, double xSpeed, double ySpeed, Rotation2d desiredRotation) {
 		
 		this.swerveSubsystem = swerveSubsystem;
 		this.xSpeed = xSpeed;
@@ -50,9 +53,9 @@ public class SwerveAuton extends Command {
 		thetaSpeed = rotationalPID.calculate(
 			swerveSubsystem.getFieldRelativeHeadingRotation2d().getDegrees(),
 			desiredRotation
-		);
+		.getDegrees());
 		
-		swerveSubsystem.applyChassisSpeeds(new ChassisSpeeds(xSpeed, ySpeed, desiredRotation));
+		swerveSubsystem.applyChassisSpeeds(new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed));
 		
 	}
 	

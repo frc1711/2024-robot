@@ -36,7 +36,7 @@ public class IntakeAuton extends Command {
 	@Override
 	public void execute() {
 		
-		intakeSubsystem.runIntake(false);
+		intakeSubsystem.intake();
 		
 	}
 	
