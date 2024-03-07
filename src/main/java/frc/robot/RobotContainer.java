@@ -61,7 +61,7 @@ public class RobotContainer {
 		startPositionChooser = new SendableChooser<>();
 		// configStartPositionChooser();
 		
-		swerveSubsystem = new Swerve(startPositionChooser.getSelected().get());
+		swerveSubsystem = new Swerve(Swerve.StartPosition.STATION_ONE);
 		shooter = new Shooter();
 		intake = new Intake();
 		arm = new Arm();
@@ -158,7 +158,7 @@ public class RobotContainer {
 					swerveSubsystem, 
 					DoublePreference.DISTANCE_CONFIG_AUTON_X_SPEED.get(), 
 					DoublePreference.DISTANCE_CONFIG_AUTON_Y_SPEED.get(), 
-					swerveSubsystem.getGyroRotation()
+					swerveSubsystem.getFieldRelativeHeadingRotation2d()
 				), 
 				DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get()
 			)

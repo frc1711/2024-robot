@@ -30,7 +30,7 @@ public class TwoTowers extends SequentialCommandGroup {
       armSubsystem.commands.goToAngle(Degrees.of(55)),
       new BellyUpSpeaker(armSubsystem, shooterSubsystem, intakeSubsystem),
       new PickupAuton(intakeSubsystem, swerveSubsystem),
-      new TimeBasedSwerveAuton(new SwerveAuton(swerveSubsystem, -.25, 0, swerveSubsystem.getGyroRotation()), 1.5),
+      new TimeBasedSwerveAuton(new SwerveAuton(swerveSubsystem, -.25, 0, swerveSubsystem.getFieldRelativeHeadingRotation2d()), 1.5),
       new BellyUpSpeaker(armSubsystem, shooterSubsystem, intakeSubsystem),
       new TimeBasedSwerveAuton(new SwerveAuton(swerveSubsystem, 0, 0, new Rotation2d()), 0),
       new PickupAuton(intakeSubsystem, swerveSubsystem),

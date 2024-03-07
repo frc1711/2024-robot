@@ -55,7 +55,7 @@ public class SwerveAuton extends Command {
 			desiredRotation
 		.getDegrees());
 		
-		swerveSubsystem.applyChassisSpeeds(new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed));
+		swerveSubsystem.configureChassisSpeedInputs(() -> xSpeed,() -> ySpeed, () -> thetaSpeed);
 		
 	}
 	

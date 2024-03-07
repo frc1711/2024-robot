@@ -12,12 +12,14 @@ import frc.robot.commands.auton.framework.basic.SwerveAuton;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class TimeBasedSwerveAuton extends ParallelDeadlineGroup {
+public class TimeBasedSwerveAuton extends ParallelRaceGroup {
   /** Creates a new TimeBasedSwerveAuton. */
   public TimeBasedSwerveAuton(SwerveAuton swerveAuton, double time) {
 
-    super(new WaitCommand(time));
+    // super(new WaitCommand(time));
 
-    addCommands(swerveAuton);
+    addCommands(
+      new WaitCommand(time),
+      swerveAuton);
   }
 }
