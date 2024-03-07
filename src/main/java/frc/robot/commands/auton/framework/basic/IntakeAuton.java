@@ -4,56 +4,23 @@
 
 package frc.robot.commands.auton.framework.basic;
 
+import static edu.wpi.first.units.Units.Degrees;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.swerve.Swerve;
 
-public class IntakeAuton extends Command {
-	
-	Intake intakeSubsystem;
-
-	Timer timer;
+public class IntakeAuton extends ParallelDeadlineGroup {
 	
 	public IntakeAuton(Intake intakeSubsystem) {
 		
-		this.intakeSubsystem = intakeSubsystem;
-		addRequirements(intakeSubsystem);
+		super (new WaitCommand(1.5));
 		
-		timer = new Timer();
-	}
-	
-	// Called when the command is initially scheduled.
-	@Override
-	public void initialize() {
-		
-		intakeSubsystem.stop();
-
-		timer.start();
-		
-	}
-	
-	// Called every time the scheduler runs while the command is scheduled.
-	@Override
-	public void execute() {
-		
-		intakeSubsystem.intake();
-		
-	}
-	
-	// Called once the command ends or is interrupted.
-	@Override
-	public void end(boolean interrupted) {
-		
-		intakeSubsystem.stop();
-		
-	}
-	
-	// Returns true when the command should end.
-	@Override
-	public boolean isFinished() {
-		
-		return intakeSubsystem.isHoldingNote() || timer.hasElapsed(3);
-		
+		addCommands(intakeSubsystem.commands.intake());
 	}
 	
 }

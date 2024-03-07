@@ -4,11 +4,15 @@
 
 package frc.robot.commands.auton.framework;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.commands.auton.framework.basic.IntakeAuton;
-import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
+import frc.robot.commands.auton.framework.basic.SwerveAuton;
+import frc.robot.commands.auton.framework.basic.timed.TimeBasedSwerveAuton;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.swerve.Swerve;
 
@@ -32,7 +36,7 @@ public class PickupAuton extends ParallelDeadlineGroup {
 		yVariable = Math.sin(swerve.getFieldRelativeHeadingRotation2d().getRadians());
 		robotPose = swerve.getRobotPose();
 		
-		addCommands(new TimedSwerveAuton(swerve, new ChassisSpeeds(xVariable, yVariable, 0), 2));
+		addCommands(new TimeBasedSwerveAuton(new SwerveAuton(swerve, yVariable, xVariable, null), 2));
 		
 	}
 	

@@ -4,6 +4,7 @@
 
 package frc.robot.commands.auton.framework.basic.timed;
 
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
@@ -11,11 +12,12 @@ import frc.robot.commands.auton.framework.basic.SwerveAuton;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class TimeBasedSwerveAuton extends ParallelRaceGroup {
+public class TimeBasedSwerveAuton extends ParallelDeadlineGroup {
   /** Creates a new TimeBasedSwerveAuton. */
   public TimeBasedSwerveAuton(SwerveAuton swerveAuton, double time) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new WaitCommand(time), swerveAuton);
+
+    super(new WaitCommand(time));
+
+    addCommands(swerveAuton);
   }
 }

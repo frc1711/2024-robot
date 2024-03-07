@@ -17,7 +17,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.auton.Fellowship;
+import frc.robot.commands.auton.King;
+import frc.robot.commands.auton.TwoTowers;
 import frc.robot.commands.auton.framework.basic.OdometryAuton;
+import frc.robot.commands.auton.framework.basic.SwerveAuton;
+import frc.robot.commands.auton.framework.basic.timed.TimeBasedSwerveAuton;
+import frc.robot.constants.DoublePreference;
 import frc.robot.constants.DIODevice;
 import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
 import frc.robot.subsystems.Arm;
@@ -54,7 +59,7 @@ public class RobotContainer {
 		driveController = new CommandXboxController(0);
 		subsystemController = new CommandXboxController(1);
 		startPositionChooser = new SendableChooser<>();
-		configStartPositionChooser();
+		// configStartPositionChooser();
 		
 		swerveSubsystem = new Swerve(startPositionChooser.getSelected().get());
 		shooter = new Shooter();
@@ -77,7 +82,7 @@ public class RobotContainer {
 		autonChooser = new SendableChooser<>();
 		testChooser = new SendableChooser<>();
 		
-		configTestTab();
+		// configTestTab();
 		configAutonChooser();
 		
 		Shuffleboard.getTab("Subsystems").addBoolean(
@@ -132,114 +137,46 @@ public class RobotContainer {
 	private void configAutonChooser() {
 		
 		autonChooser.addOption(
-			"Basic Auton",
+			"Fellowship of the Ring (Basic Auton)",
 			() -> new Fellowship(swerveSubsystem, shooter, intake, arm)
 		);
-		
+
 		autonChooser.addOption(
-			"Odometry Test Auton",
-			() -> new OdometryAuton(
-				swerveSubsystem,
-				new Pose2d(
-					new Translation2d(
-						swerveSubsystem.getStartPosition().getTranslation().getX() + .5,
-						swerveSubsystem.getStartPosition().getTranslation().getY()
-					),
-					new Rotation2d(Math.PI)
-				)
-			)
+			"The Two Towers (Two-Piece Auton)", 
+			() -> new TwoTowers(swerveSubsystem, intake, shooter, arm)
 		);
-		
+
 		autonChooser.addOption(
-			"Timed Swerve Auton",
-			() -> new TimedSwerveAuton(swerveSubsystem, new ChassisSpeeds(.25, 0, 0), 5)
+			"Return of the King (Three-Piece Auton)", 
+			() -> new King(swerveSubsystem, intake, shooter, arm)
+		);
+
+		autonChooser.addOption(
+			"An Unexpected Journey (Distance Config Auton)", 
+			() -> new TimeBasedSwerveAuton(
+				new SwerveAuton(
+					swerveSubsystem, 
+					DoublePreference.DISTANCE_CONFIG_AUTON_X_SPEED.get(), 
+					DoublePreference.DISTANCE_CONFIG_AUTON_Y_SPEED.get(), 
+					swerveSubsystem.getGyroRotation()
+				), 
+				DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get()
+			)
 		);
 		
 		putSendable("Pre-match Tab", "Auton Chooser", autonChooser);
 		
 	}
 	
-	private void configStartPositionChooser() {
+	// private void configStartPositionChooser() {
 		
-		startPositionChooser.setDefaultOption("First Station Position", () -> Swerve.StartPosition.STATION_ONE);
-		startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_TWO);
-		startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_THREE);
+	// 	startPositionChooser.setDefaultOption("First Station Position", () -> Swerve.StartPosition.STATION_ONE);
+	// 	startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_TWO);
+	// 	startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_THREE);
 		
-		putSendable("Pre-match Tab", "Start Postion Chooser", startPositionChooser);
+	// 	putSendable("Pre-match Tab", "Start Postion Chooser", startPositionChooser);
 		
-	}
-	
-	private void configTestTab() {
-		
-		// putSendable("Test Tab", "Shooter", shooter);
-		//
-		// testChooser.addOption(
-		//  "Shooter Test Command",
-		//  () -> new ShooterTest(
-		// 	 shooter,
-		// 	 driveController::getAButton,
-		// 	 1,
-		// 	 1
-		//  )
-		// );
-		//
-		// new TestCommand(
-		//  shooter,
-		//  new InstantCommand(
-		// 	 () -> shooter.runShooter(
-		// 		 1, 
-		// 		 1
-		// 	 ),
-		// 	 shooter
-		//  ),
-		//  new InstantCommand(
-		// 	 shooter::stop,
-		// 	 shooter
-		//  ),
-		//  new InstantCommand(
-		// 	 shooter::increaseShooterSpeed,
-		// 	 shooter
-		//  ),
-		//  new InstantCommand(
-		// 	 shooter::decreaseShooterSpeed,
-		// 	 shooter
-		//  ),
-		//  driveController::getLeftBumperPressed,
-		//  driveController::getRightBumperPressed,
-		//  driveController::getXButtonPressed,
-		//  driveController::getAButton
-		// );
-		//
-		// testChooser.addOption(
-		//  "Intake Test Command",
-		//  () -> new TestCommand(
-		// 	 shooter,
-		// 	 new InstantCommand(
-		// 		 () -> intake.runIntake(false),
-		// 		 intake
-		// 	 ),
-		// 	 new InstantCommand(
-		// 		 intake::stop,
-		// 		 intake
-		// 	 ),
-		// 	 new InstantCommand(
-		// 		 intake::increaseIntakeSpeed,
-		// 		 intake
-		// 	 ),
-		// 	 new InstantCommand(
-		// 		 intake::decreaseIntakeSpeed,
-		// 		 intake
-		// 	 ),
-		// 	 driveController::getLeftBumperPressed,
-		// 	 driveController::getRightBumperPressed,
-		// 	 driveController::getAButtonPressed,
-		// 	 driveController::getAButton
-		//  )
-		// );
-		
-		putSendable("Test Tab", "Test Command Chooser", testChooser);
-		
-	}
+	// }
 	
 	public Command getAutonomousCommand() {
 		

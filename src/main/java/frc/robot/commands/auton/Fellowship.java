@@ -4,19 +4,10 @@
 
 package frc.robot.commands.auton;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.auton.framework.basic.ArmAuton;
 import frc.robot.commands.auton.framework.basic.BellyUpSpeaker;
-import frc.robot.commands.auton.framework.basic.OdometryAuton;
-import frc.robot.commands.auton.framework.basic.ShooterAuton;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimeBasedSwerveAuton;
-import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
-import frc.robot.constants.DoublePreference;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;

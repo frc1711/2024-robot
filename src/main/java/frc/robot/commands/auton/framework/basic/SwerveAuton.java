@@ -72,7 +72,7 @@ public class SwerveAuton extends Command {
 	@Override
 	public boolean isFinished() {
 		
-		return timer.hasElapsed(5);
+		return false;
 		
 	}
 	
