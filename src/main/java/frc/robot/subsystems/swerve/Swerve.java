@@ -61,10 +61,6 @@ public class Swerve extends SubsystemBase {
 	
 	protected final AHRS gyro;
 	
-	protected Supplier<Point> vxyInput;
-	
-	protected DoubleSupplier vThetaInput;
-	
 	protected final SwerveDriveKinematics kinematics;
 
 	protected final HolonomicDriveController controller;
@@ -138,8 +134,6 @@ public class Swerve extends SubsystemBase {
 		
 		this.headingPIDController = new PIDController(0.015, 0, 0);
 		this.gyro = new AHRS();
-		this.vxyInput = () -> new Point(0, 0);
-		this.vThetaInput = () -> 0;
 		this.startPosition = startPosition;
 		
 		this.modulePositions = new SwerveModulePosition[] {
@@ -211,43 +205,6 @@ public class Swerve extends SubsystemBase {
 			rearLeftSwerveModule,
 			rearRightSwerveModule
 		);
-		
-	}
-	
-	/**
-	 * Configures the DoubleSuppliers used by this Swerve instance to inform the
-	 * relative movement of the robot.
-	 *
-	 * @param vxInput The DoubleSupplier that provides the x-axis velocity of
-	 * the robot.
-	 * @param vyInput The DoubleSupplier that provides the y-axis velocity of
-	 * the robot.
-	 * @param vThetaInput The DoubleSupplier that provides the angular velocity
-	 * of the robot.
-	 */
-	public void configureChassisSpeedInputs(
-		DoubleSupplier vxInput,
-		DoubleSupplier vyInput,
-		DoubleSupplier vThetaInput
-	) {
-		
-		this.configureChassisSpeedInputs(
-			() -> new Point(
-				vxInput.getAsDouble(),
-				vyInput.getAsDouble()
-			),
-			vThetaInput
-		);
-		
-	}
-	
-	public void configureChassisSpeedInputs(
-		Supplier<Point> vxyInput,
-		DoubleSupplier vThetaInput
-	) {
-		
-		this.vxyInput = vxyInput;
-		this.vThetaInput = vThetaInput;
 		
 	}
 	
@@ -360,6 +317,31 @@ public class Swerve extends SubsystemBase {
 	
 	public void applyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
 		
+		// Poll the current state of the heading lock.
+		boolean wasHeadingLockEnabled = this.isHeadingLockEnabled;
+		
+		// Enable the heading lock if we are not receiving any rotational input,
+		// otherwise, disable it (if we *are* receiving rotational input).
+		this.isHeadingLockEnabled = Math.abs(chassisSpeeds.omegaRadiansPerSecond) <= 0;
+		
+		// Check for a rising edge of the heading lock state.
+		boolean didHeadingLockBecomeEnabled = (
+			!wasHeadingLockEnabled &&
+			this.isHeadingLockEnabled
+		);
+		
+		// If the heading lock *became* active...
+		if (didHeadingLockBecomeEnabled) {
+			
+			// Update the heading setpoint to the heading we've rotated to while
+			// the heading lock was disabled.
+			this.headingPIDController.setSetpoint(
+				this.getFieldRelativeHeading().in(Degrees)
+			);
+			
+		}
+		
+		// Update the chassis speeds.
 		this.currentRawChassisSpeeds = chassisSpeeds;
 		
 	}
@@ -393,21 +375,8 @@ public class Swerve extends SubsystemBase {
 	@Override
 	public void periodic() {
 		
-		double newAngularSetpoint = this.headingPIDController.getSetpoint() +
-			(this.currentRawChassisSpeeds.omegaRadiansPerSecond * 2);
-		
 		double headingPIDOutput = this.headingPIDController.calculate(
-			this.getFieldRelativeHeadingRotation2d().getDegrees(),
-			newAngularSetpoint
-		);
-		
-		Point vxy = this.vxyInput.get();
-		double vTheta = this.vThetaInput.getAsDouble();
-		
-		this.currentRawChassisSpeeds = new ChassisSpeeds(
-			vxy.x,
-			vxy.y,
-			vTheta * 2
+			this.getFieldRelativeHeadingRotation2d().getDegrees()
 		);
 		
 		this.currentActualChassisSpeeds = isHeadingLockEnabled ?
@@ -416,11 +385,6 @@ public class Swerve extends SubsystemBase {
 				this.currentRawChassisSpeeds.vyMetersPerSecond,
 				headingPIDOutput
 			) : this.currentRawChassisSpeeds;
-		
-		this.currentActualChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-			this.currentActualChassisSpeeds,
-			this.getFieldRelativeHeadingRotation2d()
-		);
 		
 		SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(
 			this.currentActualChassisSpeeds
