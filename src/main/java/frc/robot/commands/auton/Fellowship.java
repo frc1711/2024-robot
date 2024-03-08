@@ -34,7 +34,7 @@ public class Fellowship extends SequentialCommandGroup {
     addCommands(
         arm.commands.goToAngle(Degrees.of(55)),
         new BellyUpSpeaker(arm, shooter, intake),
-        new TimeBasedSwerveAuton(new SwerveAuton(swerve, .25, 0, swerve.getGyroRotation()), 1.5)
+        new TimeBasedSwerveAuton(new SwerveAuton(swerve, .25, 0, swerve.getFieldRelativeHeadingRotation2d()), 1.5)
     );
     
   }
