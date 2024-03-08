@@ -23,33 +23,48 @@ import static edu.wpi.first.units.Units.*;
 public class ComplexCommands {
 	
 	public static Command prepareToShootAtAngle(
-		Arm arm,
-		Shooter shooter,
+		RobotContainer robot,
 		Measure<Angle> angle,
 		double shooterSpeed
 	) {
 		
-		return arm.commands.goToRestingAngle(angle)
-			.alongWith(shooter.commands.spinUp(shooterSpeed));
+		return robot.arm.commands.goToRestingAngle(angle)
+			.alongWith(robot.shooter.commands.spinUp(shooterSpeed));
 		
 	}
 	
 	public static Command finishShootingAtAngle(
-		Arm arm,
-		Shooter shooter,
-		Intake intake,
+		RobotContainer robot,
 		Measure<Angle> angle,
 		double shooterSpeed
 	) {
 		
-		return intake.commands.intake().raceWith(new WaitCommand(1))
+		return robot.intake.commands.intake().raceWith(new WaitCommand(1))
 			/*.onlyIf(
-				arm.triggers.armHasReachedSetpoint()
-//					.and(shooter.triggers.isAtSpeed(shooterSpeed))
+				robot.arm.triggers.armHasReachedSetpoint()
+//					.and(robot.shooter.triggers.isAtSpeed(shooterSpeed))
 			)*/.andThen(
-				arm.commands.goToRestingAngle(Degrees.of(0))
-					.alongWith(shooter.commands.stop())
+				robot.arm.commands.goToRestingAngle(Degrees.of(0))
+					.alongWith(robot.shooter.commands.stop())
 			);
+		
+	}
+	
+	public static Command shootAtAngle(
+		RobotContainer robot,
+		Measure<Angle> angle,
+		double shooterSpeed
+	) {
+		
+		return ComplexCommands.prepareToShootAtAngle(
+			robot,
+			angle,
+			shooterSpeed
+		).andThen(ComplexCommands.finishShootingAtAngle(
+			robot,
+			angle,
+			shooterSpeed
+		));
 		
 	}
 	
