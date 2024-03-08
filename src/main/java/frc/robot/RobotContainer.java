@@ -30,6 +30,8 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.util.StartPositions;
+import frc.robot.util.StartPositions.StartPosition;
 
 public class RobotContainer {
 	
@@ -53,14 +55,14 @@ public class RobotContainer {
 	
 	public final SendableChooser<Supplier<Command>> testChooser;
 	
-	public final SendableChooser<Supplier<Swerve.StartPosition>> startPositionChooser;
+	public final SendableChooser<Supplier<StartPositions.StartPosition>> startPositionChooser;
 	
 	public RobotContainer() {
 		
 		driveController = new CommandXboxController(0);
 		subsystemController = new CommandXboxController(1);
 		startPositionChooser = new SendableChooser<>();
-		// configStartPositionChooser();
+		configStartPositionChooser();
 		
 		swerveSubsystem = new Swerve(Swerve.StartPosition.STATION_ONE);
 		shooter = new Shooter();
@@ -139,7 +141,7 @@ public class RobotContainer {
 		
 		autonChooser.addOption(
 			"Fellowship of the Ring (Basic Auton)",
-			() -> new Fellowship(swerveSubsystem, shooter, intake, arm)
+			() -> new Fellowship(swerveSubsystem, shooter, intake, arm, startPositionChooser.getSelected().get())
 		);
 
 		autonChooser.addOption(
@@ -168,15 +170,15 @@ public class RobotContainer {
 		
 	}
 	
-	// private void configStartPositionChooser() {
+	private void configStartPositionChooser() {
 		
-	// 	startPositionChooser.setDefaultOption("First Station Position", () -> Swerve.StartPosition.STATION_ONE);
-	// 	startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_TWO);
-	// 	startPositionChooser.addOption("Second Station Position", () -> Swerve.StartPosition.STATION_THREE);
+		startPositionChooser.addOption("Middle Starting Position", () -> StartPosition.MIDDLE);
+		startPositionChooser.addOption("Amp Side Starting Position", () -> StartPosition.AMP_SIDE);
+		startPositionChooser.addOption("Far Side Starting Position", () -> StartPosition.FAR_SIDE);
 		
-	// 	putSendable("Pre-match Tab", "Start Postion Chooser", startPositionChooser);
+		putSendable("Pre-match Tab", "Start Postion Chooser", startPositionChooser);
 		
-	// }
+	}
 	
 	public Command getAutonomousCommand() {
 		

@@ -69,6 +69,10 @@ public enum DoublePreference {
     ARM_PID_KD("Arm PID - Derivative Term", 0),
     
     ARM_PID_TOLERANCE_DEGREES("Arm PID - Tolerance (Degrees)", 5),
+
+    AUTON_START_DELAY("Auton Delay - Start", .25),
+
+    AUTON_ROLLOUT_DELAY("Auton Delay - Roll Out", 0),
     
     DISTANCE_CONFIG_AUTON_X_SPEED("Distance Config Auton - X Speed (-1 to 1)", 0),
     
