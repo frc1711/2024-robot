@@ -33,9 +33,6 @@ public class SingleControllerTeleoperativeControlsScheme implements ControlsSche
 		Shooter.Commands shooter = robotContainer.shooter.commands;
 		Arm.Commands arm = robotContainer.arm.commands;
 		
-		// Spin up the shooter while the 'A' button is pressed on controller #2.
-		controller1.a().whileTrue(shooter.shoot());
-		
 		robotContainer.arm.setDefaultCommand(
 			arm.holdAtAngle(Degrees.of(0))
 		);
@@ -56,57 +53,23 @@ public class SingleControllerTeleoperativeControlsScheme implements ControlsSche
 			robotContainer.intake
 		));
 		
-		controller1.x().whileTrue(ComplexCommands.prepareToShootAtAngle(
-			robotContainer.arm,
-			robotContainer.shooter,
+		controller1.x().whileTrue(ComplexCommands.shootAtAngle(
+			robotContainer,
 			Degrees.of(55),
 			1
-		).andThen(ComplexCommands.finishShootingAtAngle(
-			robotContainer.arm,
-			robotContainer.shooter,
-			robotContainer.intake,
-			Degrees.of(55),
+		));
+		
+		controller1.b().whileTrue(ComplexCommands.shootAtAngle(
+			robotContainer,
+			Degrees.of(98),
+			0.12
+		));
+		
+		controller1.y().whileTrue(ComplexCommands.shootAtAngle(
+			robotContainer,
+			Degrees.of(30),
 			1
-		)));
-		
-		controller1.b().whileTrue(ComplexCommands.prepareToShootAtAngle(
-			robotContainer.arm,
-			robotContainer.shooter,
-			Degrees.of(100),
-			0.12
-		).andThen(ComplexCommands.finishShootingAtAngle(
-			robotContainer.arm,
-			robotContainer.shooter,
-			robotContainer.intake,
-			Degrees.of(100),
-			0.12
-		)));
-		
-//		controller1.b().onFalse(ComplexCommands.finishShootingAtAngle(
-//			robotContainer.arm,
-//			robotContainer.shooter,
-//			robotContainer.intake,
-//			Degrees.of(55),
-//			1
-//		));
-		
-//		controller2.b().whileTrue(
-//			arm.holdAtAngle(Degrees.of(100))
-//				.alongWith(
-//					shooter.spinUp(),
-//					(new WaitCommand(1)).andThen(intake.intake()).raceWith(new WaitCommand(1))
-//				).andThen(shooter::stop).handleInterrupt(shooter::stop));
-//		);
-		
-		// Move the arm towards the amp shooting angle while the 'B' button is
-		// pressed on controller #2.
-//		controller1.b().whileTrue(arm.holdAtAngle(Degrees.of(95)));
-		
-		// Move the arm towards the speaker shooting angle while the 'X' button
-		// is pressed on controller #2.
-//		controller1.x().whileTrue(arm.holdAtAngle(Degrees.of(55)));
-		
-		controller1.y().whileTrue(shooter.shoot(0.12));
+		));
 		
 		// Spin the intake outwards while the left trigger is pressed.
 		controller1.leftTrigger(TRIGGER_THRESHOLD).whileTrue(intake.outtake().alongWith(shooter.shoot(-0.5)));
@@ -114,28 +77,30 @@ public class SingleControllerTeleoperativeControlsScheme implements ControlsSche
 		// Spin the intake inwards while the right trigger is pressed.
 		controller1.rightTrigger(TRIGGER_THRESHOLD).whileTrue(intake.intake());
 		
-//		controller1.leftBumper().whileTrue(robotContainer.arm.sysIdDynamicVoltageTest(SysIdRoutine.Direction.kReverse));
-//		controller1.rightBumper().whileTrue(robotContainer.arm.sysIdDynamicVoltageTest(SysIdRoutine.Direction.kForward));
-		
+		// Calibrate the field relative heading of the robot when the 'select'
+		// ('back') button is pressed on controller #1.
 		controller1.back().onTrue(swerve.calibrateFieldRelativeHeading());
 		
+		// Snap the robot to the cardinal field relative headings via the D-pad.
 		controller1.povUp().onTrue(swerve.setFieldRelativeHeading(Degrees.of(0)));
 		controller1.povLeft().onTrue(swerve.setFieldRelativeHeading(Degrees.of(90)));
 		controller1.povDown().onTrue(swerve.setFieldRelativeHeading(Degrees.of(180)));
 		controller1.povRight().onTrue(swerve.setFieldRelativeHeading(Degrees.of(270)));
 		
-		robotContainer.swerveSubsystem.configureChassisSpeedInputs(
-			PointSupplierBuilder.fromLeftJoystick(controller1)
-				.normalizeXboxJoystickToNWU()
-				.withClamp(-1, 1)
-				.withScaledDeadband(JOYSTICK_DEADBAND)
-				.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
-				.withScaling(0.6),
-			DoubleSupplierBuilder.fromRightX(controller1)
-				.withScaling(-1)
-				.withClamp(-1, 1)
-				.withScaledDeadband(JOYSTICK_DEADBAND)
-				.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
+		robotContainer.swerveSubsystem.setDefaultCommand(
+			swerve.driveFieldRelative(
+				PointSupplierBuilder.fromLeftJoystick(controller1)
+					.normalizeXboxJoystickToNWU()
+					.withClamp(-1, 1)
+					.withScaledDeadband(JOYSTICK_DEADBAND)
+					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
+					.withScaling(0.6),
+				DoubleSupplierBuilder.fromRightX(controller1)
+					.withScaling(-1)
+					.withClamp(-1, 1)
+					.withScaledDeadband(JOYSTICK_DEADBAND)
+					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
+			)
 		);
 		
 	}

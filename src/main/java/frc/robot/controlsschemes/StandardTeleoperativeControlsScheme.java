@@ -56,31 +56,23 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 			robotContainer.intake
 		));
 		
-		controller2.x().whileTrue(ComplexCommands.prepareToShootAtAngle(
-			robotContainer.arm,
-			robotContainer.shooter,
+		controller2.x().whileTrue(ComplexCommands.shootAtAngle(
+			robotContainer,
 			Degrees.of(55),
 			1
-		).andThen(ComplexCommands.finishShootingAtAngle(
-			robotContainer.arm,
-			robotContainer.shooter,
-			robotContainer.intake,
-			Degrees.of(55),
-			1
-		)));
+		));
 		
-		controller2.b().whileTrue(ComplexCommands.prepareToShootAtAngle(
-			robotContainer.arm,
-			robotContainer.shooter,
-			Degrees.of(98),
-			0.12
-		).andThen(ComplexCommands.finishShootingAtAngle(
-			robotContainer.arm,
-			robotContainer.shooter,
-			robotContainer.intake,
-			Degrees.of(100),
-			0.12
-		)));
+		controller2.b().whileTrue(ComplexCommands.shootAtAngle(
+			robotContainer,
+			Degrees.of(95),
+			0.13
+		));
+		
+		controller2.y().whileTrue(ComplexCommands.shootAtAngle(
+			robotContainer,
+			Degrees.of(40),
+			1
+		));
 		
 		// Configure controls common to both controllers...
 		Stream.of(controller1, controller2).forEach((controller) -> {
@@ -105,18 +97,20 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 		controller1.povDown().onTrue(swerve.setFieldRelativeHeading(Degrees.of(180)));
 		controller1.povRight().onTrue(swerve.setFieldRelativeHeading(Degrees.of(270)));
 		
-		robotContainer.swerveSubsystem.configureChassisSpeedInputs(
-			PointSupplierBuilder.fromLeftJoystick(controller1)
-				.normalizeXboxJoystickToNWU()
-				.withClamp(-1, 1)
-				.withScaledDeadband(JOYSTICK_DEADBAND)
-				.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
-				.withScaling(0.6),
-			DoubleSupplierBuilder.fromRightX(controller1)
-				.withScaling(-1)
-				.withClamp(-1, 1)
-				.withScaledDeadband(JOYSTICK_DEADBAND)
-				.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
+		robotContainer.swerveSubsystem.setDefaultCommand(
+			swerve.driveFieldRelative(
+				PointSupplierBuilder.fromLeftJoystick(controller1)
+					.normalizeXboxJoystickToNWU()
+					.withClamp(-1, 1)
+					.withScaledDeadband(JOYSTICK_DEADBAND)
+					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
+					.withScaling(0.6),
+				DoubleSupplierBuilder.fromRightX(controller1)
+					.withScaling(-1)
+					.withClamp(-1, 1)
+					.withScaledDeadband(JOYSTICK_DEADBAND)
+					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
+			)
 		);
 		
 	}
