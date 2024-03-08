@@ -68,7 +68,7 @@ public enum DoublePreference {
      */
     ARM_PID_KD("Arm PID - Derivative Term", 0),
     
-    ARM_PID_TOLERANCE_DEGREES("Arm PID - Tolerance (Degrees)", 5);
+    ARM_PID_TOLERANCE_DEGREES("Arm PID - Tolerance (Degrees)", 1);
     
     /**
      * The key of the preference.
