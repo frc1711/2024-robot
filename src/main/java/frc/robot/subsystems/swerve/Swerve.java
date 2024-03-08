@@ -33,7 +33,6 @@ import frc.robot.constants.CANDevice;
 import frc.robot.constants.DoublePreference;
 import frc.robot.constants.RobotDimensions;
 import frc.robot.util.Point;
-import frc.robot.util.PointSupplierBuilder;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -213,6 +212,7 @@ public class Swerve extends SubsystemBase {
 	 */
 	public void stop() {
 		
+		this.driveFieldRelative(0, 0, 0);
 		this.getModuleStream().forEach(SwerveModule::stop);
 		
 	}

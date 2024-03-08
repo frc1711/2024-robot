@@ -6,10 +6,12 @@ package frc.robot.commands.auton.framework.basic;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.swerve.Swerve;
+
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
 
 public class SwerveAuton extends Command {
 	
@@ -21,17 +23,13 @@ public class SwerveAuton extends Command {
 	
 	PIDController rotationalPID;
 	
-	Timer timer;
-	
-	public SwerveAuton(Swerve swerveSubsystem, double xSpeed, double ySpeed, Rotation2d desiredRotation) {
+	public SwerveAuton(RobotContainer robot, double xSpeed, double ySpeed, Rotation2d desiredRotation) {
 		
-		this.swerveSubsystem = swerveSubsystem;
+		this.swerveSubsystem = robot.swerveSubsystem;
 		this.xSpeed = xSpeed;
 		this.ySpeed = ySpeed;
 		this.desiredRotation = desiredRotation;
-		this.timer = new Timer();
-		this.rotationalPID = new PIDController(.01, 0, 0);
-		rotationalPID.enableContinuousInput(0, 360);
+		
 		addRequirements(swerveSubsystem);
 		
 	}
@@ -41,21 +39,14 @@ public class SwerveAuton extends Command {
 	public void initialize() {
 		
 		swerveSubsystem.stop();
-		timer.restart();
-		
+		swerveSubsystem.setFieldRelativeHeadingSetpoint(Degrees.of(this.desiredRotation.getDegrees()));
+
 	}
-	
-	double thetaSpeed;
 	
 	@Override
 	public void execute() {
 		
-		thetaSpeed = rotationalPID.calculate(
-			swerveSubsystem.getFieldRelativeHeadingRotation2d().getDegrees(),
-			desiredRotation
-		.getDegrees());
-		
-		swerveSubsystem.applyChassisSpeeds(new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed));
+		this.swerveSubsystem.driveFieldRelative(xSpeed, ySpeed, 0);
 		
 	}
 	
@@ -64,7 +55,6 @@ public class SwerveAuton extends Command {
 	public void end(boolean interrupted) {
 		
 		swerveSubsystem.stop();
-		timer.stop();
 		
 	}
 	
@@ -72,7 +62,7 @@ public class SwerveAuton extends Command {
 	@Override
 	public boolean isFinished() {
 		
-		return timer.hasElapsed(5);
+		return false;
 		
 	}
 	

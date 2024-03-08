@@ -4,56 +4,17 @@
 
 package frc.robot.commands.auton.framework.basic;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Intake;
 
-public class IntakeAuton extends Command {
+public class IntakeAuton extends ParallelRaceGroup {
 	
-	Intake intakeSubsystem;
-
-	Timer timer;
-	
-	public IntakeAuton(Intake intakeSubsystem) {
+	public IntakeAuton(RobotContainer robot) {
 		
-		this.intakeSubsystem = intakeSubsystem;
-		addRequirements(intakeSubsystem);
-		
-		timer = new Timer();
-	}
-	
-	// Called when the command is initially scheduled.
-	@Override
-	public void initialize() {
-		
-		intakeSubsystem.stop();
-
-		timer.start();
-		
-	}
-	
-	// Called every time the scheduler runs while the command is scheduled.
-	@Override
-	public void execute() {
-		
-		intakeSubsystem.intake();
-		
-	}
-	
-	// Called once the command ends or is interrupted.
-	@Override
-	public void end(boolean interrupted) {
-		
-		intakeSubsystem.stop();
-		
-	}
-	
-	// Returns true when the command should end.
-	@Override
-	public boolean isFinished() {
-		
-		return intakeSubsystem.isHoldingNote() || timer.hasElapsed(3);
-		
+		addCommands(new WaitCommand(5), robot.intake.commands.intake().onlyWhile(() -> !robot.upperBeamBreakSensor.get()));
 	}
 	
 }

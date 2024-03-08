@@ -4,14 +4,16 @@
 
 package frc.robot.commands.auton;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.ComplexCommands;
+import frc.robot.RobotContainer;
 import frc.robot.commands.auton.framework.PickupAuton;
-import frc.robot.commands.auton.framework.SpeakerAuton;
-import frc.robot.commands.auton.framework.basic.OdometryAuton;
-import frc.robot.commands.auton.framework.basic.timed.TimedSwerveAuton;
+import frc.robot.commands.auton.framework.basic.SwerveAuton;
+import frc.robot.commands.auton.framework.basic.timed.TimeBasedSwerveAuton;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -22,17 +24,21 @@ import frc.robot.subsystems.swerve.Swerve;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class TwoTowers extends SequentialCommandGroup {
   
-  public TwoTowers(Swerve swerveSubsystem, Intake intakeSubsystem, Shooter shooterSubsystem, Arm armSubsystem) {
+  public TwoTowers(RobotContainer robot) {
     
-    //TODO: Decide which notes to pick up in autons to determine angle to the speaker's AprilTag and their positions relative to the robot
     //TODO: Determine timing and directions for drive autons
     addCommands(
-      new SpeakerAuton(swerveSubsystem, shooterSubsystem, armSubsystem, 0),
-      new TimedSwerveAuton(swerveSubsystem, new ChassisSpeeds(0, 0, 0), 0),
-      new PickupAuton(intakeSubsystem, swerveSubsystem),
-      new SpeakerAuton(swerveSubsystem, shooterSubsystem, armSubsystem, -153),
-      new TimedSwerveAuton(swerveSubsystem, new ChassisSpeeds(0, 0, 0), 0),
-      new PickupAuton(intakeSubsystem, swerveSubsystem),
-      new SpeakerAuton(swerveSubsystem, shooterSubsystem, armSubsystem, 175));
+      ComplexCommands.prepareToShootAtAngle(robot, Degrees.of(55), 1),
+      ComplexCommands.finishShootingAtAngle(robot, Degrees.of(55), 1).raceWith(new WaitCommand(2)),
+      new SwerveAuton(robot, 0, 0, new Rotation2d(Degrees.of(-30))).raceWith(new WaitCommand(0)),
+      new PickupAuton(robot),
+      new SwerveAuton(robot, -.15, 0, robot.swerveSubsystem.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(3)),
+      ComplexCommands.prepareToShootAtAngle(robot, Degrees.of(55), 1),
+      ComplexCommands.finishShootingAtAngle(robot, Degrees.of(55), 1).raceWith(new WaitCommand(2)));
+      // new SwerveAuton(swerveSubsystem, 0, 0, new Rotation2d()).raceWith(new WaitCommand(0)),
+      // new PickupAuton(intakeSubsystem, swerveSubsystem),
+      // new TimeBasedSwerveAuton(new SwerveAuton(swerveSubsystem, 0, 0, new Rotation2d()), 0),
+      // ComplexCommands.prepareToShootAtAngle(armSubsystem, shooterSubsystem, Degrees.of(55), 1),
+      // ComplexCommands.finishShootingAtAngle(armSubsystem, shooterSubsystem, intakeSubsystem, Degrees.of(55), 1));
   }
 }

@@ -94,7 +94,7 @@ public class SingleControllerTeleoperativeControlsScheme implements ControlsSche
 					.withClamp(-1, 1)
 					.withScaledDeadband(JOYSTICK_DEADBAND)
 					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
-					.withScaling(0.6),
+					.withScaling(0.65),
 				DoubleSupplierBuilder.fromRightX(controller1)
 					.withScaling(-1)
 					.withClamp(-1, 1)

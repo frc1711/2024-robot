@@ -14,8 +14,11 @@ import frc.robot.commands.auton.framework.basic.SwerveAuton;
 public class TimeBasedSwerveAuton extends ParallelRaceGroup {
   /** Creates a new TimeBasedSwerveAuton. */
   public TimeBasedSwerveAuton(SwerveAuton swerveAuton, double time) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new WaitCommand(time), swerveAuton);
+
+    // super(new WaitCommand(time));
+
+    addCommands(
+      new WaitCommand(time),
+      swerveAuton);
   }
 }
