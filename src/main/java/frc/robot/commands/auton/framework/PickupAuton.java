@@ -4,12 +4,10 @@
 
 package frc.robot.commands.auton.framework;
 
-import static edu.wpi.first.units.Units.Degrees;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.commands.auton.framework.basic.IntakeAuton;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
 import frc.robot.commands.auton.framework.basic.timed.TimeBasedSwerveAuton;
@@ -28,15 +26,17 @@ public class PickupAuton extends ParallelDeadlineGroup {
 	/**
 	 * Creates a new PickupAuton.
 	 */
-	public PickupAuton(Intake intake, Swerve swerve) {
+	public PickupAuton(RobotContainer robotContainer, Intake intake, Swerve swerve) {
 		
-		super(new IntakeAuton(intake));
+		super(new IntakeAuton(robotContainer, intake));
+
+		swerve.calibrateFieldRelativeHeading();
 
 		xVariable = Math.cos(swerve.getFieldRelativeHeadingRotation2d().getRadians());
 		yVariable = Math.sin(swerve.getFieldRelativeHeadingRotation2d().getRadians());
 		robotPose = swerve.getRobotPose();
 		
-		addCommands(new TimeBasedSwerveAuton(new SwerveAuton(swerve, yVariable, xVariable, null), 2));
+		addCommands(new SwerveAuton(swerve, .15, 0, swerve.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(3)));
 		
 	}
 	

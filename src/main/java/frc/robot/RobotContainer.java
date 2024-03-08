@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.auton.Fellowship;
 import frc.robot.commands.auton.King;
@@ -143,24 +144,23 @@ public class RobotContainer {
 
 		autonChooser.addOption(
 			"The Two Towers (Two-Piece Auton)", 
-			() -> new TwoTowers(swerveSubsystem, intake, shooter, arm)
+			() -> new TwoTowers(this, swerveSubsystem, intake, shooter, arm)
 		);
 
 		autonChooser.addOption(
 			"Return of the King (Three-Piece Auton)", 
-			() -> new King(swerveSubsystem, intake, shooter, arm)
+			() -> new King(swerveSubsystem, intake, shooter, arm, this)
 		);
 
 		autonChooser.addOption(
 			"An Unexpected Journey (Distance Config Auton)", 
-			() -> new TimeBasedSwerveAuton(
-				new SwerveAuton(
+			() -> new SwerveAuton(
 					swerveSubsystem, 
 					DoublePreference.DISTANCE_CONFIG_AUTON_X_SPEED.get(), 
 					DoublePreference.DISTANCE_CONFIG_AUTON_Y_SPEED.get(), 
 					swerveSubsystem.getFieldRelativeHeadingRotation2d()
-				), 
-				DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get()
+				).raceWith( 
+				new WaitCommand(DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get())
 			)
 		);
 		

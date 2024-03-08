@@ -6,8 +6,6 @@ package frc.robot.commands.auton.framework.basic;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swerve.Swerve;
 
@@ -21,15 +19,12 @@ public class SwerveAuton extends Command {
 	
 	PIDController rotationalPID;
 	
-	Timer timer;
-	
 	public SwerveAuton(Swerve swerveSubsystem, double xSpeed, double ySpeed, Rotation2d desiredRotation) {
 		
 		this.swerveSubsystem = swerveSubsystem;
 		this.xSpeed = xSpeed;
 		this.ySpeed = ySpeed;
 		this.desiredRotation = desiredRotation;
-		this.timer = new Timer();
 		this.rotationalPID = new PIDController(.01, 0, 0);
 		rotationalPID.enableContinuousInput(0, 360);
 		addRequirements(swerveSubsystem);
@@ -41,8 +36,9 @@ public class SwerveAuton extends Command {
 	public void initialize() {
 		
 		swerveSubsystem.stop();
-		timer.restart();
 		
+		swerveSubsystem.configureChassisSpeedInputs(() -> xSpeed,() -> ySpeed, () -> thetaSpeed);
+
 	}
 	
 	double thetaSpeed;
@@ -55,16 +51,14 @@ public class SwerveAuton extends Command {
 			desiredRotation
 		.getDegrees());
 		
-		swerveSubsystem.configureChassisSpeedInputs(() -> xSpeed,() -> ySpeed, () -> thetaSpeed);
-		
 	}
 	
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
 		
+		swerveSubsystem.configureChassisSpeedInputs(() -> 0, () -> 0, () -> 0);
 		swerveSubsystem.stop();
-		timer.stop();
 		
 	}
 	

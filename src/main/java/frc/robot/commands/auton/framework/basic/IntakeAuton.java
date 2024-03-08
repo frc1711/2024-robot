@@ -4,23 +4,17 @@
 
 package frc.robot.commands.auton.framework.basic;
 
-import static edu.wpi.first.units.Units.Degrees;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.swerve.Swerve;
 
-public class IntakeAuton extends ParallelDeadlineGroup {
+public class IntakeAuton extends ParallelRaceGroup {
 	
-	public IntakeAuton(Intake intakeSubsystem) {
+	public IntakeAuton(RobotContainer robotContainer, Intake intakeSubsystem) {
 		
-		super (new WaitCommand(1.5));
-		
-		addCommands(intakeSubsystem.commands.intake());
+		addCommands(new WaitCommand(5), intakeSubsystem.commands.intake().onlyWhile(() -> !robotContainer.upperBeamBreakSensor.get()));
 	}
 	
 }
