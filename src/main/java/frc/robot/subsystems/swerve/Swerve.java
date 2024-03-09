@@ -341,6 +341,8 @@ public class Swerve extends SubsystemBase {
 			
 		}
 		
+		chassisSpeeds.omegaRadiansPerSecond *= 1.5;
+		
 		// Update the chassis speeds.
 		this.currentRawChassisSpeeds = chassisSpeeds;
 		
