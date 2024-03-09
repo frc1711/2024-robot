@@ -6,13 +6,15 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.ComplexCommands;
 import frc.robot.RobotContainer;
-import frc.robot.commands.auton.Fellowship;
 import frc.robot.commands.auton.King;
 import frc.robot.commands.auton.TwoTowers;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
 
 import java.util.function.Function;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 public enum Auton {
 	
@@ -23,7 +25,38 @@ public enum Auton {
 	
 	ONE_NOTE(
 		"Fellowship of the Ring (One Note)",
-			Fellowship::new
+		robot -> {
+			
+			double xSpeed = 0.35;
+			double ySpeed = 0;
+			StartPosition startPosition = StartPosition.getSelectedStartPosition();
+			Alliance alliance = DriverStation.getAlliance()
+				.orElse(Auton.getDefaultAlliance());
+			
+			if (
+				(startPosition == StartPosition.SOURCE_SIDE && alliance == Alliance.Red) ||
+				(startPosition == StartPosition.AMP_SIDE && alliance == Alliance.Blue)
+			) ySpeed = -0.35;
+			else if (
+				(startPosition == StartPosition.AMP_SIDE && alliance == Alliance.Red) ||
+				(startPosition == StartPosition.SOURCE_SIDE && alliance == Alliance.Blue)
+			) ySpeed = 0.35;
+			
+			return new WaitCommand(DoublePreference.AUTON_START_DELAY.get())
+				.andThen(ComplexCommands.shootAtAngle(
+					robot,
+					Degrees.of(55),
+					1
+				).withTimeout(2))
+				.andThen(new WaitCommand(DoublePreference.AUTON_ROLLOUT_DELAY.get()))
+				.andThen(new SwerveAuton(
+					robot,
+					xSpeed,
+					ySpeed,
+					robot.swerve.getFieldRelativeHeadingRotation2d()
+				).withTimeout(1.15));
+			
+		}
 	),
 	
 	TWO_NOTE(
