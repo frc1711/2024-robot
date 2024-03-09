@@ -1,5 +1,7 @@
 package frc.robot.configuration;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -53,6 +55,12 @@ public enum Auton {
 		new SendableChooser<>();
 	
 	/**
+	 * The default Alliance color to assume if no alliance color is able to be
+	 * fetched from the FMS.
+	 */
+	private static final Alliance DEFAULT_AUTON_ALLIANCE = Alliance.Red;
+	
+	/**
 	 * The default auton to run if no auton is explicitly selected.
 	 */
 	private static final Auton DEFAULT_AUTON = Auton.TWO_NOTE;
@@ -84,6 +92,12 @@ public enum Auton {
 		
 		this.humanReadableName = name;
 		this.commandSupplier = commandFunction;
+		
+	}
+	
+	public static Alliance getDefaultAlliance() {
+		
+		return Auton.DEFAULT_AUTON_ALLIANCE;
 		
 	}
 	
