@@ -13,11 +13,6 @@ import frc.robot.ComplexCommands;
 import frc.robot.RobotContainer;
 import frc.robot.commands.auton.framework.PickupAuton;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
-import frc.robot.commands.auton.framework.basic.timed.TimeBasedSwerveAuton;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.swerve.Swerve;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -32,7 +27,7 @@ public class TwoTowers extends SequentialCommandGroup {
       ComplexCommands.finishShootingAtAngle(robot, Degrees.of(55), 1).raceWith(new WaitCommand(2)),
       new SwerveAuton(robot, 0, 0, new Rotation2d(Degrees.of(-30))).raceWith(new WaitCommand(0)),
       new PickupAuton(robot),
-      new SwerveAuton(robot, -.15, 0, robot.swerveSubsystem.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(3)),
+      new SwerveAuton(robot, -.15, 0, robot.swerve.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(3)),
       ComplexCommands.prepareToShootAtAngle(robot, Degrees.of(55), 1),
       ComplexCommands.finishShootingAtAngle(robot, Degrees.of(55), 1).raceWith(new WaitCommand(2)));
       // new SwerveAuton(swerveSubsystem, 0, 0, new Rotation2d()).raceWith(new WaitCommand(0)),

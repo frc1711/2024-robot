@@ -54,7 +54,7 @@ public class ControlsSchemeBuilder {
 	) {
 		
 		controller.back().onTrue(
-			this.robot.swerveSubsystem.commands.calibrateFieldRelativeHeading()
+			this.robot.swerve.commands.calibrateFieldRelativeHeading()
 		);
 		
 		return this;
@@ -73,8 +73,8 @@ public class ControlsSchemeBuilder {
 		CommandXboxController controller
 	) {
 		
-		this.robot.swerveSubsystem.setDefaultCommand(
-			this.robot.swerveSubsystem.commands.driveFieldRelative(
+		this.robot.swerve.setDefaultCommand(
+			this.robot.swerve.commands.driveFieldRelative(
 				PointSupplierBuilder.fromLeftJoystick(controller)
 					.normalizeXboxJoystickToNWU()
 					.withClamp(-1, 1)
@@ -97,7 +97,7 @@ public class ControlsSchemeBuilder {
 		CommandXboxController controller
 	) {
 		
-		Swerve.Commands swerve = this.robot.swerveSubsystem.commands;
+		Swerve.Commands swerve = this.robot.swerve.commands;
 		
 		controller.povUp().onTrue(swerve.setFieldRelativeHeading(Degrees.of(0)));
 		controller.povLeft().onTrue(swerve.setFieldRelativeHeading(Degrees.of(90)));

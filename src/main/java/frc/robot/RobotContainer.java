@@ -7,10 +7,6 @@ package frc.robot;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -34,7 +30,7 @@ import frc.robot.util.StartPositions.StartPosition;
 
 public class RobotContainer {
 	
-	public final Swerve swerveSubsystem;
+	public final Swerve swerve;
 	
 	public final Shooter shooter;
 	
@@ -63,7 +59,7 @@ public class RobotContainer {
 		startPositionChooser = new SendableChooser<>();
 		configStartPositionChooser();
 		
-		swerveSubsystem = new Swerve(Swerve.StartPosition.STATION_ONE);
+		swerve = new Swerve(Swerve.StartPosition.STATION_ONE);
 		shooter = new Shooter();
 		intake = new Intake();
 		arm = new Arm();
@@ -142,7 +138,7 @@ public class RobotContainer {
 					this,
 					DoublePreference.DISTANCE_CONFIG_AUTON_X_SPEED.get(),
 					DoublePreference.DISTANCE_CONFIG_AUTON_Y_SPEED.get(),
-					swerveSubsystem.getFieldRelativeHeadingRotation2d()
+					swerve.getFieldRelativeHeadingRotation2d()
 				).raceWith(
 				new WaitCommand(DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get())
 			)

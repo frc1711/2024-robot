@@ -14,8 +14,6 @@ import frc.robot.util.StartPositions.StartPosition;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
@@ -28,7 +26,7 @@ public class Fellowship extends SequentialCommandGroup {
         ComplexCommands.prepareToShootAtAngle(robot, Degrees.of(55), 1),
         ComplexCommands.finishShootingAtAngle(robot, Degrees.of(55), 1).raceWith(new WaitCommand(2)),
         new WaitCommand(DoublePreference.AUTON_ROLLOUT_DELAY.get()),
-        new SwerveAuton(robot, .35, startPosition.autonYSpeed, robot.swerveSubsystem.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(1.15))
+        new SwerveAuton(robot, .35, startPosition.autonYSpeed, robot.swerve.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(1.15))
     );
     
   }

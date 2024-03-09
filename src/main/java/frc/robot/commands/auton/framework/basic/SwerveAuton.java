@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.swerve.Swerve;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 
 public class SwerveAuton extends Command {
@@ -25,7 +24,7 @@ public class SwerveAuton extends Command {
 	
 	public SwerveAuton(RobotContainer robot, double xSpeed, double ySpeed, Rotation2d desiredRotation) {
 		
-		this.swerveSubsystem = robot.swerveSubsystem;
+		this.swerveSubsystem = robot.swerve;
 		this.xSpeed = xSpeed;
 		this.ySpeed = ySpeed;
 		this.desiredRotation = desiredRotation;
