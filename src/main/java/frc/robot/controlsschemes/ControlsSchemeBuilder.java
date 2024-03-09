@@ -1,5 +1,6 @@
 package frc.robot.controlsschemes;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.ComplexCommands;
@@ -128,6 +129,22 @@ public class ControlsSchemeBuilder {
 					this.robot.upperBeamBreakSensor::get
 				))
 			), this.robot.upperBeamBreakSensor::get)
+		);
+		
+		return this;
+		
+	}
+	
+	public ControlsSchemeBuilder rumbleControllerWhenNoteInIntake(
+		CommandXboxController controller
+	) {
+		
+		double rumbleIntensity =
+			this.robot.lowerBeamBreakSensor.get() ? 0.5 : 0;
+		
+		controller.getHID().setRumble(
+			GenericHID.RumbleType.kBothRumble,
+			rumbleIntensity
 		);
 		
 		return this;
