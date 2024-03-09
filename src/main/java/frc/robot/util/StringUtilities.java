@@ -29,7 +29,7 @@ public class StringUtilities {
 	 */
 	public static String toTitleCase(String string) {
 		
-		String[] words = string.split(" ");
+		String[] words = string.toLowerCase().split(" ");
 		
 		for (int i = 0; i < words.length; i++) {
 			
