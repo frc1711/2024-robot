@@ -118,23 +118,6 @@ public class RobotContainer {
 		
 	}
 	
-	/**
-	 * Creates a new sendable command in the Analysis Tab of ShuffleBoard.
-	 */
-	public static void putCommand(
-		String name,
-		Command command,
-		boolean canRunWhileDisabled
-	) {
-		
-		putSendable(
-			"Analysis Tab",
-			name,
-			command.withName(name).ignoringDisable(canRunWhileDisabled)
-		);
-		
-	}
-	
 	private void configAutonChooser() {
 		
 		autonChooser.addOption(
