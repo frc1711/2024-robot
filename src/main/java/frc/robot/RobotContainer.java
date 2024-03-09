@@ -25,8 +25,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
-import frc.robot.util.StartPositions;
-import frc.robot.util.StartPositions.StartPosition;
+import frc.robot.util.StartPosition;
 
 public class RobotContainer {
 	
@@ -50,7 +49,7 @@ public class RobotContainer {
 	
 	public final SendableChooser<Supplier<Command>> testChooser;
 	
-	public final SendableChooser<Supplier<StartPositions.StartPosition>> startPositionChooser;
+	public final SendableChooser<Supplier<StartPosition>> startPositionChooser;
 	
 	public RobotContainer() {
 		
@@ -152,7 +151,7 @@ public class RobotContainer {
 		
 		startPositionChooser.addOption("Middle Starting Position", () -> StartPosition.MIDDLE);
 		startPositionChooser.addOption("Amp Side Starting Position", () -> StartPosition.AMP_SIDE);
-		startPositionChooser.addOption("Far Side Starting Position", () -> StartPosition.FAR_SIDE);
+		startPositionChooser.addOption("Far Side Starting Position", () -> StartPosition.SOURCE_SIDE);
 		
 		putSendable("Pre-match Tab", "Start Position Chooser", startPositionChooser);
 		
