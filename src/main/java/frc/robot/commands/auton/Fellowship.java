@@ -19,14 +19,14 @@ import static edu.wpi.first.units.Units.Degrees;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class Fellowship extends SequentialCommandGroup {
   
-  public Fellowship(RobotContainer robot, StartPosition startPosition) {
+  public Fellowship(RobotContainer robot) {
     //TODO: Add shuffleboard preference for a delay between first shot and rollout
     addCommands(
         new WaitCommand(DoublePreference.AUTON_START_DELAY.get()),
         ComplexCommands.prepareToShootAtAngle(robot, Degrees.of(55), 1),
         ComplexCommands.finishShootingAtAngle(robot, Degrees.of(55), 1).raceWith(new WaitCommand(2)),
         new WaitCommand(DoublePreference.AUTON_ROLLOUT_DELAY.get()),
-        new SwerveAuton(robot, .35, startPosition.autonYSpeed, robot.swerve.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(1.15))
+        new SwerveAuton(robot, .35, StartPosition.getSelectedStartPosition().autonYSpeed, robot.swerve.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(1.15))
     );
     
   }
