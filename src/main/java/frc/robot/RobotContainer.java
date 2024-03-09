@@ -4,28 +4,15 @@
 
 package frc.robot;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.auton.Fellowship;
-import frc.robot.commands.auton.King;
-import frc.robot.commands.auton.TwoTowers;
-import frc.robot.commands.auton.framework.basic.SwerveAuton;
-import frc.robot.configuration.DoublePreference;
 import frc.robot.configuration.DIODevice;
 import frc.robot.controlsschemes.ControlsScheme;
-import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
+import frc.robot.controlsschemes.SingleControllerTeleoperativeControlsScheme;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
-import frc.robot.configuration.StartPosition;
 
 public class RobotContainer {
 	
@@ -41,13 +28,11 @@ public class RobotContainer {
 	
 	public final DigitalInput lowerBeamBreakSensor;
 	
-	public final CommandXboxController driveController;
+	protected final CommandXboxController driveController;
 	
-	public final CommandXboxController subsystemController;
+	protected final CommandXboxController subsystemController;
 	
 	protected final ControlsScheme controlsScheme;
-	
-	protected final SendableChooser<Supplier<Command>> autonChooser;
 	
 	public RobotContainer() {
 		
@@ -69,10 +54,7 @@ public class RobotContainer {
 		this.subsystemController = new CommandXboxController(1);
 		
 		// Initialize the controls scheme.
-		this.controlsScheme = new StandardTeleoperativeControlsScheme();
-		
-		// Initialize the autonomous command chooser.
-		this.autonChooser = RobotContainer.initializeAutonChooser(this);
+		this.controlsScheme = new SingleControllerTeleoperativeControlsScheme();
 		
 		// Shuffleboard.getTab("Subsystems").add("Arm", arm);
 		// Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
@@ -91,57 +73,23 @@ public class RobotContainer {
 		
 	}
 	
-	protected static SendableChooser<Supplier<Command>> initializeAutonChooser(
-		RobotContainer robot
-	) {
+	public void teleopPeriodic() {
 		
-		SendableChooser<Supplier<Command>> autonChooser =
-			new SendableChooser<>();
-		
-		autonChooser.addOption(
-			"Fellowship of the Ring (Basic Auton)",
-			() -> new Fellowship(robot, StartPosition.getSelectedStartPosition())
+		this.controlsScheme.periodic(
+			this,
+			this.driveController,
+			this.subsystemController
 		);
-
-		autonChooser.addOption(
-			"The Two Towers (Two-Piece Auton)",
-			() -> new TwoTowers(robot)
-		);
-
-		autonChooser.addOption(
-			"Return of the King (Three-Piece Auton)",
-			() -> new King(robot)
-		);
-
-		autonChooser.addOption(
-			"An Unexpected Journey (Distance Config Auton)",
-			() -> new SwerveAuton(
-					robot,
-					DoublePreference.DISTANCE_CONFIG_AUTON_X_SPEED.get(),
-					DoublePreference.DISTANCE_CONFIG_AUTON_Y_SPEED.get(),
-					robot.swerve.getFieldRelativeHeadingRotation2d()
-				).raceWith(
-				new WaitCommand(DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get())
-			)
-		);
-		
-		Shuffleboard.getTab("Pre-match Tab")
-			.add("Auton Chooser", autonChooser);
-		
-		return autonChooser;
 		
 	}
 	
-	public Optional<Command> getAutonomousCommand() {
+	public void teleopExit() {
 		
-		Supplier<Command> commandSupplier = autonChooser.getSelected();
-		
-		if (commandSupplier == null) return Optional.empty();
-		
-		Command command = commandSupplier.get();
-		
-		if (command == null) return Optional.empty();
-		else return Optional.of(command);
+		this.controlsScheme.exit(
+			this,
+			this.driveController,
+			this.subsystemController
+		);
 		
 	}
 	
