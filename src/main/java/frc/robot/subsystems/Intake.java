@@ -169,6 +169,12 @@ public class Intake extends SubsystemBase {
             
         }
         
+        public Command stop() {
+            
+            return Intake.this.runOnce(Intake.this::stop);
+            
+        }
+        
     }
 	
 }
