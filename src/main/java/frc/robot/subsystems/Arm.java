@@ -38,14 +38,6 @@ public class Arm extends PIDSubsystem {
 	protected final RaptorsSparkAbsoluteEncoder leftEncoder;
 	
 	protected final RaptorsSparkAbsoluteEncoder rightEncoder;
-
-	protected final DigitalInput leftUpperLimitSwitch;
-
-//	protected final DigitalInput rightUpperLimitSwitch;
-
-//	protected final DigitalInput leftLowerLimitSwitch;
-
-//	protected final DigitalInput rightLowerLimitSwitch;
 	
 	protected Measure<Angle> restingAngle;
 	
@@ -91,12 +83,6 @@ public class Arm extends PIDSubsystem {
 			Degrees,
 			true
 		);
-		
-
-		leftUpperLimitSwitch = new DigitalInput(DIODevice.LEFT_UPPER_ARM_LIMIT_SWITCH.id);
-//		rightUpperLimitSwitch = new DigitalInput(DIODevice.RIGHT_UPPER_ARM_LIMIT_SWITCH.id);
-//		leftLowerLimitSwitch = new DigitalInput(DIODevice.LEFT_LOWER_ARM_LIMIT_SWITCH.id);
-//		rightLowerLimitSwitch = new DigitalInput(DIODevice.RIGHT_LOWER_ARM_LIMIT_SWITCH.id);
 		
 		this.commands = new Arm.Commands();
 		this.triggers = new Arm.Triggers();
@@ -206,37 +192,6 @@ public class Arm extends PIDSubsystem {
 		
 	}
 	
-	public boolean areUpperLimitsSwitchesTripped() {
-		
-		return this.leftUpperLimitSwitch.get();
-		
-		// return (
-		// 	this.leftUpperLimitSwitch.get() ||
-		// 	this.rightUpperLimitSwitch.get()
-		// );
-		
-	}
-	
-	public boolean areLowerLimitsSwitchesTripped() {
-		
-		return false;
-		
-		// return (
-		// 	this.leftLowerLimitSwitch.get() ||
-		// 	this.rightLowerLimitSwitch.get()
-		// );
-		
-	}
-	
-	public boolean areLimitSwitchesTripped() {
-		
-		return (
-			this.areUpperLimitsSwitchesTripped() ||
-			this.areLowerLimitsSwitchesTripped()
-		);
-		
-	}
-	
 	public boolean isArmOutsideUpperAngularLimit() {
 		
 		return this.getAngle().in(Degrees) >
@@ -262,19 +217,13 @@ public class Arm extends PIDSubsystem {
 	
 	public boolean isArmOutsideUpperLimit() {
 		
-		return (
-			this.areUpperLimitsSwitchesTripped() ||
-			this.isArmOutsideUpperAngularLimit()
-		);
+		return this.isArmOutsideUpperAngularLimit();
 		
 	}
 	
 	public boolean isArmOutsideLowerLimit() {
 		
-		return (
-			this.areLowerLimitsSwitchesTripped() ||
-			this.isArmOutsideLowerAngularLimit()
-		);
+		return this.isArmOutsideLowerAngularLimit();
 		
 	}
 	
