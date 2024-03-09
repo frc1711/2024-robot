@@ -29,6 +29,7 @@ public enum Auton {
 			
 			double xSpeed = 0.35;
 			double ySpeed = 0;
+			
 			StartPosition startPosition = StartPosition.getSelectedStartPosition();
 			Alliance alliance = DriverStation.getAlliance()
 				.orElse(Auton.getDefaultAlliance());
@@ -76,9 +77,7 @@ public enum Auton {
 			DoublePreference.DISTANCE_CONFIG_AUTON_X_SPEED.get(),
 			DoublePreference.DISTANCE_CONFIG_AUTON_Y_SPEED.get(),
 			robot.swerve.getFieldRelativeHeadingRotation2d()
-		).raceWith(
-			new WaitCommand(DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get())
-		)
+		).withTimeout(DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get())
 	);
 	
 	/**
