@@ -76,7 +76,7 @@ public class RobotContainer {
 			DIODevice.INTAKE_LOWER_BEAM_BREAK_SENSOR.id
 		);
 		
-		 Shuffleboard.getTab("Subsystems").add("Arm", arm);
+		// Shuffleboard.getTab("Subsystems").add("Arm", arm);
 		// Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
 		// Shuffleboard.getTab("Subsystems").add("Intake", intake);
 		// Shuffleboard.getTab("Subsystems").add("Swerve", this.swerveSubsystem);
