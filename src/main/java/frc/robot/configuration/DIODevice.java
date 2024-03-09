@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package frc.robot.configuration;
 
 /**
  * Enumerates the devices plugged into the DIO ports of the RoboRIO, alongside

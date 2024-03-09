@@ -29,9 +29,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.robot.constants.CANDevice;
-import frc.robot.constants.DoublePreference;
-import frc.robot.constants.RobotDimensions;
+import frc.robot.configuration.CANDevice;
+import frc.robot.configuration.DoublePreference;
+import frc.robot.configuration.RobotDimensions;
 import frc.robot.util.Point;
 
 import java.util.function.DoubleSupplier;

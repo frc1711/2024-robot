@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package frc.robot.configuration;
 
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Distance;

@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.DoublePreference;
+import frc.robot.configuration.DoublePreference;
 import frc.robot.util.StartPosition;
 
 import java.util.Optional;

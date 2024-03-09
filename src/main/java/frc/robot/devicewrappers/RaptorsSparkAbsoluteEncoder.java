@@ -8,7 +8,7 @@ import edu.wpi.first.units.Velocity;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Preferences;
-import frc.robot.constants.DoublePreference;
+import frc.robot.configuration.DoublePreference;
 import frc.robot.util.ControlsUtilities;
 
 import static edu.wpi.first.units.Units.*;
