@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.configuration.DIODevice;
 import frc.robot.controlsschemes.ControlsScheme;
 import frc.robot.controlsschemes.SingleControllerTeleoperativeControlsScheme;
+import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -54,7 +55,7 @@ public class RobotContainer {
 		this.subsystemController = new CommandXboxController(1);
 		
 		// Initialize the controls scheme.
-		this.controlsScheme = new SingleControllerTeleoperativeControlsScheme();
+		this.controlsScheme = new StandardTeleoperativeControlsScheme();
 		
 		// Shuffleboard.getTab("Subsystems").add("Arm", arm);
 		// Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
