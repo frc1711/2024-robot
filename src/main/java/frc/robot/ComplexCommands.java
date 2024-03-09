@@ -67,7 +67,7 @@ public class ComplexCommands {
 		Command shoot = robot.intake.commands.intake().withTimeout(1);
 		
 		return prepareToShoot
-			.alongWith(waitUntilPreparedToShoot.andThen(shoot))
+			.alongWith(waitUntilPreparedToShoot.andThen(shoot).withTimeout(1))
 			.andThen(robot.shooter.commands.stop())
 			.handleInterrupt(robot.shooter::stop);
 		
