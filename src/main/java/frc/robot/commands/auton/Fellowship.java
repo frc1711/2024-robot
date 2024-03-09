@@ -10,7 +10,7 @@ import frc.robot.ComplexCommands;
 import frc.robot.RobotContainer;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
 import frc.robot.constants.DoublePreference;
-import frc.robot.util.StartPositions.StartPosition;
+import frc.robot.util.StartPosition;
 
 import static edu.wpi.first.units.Units.Degrees;
 
