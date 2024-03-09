@@ -7,7 +7,6 @@ package frc.robot;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -48,40 +47,37 @@ public class RobotContainer {
 	
 	protected final ControlsScheme controlsScheme;
 	
-	public final SendableChooser<Supplier<Command>> autonChooser;
+	protected final SendableChooser<Supplier<Command>> autonChooser;
 	
 	public RobotContainer() {
 		
-		driveController = new CommandXboxController(0);
-		subsystemController = new CommandXboxController(1);
-		startPositionChooser = new SendableChooser<>();
-		configStartPositionChooser();
+		// Initialize the subsystems.
+		this.swerve = new Swerve(Swerve.StartPosition.STATION_ONE);
+		this.shooter = new Shooter();
+		this.intake = new Intake();
+		this.arm = new Arm();
 		
-		swerve = new Swerve(Swerve.StartPosition.STATION_ONE);
-		shooter = new Shooter();
-		intake = new Intake();
-		arm = new Arm();
+		// Initialize the various sensors on the robot.
+		this.upperBeamBreakSensor =
+			new DigitalInput(DIODevice.INTAKE_UPPER_BEAM_BREAK_SENSOR.id);
 		
-		controlsScheme = new StandardTeleoperativeControlsScheme();
+		this.lowerBeamBreakSensor =
+			new DigitalInput(DIODevice.INTAKE_LOWER_BEAM_BREAK_SENSOR.id);
 		
-		this.upperBeamBreakSensor = new DigitalInput(
-			DIODevice.INTAKE_UPPER_BEAM_BREAK_SENSOR.id
-		);
+		// Initialize the controller instances.
+		this.driveController = new CommandXboxController(0);
+		this.subsystemController = new CommandXboxController(1);
 		
-		this.lowerBeamBreakSensor = new DigitalInput(
-			DIODevice.INTAKE_LOWER_BEAM_BREAK_SENSOR.id
-		);
+		// Initialize the controls scheme.
+		this.controlsScheme = new StandardTeleoperativeControlsScheme();
+		
+		// Initialize the autonomous command chooser.
+		this.autonChooser = RobotContainer.initializeAutonChooser(this);
 		
 		// Shuffleboard.getTab("Subsystems").add("Arm", arm);
 		// Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
 		// Shuffleboard.getTab("Subsystems").add("Intake", intake);
 		// Shuffleboard.getTab("Subsystems").add("Swerve", this.swerveSubsystem);
-		
-		autonChooser = new SendableChooser<>();
-		testChooser = new SendableChooser<>();
-		
-		// configTestTab();
-		configAutonChooser();
 		
 	}
 	
@@ -95,30 +91,35 @@ public class RobotContainer {
 		
 	}
 	
-	private void configAutonChooser() {
+	protected static SendableChooser<Supplier<Command>> initializeAutonChooser(
+		RobotContainer robot
+	) {
+		
+		SendableChooser<Supplier<Command>> autonChooser =
+			new SendableChooser<>();
 		
 		autonChooser.addOption(
 			"Fellowship of the Ring (Basic Auton)",
-			() -> new Fellowship(this, StartPosition.getSelectedStartPosition())
+			() -> new Fellowship(robot, StartPosition.getSelectedStartPosition())
 		);
 
 		autonChooser.addOption(
 			"The Two Towers (Two-Piece Auton)",
-			() -> new TwoTowers(this)
+			() -> new TwoTowers(robot)
 		);
 
 		autonChooser.addOption(
 			"Return of the King (Three-Piece Auton)",
-			() -> new King(this)
+			() -> new King(robot)
 		);
 
 		autonChooser.addOption(
 			"An Unexpected Journey (Distance Config Auton)",
 			() -> new SwerveAuton(
-					this,
+					robot,
 					DoublePreference.DISTANCE_CONFIG_AUTON_X_SPEED.get(),
 					DoublePreference.DISTANCE_CONFIG_AUTON_Y_SPEED.get(),
-					swerve.getFieldRelativeHeadingRotation2d()
+					robot.swerve.getFieldRelativeHeadingRotation2d()
 				).raceWith(
 				new WaitCommand(DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get())
 			)
@@ -126,6 +127,8 @@ public class RobotContainer {
 		
 		Shuffleboard.getTab("Pre-match Tab")
 			.add("Auton Chooser", autonChooser);
+		
+		return autonChooser;
 		
 	}
 	
