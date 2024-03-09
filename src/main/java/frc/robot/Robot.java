@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.DoublePreference;
+import frc.robot.util.StartPosition;
 
 import java.util.Optional;
 
@@ -22,6 +23,9 @@ public class Robot extends TimedRobot {
         
         // Initialize preferences on the RoboRIO.
         DoublePreference.init();
+        
+        // Initialize the Shuffleboard starting position selector.
+        StartPosition.initializeShuffleboardSelector();
 		
         // Initialize the RobotContainer.
         this.robotContainer = new RobotContainer();
