@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -161,9 +162,16 @@ public class RobotContainer {
 		
 	}
 	
-	public Command getAutonomousCommand() {
+	public Optional<Command> getAutonomousCommand() {
 		
-		return autonChooser.getSelected().get();
+		Supplier<Command> commandSupplier = autonChooser.getSelected();
+		
+		if (commandSupplier == null) return Optional.empty();
+		
+		Command command = commandSupplier.get();
+		
+		if (command == null) return Optional.empty();
+		else return Optional.of(command);
 		
 	}
 	
