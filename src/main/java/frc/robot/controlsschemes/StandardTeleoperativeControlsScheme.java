@@ -32,9 +32,9 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 		CommandXboxController controller2
 	) {
 		
-		(new ControlsSchemeBuilder(robot))
-			.rumbleControllerWhenNoteInIntake(controller1)
-			.rumbleControllerWhenNoteInIntake(controller2);
+//		(new ControlsSchemeBuilder(robot))
+//			.rumbleControllerWhenNoteInIntake(controller1)
+//			.rumbleControllerWhenNoteInIntake(controller2);
 		
 	}
 	
@@ -45,8 +45,8 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 		CommandXboxController controller2
 	) {
 		
-		controller1.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0);
-		controller2.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0);
+//		controller1.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0);
+//		controller2.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0);
 		
 	}
 	
