@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.configuration.DoublePreference;
-import frc.robot.util.StartPosition;
+import frc.robot.configuration.StartPosition;
 
 import java.util.Optional;
 

@@ -1,9 +1,10 @@
-package frc.robot.util;
+package frc.robot.configuration;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import frc.robot.util.StringUtilities;
 
 /**
  * An enumeration representing the starting position of the robot on the field

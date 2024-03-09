@@ -25,7 +25,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
-import frc.robot.util.StartPosition;
+import frc.robot.configuration.StartPosition;
 
 public class RobotContainer {
 	
