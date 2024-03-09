@@ -99,21 +99,6 @@ public class RobotContainer {
 		
 	}
 	
-	public Command getTestCommand() {
-		
-		return testChooser.getSelected().get();
-		
-	}
-	
-	/**
-	 * Creates a new sendable field in the Analysis Tab of ShuffleBoard.
-	 */
-	public static void putSendable(String tab, String name, Sendable sendable) {
-		
-		Shuffleboard.getTab(tab).add(name, sendable);
-		
-	}
-	
 	private void configAutonChooser() {
 		
 		autonChooser.addOption(
@@ -143,7 +128,8 @@ public class RobotContainer {
 			)
 		);
 		
-		putSendable("Pre-match Tab", "Auton Chooser", autonChooser);
+		Shuffleboard.getTab("Pre-match Tab")
+			.add("Auton Chooser", autonChooser);
 		
 	}
 	
