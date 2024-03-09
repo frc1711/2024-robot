@@ -3,7 +3,6 @@ package frc.robot.controlsschemes;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer;
 
-@FunctionalInterface
 public interface ControlsScheme {
 	
 	/**
@@ -14,5 +13,17 @@ public interface ControlsScheme {
 		CommandXboxController controller1,
 		CommandXboxController controller2
 	);
+	
+	default void periodic(
+		RobotContainer robot,
+		CommandXboxController controller1,
+		CommandXboxController controller2
+	) {}
+	
+	default void exit(
+		RobotContainer robot,
+		CommandXboxController controller1,
+		CommandXboxController controller2
+	) {}
 	
 }
