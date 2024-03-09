@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.configuration.Auton;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.configuration.StartPosition;
 
@@ -26,10 +27,39 @@ public class Robot extends TimedRobot {
         
         // Initialize the Shuffleboard starting position selector.
         StartPosition.initializeShuffleboardSelector();
+        
+        // Initialize the Shuffleboard auton selector.
+        Auton.initializeShuffleboardSelector();
 		
         // Initialize the RobotContainer.
         this.robotContainer = new RobotContainer();
 		
+    }
+    
+    @Override
+    public void autonomousInit() {
+        
+        Auton.runSelectedAuton(this.robotContainer);
+        
+    }
+    
+    @Override
+    public void teleopInit() {
+        
+        // Stop any running autonomous command when teleop starts.
+        if (this.autonomousCommand != null) this.autonomousCommand.cancel();
+        
+        // Start the robot's teleop mode.
+        this.robotContainer.initTeleop();
+        
+    }
+    
+    @Override
+    public void testInit() {
+        
+        // Cancels all running commands at the start of test mode.
+        CommandScheduler.getInstance().cancelAll();
+        
     }
     
     @Override
@@ -41,37 +71,18 @@ public class Robot extends TimedRobot {
     }
     
     @Override
-    public void autonomousInit() {
+    public void teleopPeriodic() {
         
-        Optional<Command> autonomousCommand =
-            this.robotContainer.getAutonomousCommand();
+        // Run the teleopPeriodic method of the RobotContainer.
+        this.robotContainer.teleopPeriodic();
         
-        if (autonomousCommand.isPresent()) {
-            
-            this.autonomousCommand = autonomousCommand.get();
-            this.autonomousCommand.schedule();
-            
-        }
-	
     }
     
     @Override
-    public void teleopInit() {
-		
-        // Stop any running autonomous command when teleop starts.
-        if (this.autonomousCommand != null) this.autonomousCommand.cancel();
+    public void teleopExit() {
         
-        // Start the robot's teleop mode.
-        this.robotContainer.initTeleop();
-		
+        // Run the teleopExit method of the RobotContainer.
+        this.robotContainer.teleopExit();
+        
     }
-    
-    @Override
-    public void testInit() {
-		
-        // Cancels all running commands at the start of test mode.
-        CommandScheduler.getInstance().cancelAll();
-		
-    }
-	
 }
