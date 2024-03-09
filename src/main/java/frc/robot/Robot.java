@@ -22,7 +22,7 @@ public class Robot extends TimedRobot {
         DoublePreference.init();
 		
         // Initialize the RobotContainer.
-        robotContainer = new RobotContainer();
+        this.robotContainer = new RobotContainer();
 		
     }
     
@@ -37,10 +37,10 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
 		
-        autonomousCommand = robotContainer.getAutonomousCommand();
+        this.autonomousCommand = this.robotContainer.getAutonomousCommand();
         
         // Schedule the autonomous command, if there is one.
-        if (autonomousCommand != null) autonomousCommand.schedule();
+        if (this.autonomousCommand != null) this.autonomousCommand.schedule();
 	
     }
     
@@ -48,10 +48,10 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
 		
         // Stop any running autonomous command when teleop starts.
-        if (autonomousCommand != null) autonomousCommand.cancel();
+        if (this.autonomousCommand != null) this.autonomousCommand.cancel();
         
         // Start the robot's teleop mode.
-        robotContainer.initTeleop();
+        this.robotContainer.initTeleop();
 		
     }
     
