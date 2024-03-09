@@ -87,11 +87,6 @@ public class RobotContainer {
 		// configTestTab();
 		configAutonChooser();
 		
-		Shuffleboard.getTab("Subsystems").addBoolean(
-			"Upper Beam Break",
-			this.upperBeamBreakSensor::get
-		);
-		
 	}
 	
 	public void initTeleop() {
