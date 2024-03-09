@@ -115,8 +115,7 @@ public class ControlsSchemeBuilder {
 					.normalizeXboxJoystickToNWU()
 					.withClamp(-1, 1)
 					.withScaledDeadband(JOYSTICK_DEADBAND)
-					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
-					.withScaling(0.85),
+					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER),
 				DoubleSupplierBuilder.fromRightX(controller)
 					.withScaling(-1)
 					.withClamp(-1, 1)
