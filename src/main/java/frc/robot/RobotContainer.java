@@ -158,7 +158,7 @@ public class RobotContainer {
 		startPositionChooser.addOption("Amp Side Starting Position", () -> StartPosition.AMP_SIDE);
 		startPositionChooser.addOption("Far Side Starting Position", () -> StartPosition.FAR_SIDE);
 		
-		putSendable("Pre-match Tab", "Start Postion Chooser", startPositionChooser);
+		putSendable("Pre-match Tab", "Start Position Chooser", startPositionChooser);
 		
 	}
 	
