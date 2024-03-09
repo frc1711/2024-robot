@@ -16,22 +16,48 @@ import java.util.Map;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+/**
+ * A builder for constructing controls schemes for the robot.
+ */
 public class ControlsSchemeBuilder {
 	
+	/**
+	 * The threshold at which the triggers of the controller should be
+	 * considered to be pressed.
+	 */
 	protected static final double TRIGGER_THRESHOLD = 0.5;
 	
+	/**
+	 * The deadband to apply to the joysticks of the controller.
+	 */
 	protected static final double JOYSTICK_DEADBAND = 0.1;
 	
+	/**
+	 * The power to raise the input of the joysticks to for smoothing.
+	 */
 	protected static final double LINEAR_INPUT_SMOOTHING_POWER = 2;
 	
+	/**
+	 * The robot to build the controls scheme for.
+	 */
 	protected final RobotContainer robot;
 	
+	/**
+	 * Initializes a new ControlsSchemeBuilder against the given robot.
+	 *
+	 * @param robot The robot to build the controls scheme for.
+	 */
 	public ControlsSchemeBuilder(RobotContainer robot) {
 		
 		this.robot = robot;
 		
 	}
 	
+	/**
+	 * Configures the default commands for the robot's subsystems.
+	 *
+	 * @return This builder, for method chaining.
+	 */
 	public ControlsSchemeBuilder configureDefaultRobotCommands() {
 		
 		Arm.Commands arm = this.robot.arm.commands;
@@ -50,6 +76,14 @@ public class ControlsSchemeBuilder {
 		
 	}
 	
+	/**
+	 * Registers the 'SELECT' button of the given controller to calibrate the
+	 * field-relative heading of the robot.
+	 *
+	 * @param controller The controller that should be registered to handle the
+	 * given controls.
+	 * @return This builder, for method chaining.
+	 */
 	public ControlsSchemeBuilder useControllerSelectButtonToCalibrateFieldRelativeHeading(
 		CommandXboxController controller
 	) {
@@ -69,6 +103,7 @@ public class ControlsSchemeBuilder {
 	 *
 	 * @param controller The controller that should be registered to handle the
 	 * given controls.
+	 * @return This builder, for method chaining.
 	 */
 	public ControlsSchemeBuilder useControllerJoysticksForDriving(
 		CommandXboxController controller
@@ -94,6 +129,14 @@ public class ControlsSchemeBuilder {
 		
 	}
 	
+	/**
+	 * Registers the cardinal directions of the D-Pad of the given controller to
+	 * snap the robot to the corresponding field-relative heading.
+	 *
+	 * @param controller The controller that should be registered to handle the
+	 * given controls.
+	 * @return This builder, for method chaining.
+	 */
 	public ControlsSchemeBuilder useControllerDPadForSnappingToHeading(
 		CommandXboxController controller
 	) {
@@ -109,6 +152,14 @@ public class ControlsSchemeBuilder {
 		
 	}
 	
+	/**
+	 * Registers the triggers of the given controller to control the intake of
+	 * the robot.
+	 *
+	 * @param controller The controller that should be registered to handle the
+	 * given controls.
+	 * @return This builder, for method chaining.
+	 */
 	public ControlsSchemeBuilder useControllerTriggersForIntakingAndOuttaking(
 		CommandXboxController controller
 	) {
@@ -135,6 +186,14 @@ public class ControlsSchemeBuilder {
 		
 	}
 	
+	/**
+	 * Periodically controls the rumble of the given controller based on the
+	 * state of the intake's beam break sensor.
+	 *
+	 * @param controller The controller that should be registered to handle the
+	 * given controls.
+	 * @return This builder, for method chaining.
+	 */
 	public ControlsSchemeBuilder rumbleControllerWhenNoteInIntake(
 		CommandXboxController controller
 	) {
@@ -151,6 +210,14 @@ public class ControlsSchemeBuilder {
 		
 	}
 	
+	/**
+	 * Registers the 'A', 'B', and 'Y' buttons of the given controller to shoot
+	 * the robot's shooter at different angles.
+	 *
+	 * @param controller The controller that should be registered to handle the
+	 * given controls.
+	 * @return This builder, for method chaining.
+	 */
 	public ControlsSchemeBuilder useABXYButtonsForShooting(
 		CommandXboxController controller
 	) {
