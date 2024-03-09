@@ -133,16 +133,6 @@ public class RobotContainer {
 		
 	}
 	
-	private void configStartPositionChooser() {
-		
-		startPositionChooser.addOption("Middle Starting Position", () -> StartPosition.MIDDLE);
-		startPositionChooser.addOption("Amp Side Starting Position", () -> StartPosition.AMP_SIDE);
-		startPositionChooser.addOption("Far Side Starting Position", () -> StartPosition.SOURCE_SIDE);
-		
-		putSendable("Pre-match Tab", "Start Position Chooser", startPositionChooser);
-		
-	}
-	
 	public Optional<Command> getAutonomousCommand() {
 		
 		Supplier<Command> commandSupplier = autonChooser.getSelected();
