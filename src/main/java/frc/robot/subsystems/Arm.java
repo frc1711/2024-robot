@@ -297,6 +297,19 @@ public class Arm extends PIDSubsystem {
 		
 	}
 	
+	public boolean isArmAtAngle(Measure<Angle> angle, Measure<Angle> tolerance) {
+		
+		Measure<Angle> currentAngle = this.getAngle();
+		Measure<Angle> minimumAngle = angle.minus(tolerance);
+		Measure<Angle> maximumAngle = angle.plus(tolerance);
+		
+		return (
+			currentAngle.gte(minimumAngle) &&
+			currentAngle.lte(maximumAngle)
+		);
+		
+	}
+	
 	@Override
 	public void initSendable(SendableBuilder builder) {
 		
@@ -453,6 +466,14 @@ public class Arm extends PIDSubsystem {
 		public Trigger armHasReachedSetpoint() {
 			
 			return new Trigger(Arm.this.getController()::atSetpoint);
+			
+		}
+		
+		public Trigger armIsAtAngle(Measure<Angle> angle, Measure<Angle> tolerance) {
+			
+			return new Trigger(
+				() -> Arm.this.isArmAtAngle(angle, tolerance)
+			);
 			
 		}
 		
