@@ -103,7 +103,7 @@ public class RobotContainer {
 		
 		autonChooser.addOption(
 			"Fellowship of the Ring (Basic Auton)",
-			() -> new Fellowship(this, startPositionChooser.getSelected().get())
+			() -> new Fellowship(this, StartPosition.getSelectedStartPosition())
 		);
 
 		autonChooser.addOption(
