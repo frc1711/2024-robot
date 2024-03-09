@@ -29,7 +29,8 @@ public class ComplexCommands {
 	) {
 		
 		return robot.arm.commands.goToRestingAngle(angle)
-			.alongWith(robot.shooter.commands.spinUp(shooterSpeed));
+			.alongWith(robot.shooter.commands.spinUp(shooterSpeed))
+			.handleInterrupt(robot.shooter::stop);
 		
 	}
 	
@@ -40,13 +41,9 @@ public class ComplexCommands {
 	) {
 		
 		return robot.intake.commands.intake().raceWith(new WaitCommand(1))
-			/*.onlyIf(
-				robot.arm.triggers.armHasReachedSetpoint()
-//					.and(robot.shooter.triggers.isAtSpeed(shooterSpeed))
-			)*/.andThen(
-				robot.arm.commands.goToRestingAngle(Degrees.of(0))
-					.alongWith(robot.shooter.commands.stop())
-			);
+			.andThen(robot.arm.commands.goToRestingAngle(Degrees.of(0))
+				.alongWith(robot.shooter.commands.stop())
+			).handleInterrupt(robot.shooter::stop);
 		
 	}
 	
