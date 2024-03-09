@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -53,15 +54,22 @@ public class ComplexCommands {
 		double shooterSpeed
 	) {
 		
-		return ComplexCommands.prepareToShootAtAngle(
-			robot,
-			angle,
-			shooterSpeed
-		).andThen(ComplexCommands.finishShootingAtAngle(
-			robot,
-			angle,
-			shooterSpeed
-		));
+		Command prepareToShoot = robot.arm.commands.holdAtAngle(angle)
+			.alongWith(robot.shooter.commands.spinUp());
+		
+		Command waitUntilPreparedToShoot = new FunctionalCommand(
+			() -> {},
+			() -> {},
+			(wasInterrupted) -> {},
+			() -> robot.arm.getController().atSetpoint()
+		).withTimeout(1.5);
+		
+		Command shoot = robot.intake.commands.intake().withTimeout(1);
+		
+		return prepareToShoot
+			.alongWith(waitUntilPreparedToShoot.andThen(shoot))
+			.andThen(robot.shooter.commands.stop())
+			.handleInterrupt(robot.shooter::stop);
 		
 	}
 
