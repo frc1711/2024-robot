@@ -20,6 +20,7 @@ import frc.robot.commands.auton.TwoTowers;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
 import frc.robot.constants.DoublePreference;
 import frc.robot.constants.DIODevice;
+import frc.robot.controlsschemes.ControlsScheme;
 import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -45,6 +46,8 @@ public class RobotContainer {
 	
 	public final CommandXboxController subsystemController;
 	
+	protected final ControlsScheme controlsScheme;
+	
 	public final SendableChooser<Supplier<Command>> autonChooser;
 	
 	public final SendableChooser<Supplier<Command>> testChooser;
@@ -62,6 +65,8 @@ public class RobotContainer {
 		shooter = new Shooter();
 		intake = new Intake();
 		arm = new Arm();
+		
+		controlsScheme = new StandardTeleoperativeControlsScheme();
 		
 		this.upperBeamBreakSensor = new DigitalInput(
 			DIODevice.INTAKE_UPPER_BEAM_BREAK_SENSOR.id
@@ -91,7 +96,7 @@ public class RobotContainer {
 	
 	public void initTeleop() {
 		
-		(new StandardTeleoperativeControlsScheme()).configureControls(
+		this.controlsScheme.configureControls(
 			this,
 			this.driveController,
 			this.subsystemController
