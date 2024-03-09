@@ -66,8 +66,6 @@ public class DriveCommand extends Command {
     
     timer = new Timer();
 
-    RobotContainer.putSendable("Analysis Tab", "Swerve Odometry", swerveSubsystem);
-
     addRequirements(swerveSubsystem);
   }
 
