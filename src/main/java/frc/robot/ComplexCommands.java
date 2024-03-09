@@ -65,7 +65,7 @@ public class ComplexCommands {
 		
 	}
 
-	public static Command followTrajectory (Swerve swerveSubsystem) {
+	public static Command followTrajectory(Swerve swerveSubsystem) {
 
 		TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
 			FeetPerSecond.of(1),
