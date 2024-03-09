@@ -23,31 +23,6 @@ import static edu.wpi.first.units.Units.*;
 
 public class ComplexCommands {
 	
-	public static Command prepareToShootAtAngle(
-		RobotContainer robot,
-		Measure<Angle> angle,
-		double shooterSpeed
-	) {
-		
-		return robot.arm.commands.goToRestingAngle(angle)
-			.alongWith(robot.shooter.commands.spinUp(shooterSpeed))
-			.handleInterrupt(robot.shooter::stop);
-		
-	}
-	
-	public static Command finishShootingAtAngle(
-		RobotContainer robot,
-		Measure<Angle> angle,
-		double shooterSpeed
-	) {
-		
-		return robot.intake.commands.intake().raceWith(new WaitCommand(1))
-			.andThen(robot.arm.commands.goToRestingAngle(Degrees.of(0))
-				.alongWith(robot.shooter.commands.stop())
-			).handleInterrupt(robot.shooter::stop);
-		
-	}
-	
 	public static Command shootAtAngle(
 		RobotContainer robot,
 		Measure<Angle> angle,
@@ -55,21 +30,17 @@ public class ComplexCommands {
 	) {
 		
 		Command prepareToShoot = robot.arm.commands.holdAtAngle(angle)
-			.alongWith(robot.shooter.commands.spinUp());
+			.alongWith(robot.shooter.commands.spinUp(shooterSpeed));
 		
-		Command waitUntilPreparedToShoot = new FunctionalCommand(
-			() -> {},
-			() -> {},
-			(wasInterrupted) -> {},
-			() -> robot.arm.getController().atSetpoint()
-		).withTimeout(1.5);
+		Command waitUntilPreparedToShoot = new WaitCommand(1.5)
+			.until(robot.arm.getController()::atSetpoint);
 		
 		Command shoot = robot.intake.commands.intake().withTimeout(1);
 		
-		return prepareToShoot
-			.alongWith(waitUntilPreparedToShoot.andThen(shoot).withTimeout(1))
-			.andThen(robot.shooter.commands.stop())
-			.handleInterrupt(robot.shooter::stop);
+		return waitUntilPreparedToShoot
+			.andThen(shoot)
+			.deadlineWith(prepareToShoot)
+			.finallyDo(robot.shooter::stop);
 		
 	}
 

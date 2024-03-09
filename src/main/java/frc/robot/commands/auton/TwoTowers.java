@@ -21,19 +21,14 @@ public class TwoTowers extends SequentialCommandGroup {
   
   public TwoTowers(RobotContainer robot) {
     
-    //TODO: Determine timing and directions for drive autons
-    addCommands(
-      ComplexCommands.prepareToShootAtAngle(robot, Degrees.of(55), 1),
-      ComplexCommands.finishShootingAtAngle(robot, Degrees.of(55), 1).raceWith(new WaitCommand(2)),
+    // TODO: Determine timing and directions for drive autons
+    this.addCommands(
+      ComplexCommands.shootAtAngle(robot, Degrees.of(55), 1),
       new SwerveAuton(robot, 0, 0, new Rotation2d(Degrees.of(-30))).raceWith(new WaitCommand(0)),
       new PickupAuton(robot),
       new SwerveAuton(robot, -.15, 0, robot.swerve.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(3)),
-      ComplexCommands.prepareToShootAtAngle(robot, Degrees.of(55), 1),
-      ComplexCommands.finishShootingAtAngle(robot, Degrees.of(55), 1).raceWith(new WaitCommand(2)));
-      // new SwerveAuton(swerveSubsystem, 0, 0, new Rotation2d()).raceWith(new WaitCommand(0)),
-      // new PickupAuton(intakeSubsystem, swerveSubsystem),
-      // new TimeBasedSwerveAuton(new SwerveAuton(swerveSubsystem, 0, 0, new Rotation2d()), 0),
-      // ComplexCommands.prepareToShootAtAngle(armSubsystem, shooterSubsystem, Degrees.of(55), 1),
-      // ComplexCommands.finishShootingAtAngle(armSubsystem, shooterSubsystem, intakeSubsystem, Degrees.of(55), 1));
+      ComplexCommands.shootAtAngle(robot, Degrees.of(55), 1)
+    );
+    
   }
 }

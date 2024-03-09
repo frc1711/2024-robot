@@ -23,8 +23,7 @@ public class Fellowship extends SequentialCommandGroup {
     //TODO: Add shuffleboard preference for a delay between first shot and rollout
     addCommands(
         new WaitCommand(DoublePreference.AUTON_START_DELAY.get()),
-        ComplexCommands.prepareToShootAtAngle(robot, Degrees.of(55), 1),
-        ComplexCommands.finishShootingAtAngle(robot, Degrees.of(55), 1).raceWith(new WaitCommand(2)),
+        ComplexCommands.shootAtAngle(robot, Degrees.of(55), 1),
         new WaitCommand(DoublePreference.AUTON_ROLLOUT_DELAY.get()),
         new SwerveAuton(robot, .35, StartPosition.getSelectedStartPosition().autonYSpeed, robot.swerve.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(1.15))
     );
