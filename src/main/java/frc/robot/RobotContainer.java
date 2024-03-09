@@ -50,10 +50,6 @@ public class RobotContainer {
 	
 	public final SendableChooser<Supplier<Command>> autonChooser;
 	
-	public final SendableChooser<Supplier<Command>> testChooser;
-	
-	public final SendableChooser<Supplier<StartPosition>> startPositionChooser;
-	
 	public RobotContainer() {
 		
 		driveController = new CommandXboxController(0);
