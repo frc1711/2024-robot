@@ -88,7 +88,7 @@ public class Arm extends PIDSubsystem {
 		this.leftMotorController.setInverted(false);
 		this.rightMotorController.setInverted(true);
 		
-		this.streamMotorControllers().forEach((motorController) -> {
+		this.getMotorControllerStream().forEach((motorController) -> {
 			
 			motorController.setOpenLoopRampRate(0.5);
 			motorController.setIdleMode(CANSparkBase.IdleMode.kBrake);
