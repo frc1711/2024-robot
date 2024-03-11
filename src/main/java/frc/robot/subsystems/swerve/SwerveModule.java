@@ -24,30 +24,76 @@ import static edu.wpi.first.units.Units.*;
 
 public class SwerveModule extends SubsystemBase {
 	
+	/**
+	 * The units of the angular heading of the module.
+	 */
 	protected static final Unit<Angle> ANGULAR_HEADING_UNITS = Degrees;
 	
+	/**
+	 * The desired speed of the steering motor, in degrees per second.
+	 */
 	protected static final Measure<Velocity<Angle>> STEER_SPEED = DegreesPerSecond.of(30);
 	
+	/**
+	 * The motor controller that controls the steer motor of this module.
+	 */
 	protected final RaptorsSparkMaxNEO steerMotorController;
 	
+	/**
+	 * The motor controller that controls the drive motor of this module.
+	 */
 	protected final RaptorsSparkMaxNEO driveMotorController;
 	
+	/**
+	 * The absolute encoder that measures the current heading of this module.
+	 */
 	public final CANcoder steerEncoder;
 	
+	/**
+	 * The relative encoder that measures the current distance of this module.
+	 */
 	protected final RelativeEncoder driveEncoder;
 	
-	public  SimpleMotorFeedforward steerFeedforward;
+	/**
+	 * The feedforward controller that calculates the voltage required to
+	 * achieve a desired speed for the steering motor.
+	 */
+	public SimpleMotorFeedforward steerFeedforward;
 
 //	protected final SimpleMotorFeedforward driveFeedforward;
 	
+	/**
+	 * The PID controller that controls the steer heading of this module.
+	 */
 	protected final PIDController steerPIDController;
 	
+	/**
+	 * The PID controller that controls the drive speed of this module.
+	 */
 	protected final PIDController drivePIDController;
 	
+	/**
+	 * The preference that stores the current angular offset of the steering
+	 * encoder for this module.
+	 */
 	protected final DoublePreference steeringEncoderOffsetPreference;
 	
 	protected final Translation2d motorMeters;
 	
+	/**
+	 * Initializes a new SwerveModule with the given motor controllers and
+	 * encoders.
+	 *
+	 * @param steerMotorControllerCANID The CAN ID of the motor controller that
+	 * controls the steer motor of this module.
+	 * @param driveMotorControllerCANID The CAN ID of the motor controller that
+	 * controls the drive motor of this module.
+	 * @param encoderCANID The CAN ID of the absolute encoder that measures the
+	 * current heading of this module.
+	 * @param encoderOffsetPreference The preference that stores the current
+	 * angular offset of the steering encoder for this module.
+	 * @param motorMeters
+	 */
 	public SwerveModule(
 		int steerMotorControllerCANID,
 		int driveMotorControllerCANID,
@@ -195,6 +241,13 @@ public class SwerveModule extends SubsystemBase {
 		
 	}
 	
+	/**
+	 * Returns a measurement of the error between the current steering heading
+	 * and the setpoint of the steering PID controller.
+	 *
+	 * @return A measurement of the error between the current steering heading
+	 * and the setpoint of the steering PID controller.
+	 */
 	public Measure<Angle> getSteeringHeadingError() {
 		
 		Measure<Angle> steerHeadingError =
@@ -272,6 +325,9 @@ public class SwerveModule extends SubsystemBase {
 		
 	}
 	
+	/**
+	 * Stops both the drive and steer motors of this swerve module.
+	 */
 	public void stop() {
 		
 		this.driveMotorController.stopMotor();
