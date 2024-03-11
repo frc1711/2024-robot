@@ -190,38 +190,17 @@ public class Arm extends PIDSubsystem {
 		
 	}
 	
-	public boolean isArmOutsideUpperAngularLimit() {
+	public boolean isArmOutsideUpperLimit() {
 		
 		return this.getAngle().in(Degrees) >
 			DoublePreference.ARM_MAX_ANGLE_DEGREES.get();
 		
 	}
 	
-	public boolean isArmOutsideLowerAngularLimit() {
+	public boolean isArmOutsideLowerLimit() {
 		
 		return this.getAngle().in(Degrees) <
 			DoublePreference.ARM_MIN_ANGLE_DEGREES.get();
-		
-	}
-	
-	public boolean isArmOutsideAngularLimits() {
-		
-		return (
-			this.isArmOutsideLowerAngularLimit() ||
-			this.isArmOutsideUpperAngularLimit()
-		);
-		
-	}
-	
-	public boolean isArmOutsideUpperLimit() {
-		
-		return this.isArmOutsideUpperAngularLimit();
-		
-	}
-	
-	public boolean isArmOutsideLowerLimit() {
-		
-		return this.isArmOutsideLowerAngularLimit();
 		
 	}
 	
