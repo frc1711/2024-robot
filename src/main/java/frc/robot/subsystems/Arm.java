@@ -50,12 +50,12 @@ public class Arm extends PIDSubsystem {
 			0,
 			DoublePreference.ARM_PID_KD.get()
 		));
-
+		
 		this.leftMotorController = new CANSparkMax(
 			CANDevice.LEFT_PIVOT_MOTOR_CONTROLLER.id,
 			MotorType.kBrushless
 		);
-
+		
 		this.rightMotorController = new CANSparkMax(
 			CANDevice.RIGHT_PIVOT_MOTOR_CONTROLLER.id,
 			MotorType.kBrushless
