@@ -78,8 +78,6 @@ public class SwerveModule extends SubsystemBase {
 	 */
 	protected final DoublePreference steeringEncoderOffsetPreference;
 	
-	protected final Translation2d motorMeters;
-	
 	/**
 	 * Initializes a new SwerveModule with the given motor controllers and
 	 * encoders.
@@ -92,14 +90,12 @@ public class SwerveModule extends SubsystemBase {
 	 * current heading of this module.
 	 * @param encoderOffsetPreference The preference that stores the current
 	 * angular offset of the steering encoder for this module.
-	 * @param motorMeters
 	 */
 	public SwerveModule(
 		int steerMotorControllerCANID,
 		int driveMotorControllerCANID,
 		int encoderCANID,
-		DoublePreference encoderOffsetPreference,
-		Translation2d motorMeters
+		DoublePreference encoderOffsetPreference
 	) {
 		
 		this.steerMotorController =
@@ -134,7 +130,6 @@ public class SwerveModule extends SubsystemBase {
 		);
 		
 		this.steeringEncoderOffsetPreference = encoderOffsetPreference;
-		this.motorMeters = motorMeters;
 		
 		// Configure the steering encoder.
 		
