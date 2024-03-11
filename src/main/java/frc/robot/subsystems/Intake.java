@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.configuration.CANDevice;
@@ -95,14 +94,7 @@ public class Intake extends SubsystemBase {
      */
     public void intake(boolean reversed) {
         
-        DoublePreference speedPreference = DoublePreference.INTAKE_SPEED;
-        
-        double speed = Preferences.getDouble(
-            speedPreference.key,
-            speedPreference.defaultValue
-        );
-        
-        this.intake(speed, reversed);
+        this.intake(DoublePreference.INTAKE_SPEED.get(), reversed);
         
     }
     

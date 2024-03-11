@@ -15,9 +15,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.*;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.devicewrappers.RaptorsSparkMaxNEO;
@@ -137,8 +134,7 @@ public class SwerveModule extends SubsystemBase {
 	 */
 	public void setSteeringEncoderOffset(Measure<Angle> offset) {
 		
-		Preferences.setDouble(
-			this.steeringEncoderOffsetPreference.key,
+		this.steeringEncoderOffsetPreference.set(
 			offset.in(SwerveModule.ANGULAR_HEADING_UNITS)
 		);
 		

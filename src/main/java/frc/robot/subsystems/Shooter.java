@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -84,9 +83,7 @@ public class Shooter extends SubsystemBase {
 	
 	public void shoot() {
 		
-		DoublePreference preference = DoublePreference.SHOOTER_SPEED;
-		
-		this.shoot(Preferences.getDouble(preference.key, preference.defaultValue));
+		this.shoot(DoublePreference.SHOOTER_SPEED.get());
 		
 	}
 	
