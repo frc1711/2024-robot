@@ -83,13 +83,13 @@ public enum DoublePreference {
     /**
      * The key of the preference.
      */
-    public final String key;
+    private final String key;
     
     /**
      * The default value of the preference to use if it is not already present
      * on the RoboRIO.
      */
-    public final double defaultValue;
+    private final double defaultValue;
     
     /**
      * Initializes a new double preference with the given key and default value.
