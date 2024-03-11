@@ -23,6 +23,16 @@ public enum Auton {
 		robot -> new WaitCommand(0)
 	),
 	
+	CROSS_THE_LINE(
+		"Battle of the Five Armies (No Note - Cross the Line)",
+		robot -> new SwerveAuton(
+			robot,
+			0.35,
+			0,
+			robot.swerve.getFieldRelativeHeadingRotation2d()
+		).withTimeout(2)
+	),
+	
 	ONE_NOTE(
 		"Fellowship of the Ring (One Note)",
 		robot -> {
