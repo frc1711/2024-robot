@@ -156,19 +156,19 @@ public class Arm extends PIDSubsystem {
 		);
 		double effectiveOutput = wouldOverrun ? 0 : output;
 		
-		this.streamMotorControllers().forEach(
+		this.getMotorControllerStream().forEach(
 			(motorController) -> motorController.setVoltage(effectiveOutput)
 		);
 	
 	}
 	
-	protected Stream<CANSparkMax> streamMotorControllers() {
+	protected Stream<CANSparkMax> getMotorControllerStream() {
 
 		return Stream.of(this.leftMotorController, this.rightMotorController);
 
 	}
 
-	protected Stream<RaptorsSparkAbsoluteEncoder> streamEncoders() {
+	protected Stream<RaptorsSparkAbsoluteEncoder> getEncoderStream() {
 
 		return Stream.of(this.leftEncoder, this.rightEncoder);
 
@@ -182,7 +182,7 @@ public class Arm extends PIDSubsystem {
 	 */
 	public void calibrateArm() {
 		
-		this.streamEncoders().forEach(
+		this.getEncoderStream().forEach(
 			(encoder) -> encoder.calibrate(
 				Degrees.of(DoublePreference.ARM_CALIBRATION_ANGLE_DEGREES.get())
 			)
@@ -222,14 +222,14 @@ public class Arm extends PIDSubsystem {
 	public void stop() {
 
 		this.disable();
-		this.streamMotorControllers().forEach(CANSparkMax::stopMotor);
+		this.getMotorControllerStream().forEach(CANSparkMax::stopMotor);
 		
 	}
 	
 	public Measure<Angle> getAngle() {
 
 		return BaseUnits.Angle.of(
-			this.streamEncoders()
+			this.getEncoderStream()
 				.mapToDouble((encoder) -> encoder.getPosition().baseUnitMagnitude())
 				.average()
 				.orElse(0)
@@ -257,7 +257,7 @@ public class Arm extends PIDSubsystem {
 
 	public void rotate(double speed) {
 		
-		this.streamMotorControllers().forEach(
+		this.getMotorControllerStream().forEach(
 			(motorController) -> motorController.set(speed)
 		);
 
