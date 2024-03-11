@@ -48,8 +48,6 @@ public class SwerveModule extends SubsystemBase {
 	
 	protected final Translation2d motorMeters;
 	
-	public final SwerveModule.Commands commands;
-	
 	public SwerveModule(
 		int steerMotorControllerCANID,
 		int driveMotorControllerCANID,
@@ -91,7 +89,6 @@ public class SwerveModule extends SubsystemBase {
 		
 		this.steeringEncoderOffsetPreference = encoderOffsetPreference;
 		this.motorMeters = motorMeters;
-		this.commands = new SwerveModule.Commands();
 		
 		// Configure the steering encoder.
 		
