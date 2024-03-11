@@ -7,7 +7,6 @@ import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Preferences;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.util.ControlsUtilities;
 
@@ -109,8 +108,7 @@ public class RaptorsSparkAbsoluteEncoder implements Sendable {
 			)
 		);
 		
-		Preferences.setDouble(
-			zeroOffsetPreference.key,
+		this.zeroOffsetPreference.set(
 			newZeroOffset.in(this.zeroOffsetPreferenceUnits)
 		);
 		

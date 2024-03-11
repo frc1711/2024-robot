@@ -351,32 +351,4 @@ public class SwerveModule extends SubsystemBase {
 		
 	}
 	
-	public class Commands {
-		
-		public Command steerWithVoltage() {
-			
-			return new FunctionalCommand(
-				() -> {
-					double steerVoltage = Preferences.getDouble("steer voltage", 0);
-					System.out.printf("driving steer at %f volts%n", steerVoltage);
-					SwerveModule.this.steerMotorController.sparkMax.setVoltage(steerVoltage);
-				},
-				() -> {},
-				(a) -> SwerveModule.this.steerMotorController.stopMotor(),
-				() -> false,
-				SwerveModule.this
-			);
-			
-		}
-		
-		public Command stopSteerMotor() {
-			
-			return SwerveModule.this.runOnce(
-				SwerveModule.this.steerMotorController::stopMotor
-			);
-			
-		}
-		
-	}
-	
 }
