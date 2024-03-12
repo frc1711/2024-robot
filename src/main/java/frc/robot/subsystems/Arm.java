@@ -145,15 +145,6 @@ public class Arm extends PIDSubsystem {
 	@Override
 	protected void useOutput(double output, double setpoint) {
 		
-		if (this.getController().atSetpoint()) {
-			
-			this.streamMotorControllers().forEach(
-				(motorController) -> motorController.setVoltage(0)
-			);
-			return;
-			
-		}
-		
 		double currentAngle = this.getAngle().in(Arm.ANGLE_UNITS);
 		boolean wouldOverrun = (
 			(output > 0 && currentAngle > DoublePreference.ARM_MAX_ANGLE_DEGREES.get()) ||
