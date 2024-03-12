@@ -122,7 +122,8 @@ public class Arm extends PIDSubsystem {
 		PIDController armAnglePIDController = this.getController();
 		
 		armAnglePIDController.setTolerance(
-			DoublePreference.ARM_PID_TOLERANCE_DEGREES.get()
+			DoublePreference.ARM_PID_TOLERANCE_DEGREES.get(),
+			1
 		);
 		
 		// Set the natural resting angle of the arm.
