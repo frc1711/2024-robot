@@ -30,8 +30,8 @@ public class SingleControllerTeleoperativeControlsScheme
 		CommandXboxController controller2
 	) {
 		
-		(new ControlsSchemeBuilder(robot))
-			.rumbleControllerWhenNoteInIntake(controller1);
+//		(new ControlsSchemeBuilder(robot))
+//			.rumbleControllerWhenNoteInIntake(controller1);
 		
 	}
 	
@@ -42,7 +42,7 @@ public class SingleControllerTeleoperativeControlsScheme
 		CommandXboxController controller2
 	) {
 		
-		controller1.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0);
+//		controller1.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0);
 		
 	}
 }
