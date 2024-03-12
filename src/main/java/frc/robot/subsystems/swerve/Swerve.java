@@ -301,7 +301,7 @@ public class Swerve extends SubsystemBase {
 				headingPIDOutput
 			) : this.currentRawChassisSpeeds;
 		
-		SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(
+		SwerveModuleState[] moduleStates = this.kinematics.toSwerveModuleStates(
 			this.currentActualChassisSpeeds
 		);
 		
