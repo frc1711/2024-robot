@@ -65,10 +65,10 @@ public class RobotContainer {
 		this.controlsScheme = new StandardTeleoperativeControlsScheme();
 		this.commands = new RobotContainer.Commands();
 		
-		// Shuffleboard.getTab("Subsystems").add("Arm", arm);
-		// Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
-		// Shuffleboard.getTab("Subsystems").add("Intake", intake);
-		// Shuffleboard.getTab("Subsystems").add("Swerve", this.swerveSubsystem);
+		Shuffleboard.getTab("Subsystems").add("Swerve", this.swerve);
+		// Shuffleboard.getTab("Subsystems").add("Shooter", this.shooter);
+		// Shuffleboard.getTab("Subsystems").add("Intake", this.intake);
+		Shuffleboard.getTab("Subsystems").add("Arm", this.arm);
 		
 	}
 	
