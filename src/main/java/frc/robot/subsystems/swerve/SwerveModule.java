@@ -117,32 +117,28 @@ public class SwerveModule extends SubsystemBase {
 		this.steerFeedforward = new SimpleMotorFeedforward(0.5, 0.005);
 //		this.driveFeedforward = new SimpleMotorFeedforward(0, 0);
 		
-		this.steerPIDController = new PIDController(
-			DoublePreference.SWERVE_STEER_PID_KP.get(),
-			0,
-			DoublePreference.SWERVE_STEER_PID_KD.get()
-		);
-		
-		this.drivePIDController = new PIDController(
-			DoublePreference.SWERVE_DRIVE_PID_KP.get(),
-			0,
-			DoublePreference.SWERVE_DRIVE_PID_KD.get()
-		);
-		
+		this.steerPIDController = new PIDController(0, 0, 0);
+		this.drivePIDController = new PIDController(0, 0, 0);
 		this.steeringEncoderOffsetPreference = encoderOffsetPreference;
 		
 		// Configure the steering encoder.
-		
 		this.driveEncoder.setPositionConversionFactor(1 / (2 * Math.PI));
 		
 		// Configure the steering PID controller.
-		
-		// This PID controller's reference is a measurement of the error between
-		// the actual current steering heading vs the setpoint, so the setpoint
-		// is always 0.
+		DoublePreference.SWERVE_STEER_PID_KP
+			.useValue(this.steerPIDController::setP);
+		DoublePreference.SWERVE_DRIVE_PID_KD
+			.useValue(this.steerPIDController::setD);
+		DoublePreference.SWERVE_STEER_PID_TOLERANCE_DEGREES
+			.useValue(this.steerPIDController::setTolerance);
 		this.steerPIDController.setSetpoint(0);
-		this.steerPIDController.setTolerance(2);
 		this.steerPIDController.enableContinuousInput(-180, 180);
+		
+		// Configure the drive PID controller.
+		DoublePreference.SWERVE_DRIVE_PID_KP
+			.useValue(this.drivePIDController::setP);
+		DoublePreference.SWERVE_DRIVE_PID_KD
+			.useValue(this.drivePIDController::setD);
 		
 	}
 	
