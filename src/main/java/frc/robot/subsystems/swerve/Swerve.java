@@ -312,49 +312,6 @@ public class Swerve extends SubsystemBase {
 		
 	}
 	
-	@Override
-	public void initSendable(SendableBuilder builder) {
-	
-//		builder.addDoubleProperty(
-//			"P term",
-//			this.frontLeftSwerveModule.steerPIDController::getP,
-//			(kP) -> this.getModuleStream().forEach(
-//				(module) -> module.steerPIDController.setP(kP)
-//			)
-//		);
-//
-//		builder.addDoubleProperty(
-//			"D term",
-//			this.frontLeftSwerveModule.steerPIDController::getD,
-//			(kD) -> this.getModuleStream().forEach(
-//				(module) -> module.steerPIDController.setD(kD)
-//			)
-//		);
-//
-//		builder.addDoubleProperty(
-//			"Steering tolerance",
-//			this.frontLeftSwerveModule.steerPIDController::getPositionTolerance,
-//			(tolerance) -> this.getModuleStream().forEach(
-//				(module) -> module.steerPIDController.setTolerance(tolerance)
-//			)
-//		);
-//
-//		builder.addDoubleProperty(
-//			"Steering kS",
-//			() -> this.frontLeftSwerveModule.steerFeedforward.ks,
-//			(kS) -> this.getModuleStream().forEach(
-//				(module) -> module.steerFeedforward = new SimpleMotorFeedforward(
-//					kS,
-//					module.steerFeedforward.kv
-//				)
-//			)
-//		);
-
-//		builder.addDoubleProperty("Swerve Odometry X Component", () -> updateOdometry().getX(), null);
-//		builder.addDoubleProperty("Swerve Odometry Y Component", () -> updateOdometry().getY(), null);
-		
-	}
-	
 	public class Commands {
 		
 		public Command calibrateModuleSteeringHeadings() {
