@@ -9,27 +9,18 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.configuration.CANDevice;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.configuration.RobotDimensions;
@@ -56,6 +47,8 @@ public class Swerve extends SubsystemBase {
 	protected final AHRS gyro;
 	
 	protected final SwerveDriveKinematics kinematics;
+	
+	protected SwerveDriveOdometry odometry;
 	
 	protected boolean isHeadingLockEnabled;
 	
@@ -130,6 +123,11 @@ public class Swerve extends SubsystemBase {
 			this.rearLeftSwerveModule.getPositionInRobot(),
 			this.rearRightSwerveModule.getPositionInRobot()
 		);
+		this.odometry = new SwerveDriveOdometry(
+			this.kinematics,
+			this.getFieldRelativeHeadingRotation2d(),
+			this.getModulePositions()
+		);
 
 		// Create a new sendable field for each module
 //		RobotContainer.putSendable("Analysis Tab", "fl-Module", frontLeftSwerveModule);
@@ -178,6 +176,30 @@ public class Swerve extends SubsystemBase {
 			frontRightSwerveModule,
 			rearLeftSwerveModule,
 			rearRightSwerveModule
+		);
+		
+	}
+	
+	protected SwerveModulePosition[] getModulePositions() {
+		
+		return new SwerveModulePosition[] {
+			this.frontLeftSwerveModule.getPosition(),
+			this.frontRightSwerveModule.getPosition(),
+			this.rearLeftSwerveModule.getPosition(),
+			this.rearRightSwerveModule.getPosition()
+		};
+		
+	}
+	
+	public HolonomicDriveController getHolonomicDriveController() {
+		
+		return new HolonomicDriveController(
+			new PIDController(1, 0, 0),
+			new PIDController(1, 0, 0),
+			new ProfiledPIDController(
+				0.015, 0, 0,
+				new Constraints(30, 60)
+			)
 		);
 		
 	}
@@ -309,6 +331,11 @@ public class Swerve extends SubsystemBase {
 		this.frontRightSwerveModule.update(moduleStates[1]);
 		this.rearLeftSwerveModule.update(moduleStates[2]);
 		this.rearRightSwerveModule.update(moduleStates[3]);
+		
+		this.odometry.update(
+			this.getFieldRelativeHeadingRotation2d(),
+			this.getModulePositions()
+		);
 		
 	}
 	
