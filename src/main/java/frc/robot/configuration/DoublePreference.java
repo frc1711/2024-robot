@@ -12,39 +12,39 @@ import java.util.function.DoubleConsumer;
  */
 public enum DoublePreference {
     
-    FRONT_LEFT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES("Front Left Swerve Module Encoder Offset", 0),
+    FRONT_LEFT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES("Front Left Swerve Module Encoder Offset", -72.773),
     
-    FRONT_RIGHT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES("Front Right Swerve Module Encoder Offset", 0),
+    FRONT_RIGHT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES("Front Right Swerve Module Encoder Offset", -9.756),
     
-    REAR_LEFT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES("Rear Left Swerve Module Encoder Offset", 0),
+    REAR_LEFT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES("Rear Left Swerve Module Encoder Offset", -71.279),
     
-    REAR_RIGHT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES("Rear Right Swerve Module Encoder Offset", 0),
+    REAR_RIGHT_SWERVE_MODULE_ENCODER_OFFSET_DEGREES("Rear Right Swerve Module Encoder Offset", 110.918),
     
-    SWERVE_STEER_PID_KP("Swerve Steer PID - Proportional Term", 0.4),
+    SWERVE_STEER_PID_KP("Swerve Steer PID - Proportional Term", 0.04),
     
     SWERVE_STEER_PID_KD("Swerve Steer PID - Derivative Term", 0),
     
     SWERVE_STEER_PID_TOLERANCE_DEGREES("Swerve Steer PID - Tolerance (Degrees)", 2),
     
-    SWERVE_DRIVE_PID_KP("Swerve Drive PID - Proportional Term", 0),
+    SWERVE_DRIVE_PID_KP("Swerve Drive PID - Proportional Term", 0.1),
     
     SWERVE_DRIVE_PID_KD("Swerve Drive PID - Derivative Term", 0),
     
     SHOOTER_SPEED("Shooter Speed", 1),
     
-    INTAKE_SPEED("Intake Speed", 0.5),
+    INTAKE_SPEED("Intake Speed", 1),
     
-    ARM_SPEED("Arm Speed", 0.5),
+    ARM_SPEED("Arm Speed", 0.75),
     
     /**
      * The offset (in degrees) that the left arm encoder should be zeroed to.
      */
-    ARM_LEFT_ENCODER_ZERO_OFFSET("Arm Left Encoder Zero Offset", 60),
+    ARM_LEFT_ENCODER_ZERO_OFFSET("Arm Left Encoder Zero Offset", 54.316),
     
     /**
      * The offset (in degrees) that the right arm encoder should be zeroed to.
      */
-    ARM_RIGHT_ENCODER_ZERO_OFFSET("Arm Right Encoder Zero Offset", 0),
+    ARM_RIGHT_ENCODER_ZERO_OFFSET("Arm Right Encoder Zero Offset", 0.250),
     
     /**
      * The minimum angle (in degrees) that the arm should be allowed to reach.
@@ -54,7 +54,7 @@ public enum DoublePreference {
     /**
      * The maximum angle (in degrees) that the arm should be allowed to reach.
      */
-    ARM_MAX_ANGLE_DEGREES("Arm Maximum Angle (Degrees)", 95),
+    ARM_MAX_ANGLE_DEGREES("Arm Maximum Angle (Degrees)", 110),
     
     /**
      * The angle (in degrees) off of horizontal that the arm should be
@@ -65,24 +65,18 @@ public enum DoublePreference {
     /**
      * The proportional term of the PID controller for the arm subsystem.
      */
-    ARM_PID_KP("Arm PID - Proportional Term", 0.15),
+    ARM_PID_KP("Arm PID - Proportional Term", 0.2),
     
     /**
      * The derivative term of the PID controller for the arm subsystem.
      */
     ARM_PID_KD("Arm PID - Derivative Term", 0),
     
-    ARM_PID_TOLERANCE_DEGREES("Arm PID - Tolerance (Degrees)", 1),
+    ARM_PID_TOLERANCE_DEGREES("Arm PID - Tolerance (Degrees)", 0.5),
 
-    AUTON_START_DELAY("Auton Delay - Start", .25),
+    AUTON_START_DELAY("Auton Delay - Start", 0.25),
 
-    AUTON_ROLLOUT_DELAY("Auton Delay - Roll Out", 0),
-    
-    DISTANCE_CONFIG_AUTON_X_SPEED("Distance Config Auton - X Speed (-1 to 1)", 0),
-    
-    DISTANCE_CONFIG_AUTON_Y_SPEED("Distance Config Auton - Y Speed (-1 to 1)", 0),
-
-    DISTANCE_CONFIG_AUTON_TIME("Distance Config Auton - Time (Seconds)", 0);
+    AUTON_ROLLOUT_DELAY("Auton Delay - Roll Out", 0);
     
     /**
      * The key of the preference.
