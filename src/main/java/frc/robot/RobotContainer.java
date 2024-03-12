@@ -67,7 +67,7 @@ public class RobotContainer {
 		this.subsystemController = new CommandXboxController(1);
 		
 		// Initialize the controls scheme.
-		this.controlsScheme = new StandardTeleoperativeControlsScheme();
+		this.controlsScheme = new SingleControllerTeleoperativeControlsScheme();
 		this.commands = new RobotContainer.Commands();
 		this.triggers = new RobotContainer.Triggers();
 		
