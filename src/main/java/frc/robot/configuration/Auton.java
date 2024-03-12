@@ -78,16 +78,6 @@ public enum Auton {
 	THREE_NOTE(
 		"Return of the King (Three Note)",
 		King::new
-	),
-	
-	DISTANCE_CONFIG(
-		"An Unexpected Journey (Distance Config)",
-		robot -> new SwerveAuton(
-			robot,
-			DoublePreference.DISTANCE_CONFIG_AUTON_X_SPEED.get(),
-			DoublePreference.DISTANCE_CONFIG_AUTON_Y_SPEED.get(),
-			robot.swerve.getFieldRelativeHeadingRotation2d()
-		).withTimeout(DoublePreference.DISTANCE_CONFIG_AUTON_TIME.get())
 	);
 	
 	/**
