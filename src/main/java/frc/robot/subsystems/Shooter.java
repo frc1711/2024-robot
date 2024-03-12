@@ -157,15 +157,20 @@ public class Shooter extends SubsystemBase {
 		
 		public Trigger isAtSpeed() {
 			
-			return this.isAtSpeed(1);
+			return this.isAtSpeed(1, 0.05);
 			
 		}
 		
-		public Trigger isAtSpeed(double speed) {
+		public Trigger isAtSpeed(double speed, double tolerance) {
+			
+			double leftOutput =
+				Shooter.this.leftShooterMotorController.getAppliedOutput();
+			double rightOutput =
+				Shooter.this.rightShooterMotorController.getAppliedOutput();
 			
 			return new Trigger(() ->
-				Shooter.this.leftShooterMotorController.getAppliedOutput() >= (speed * 0.95) &&
-				Shooter.this.rightShooterMotorController.getAppliedOutput() >= (speed * 0.95)
+				Math.abs(leftOutput - speed) < tolerance &&
+				Math.abs(rightOutput - speed) < tolerance
 			);
 			
 		}
