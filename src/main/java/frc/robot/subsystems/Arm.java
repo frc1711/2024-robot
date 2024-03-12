@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.*;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -36,6 +37,8 @@ public class Arm extends PIDSubsystem {
 	protected final RaptorsSparkAbsoluteEncoder leftEncoder;
 	
 	protected final RaptorsSparkAbsoluteEncoder rightEncoder;
+	
+	protected final ArmFeedforward feedforward;
 	
 	protected Measure<Angle> restingAngle;
 	
@@ -82,6 +85,12 @@ public class Arm extends PIDSubsystem {
 			true
 		);
 		
+		this.feedforward = new ArmFeedforward(
+			1.575,
+			2.8396,
+			0
+//			6.8414/360
+		);
 		this.commands = new Arm.Commands();
 		this.triggers = new Arm.Triggers();
 		
@@ -146,11 +155,17 @@ public class Arm extends PIDSubsystem {
 	protected void useOutput(double output, double setpoint) {
 		
 		double currentAngle = this.getAngle().in(Arm.ANGLE_UNITS);
+//		double feedforwardOutput = this.feedforward.calculate(
+//			this.getAngle().in(Degrees),
+//			Math.copySign(10, output)
+//		);
+		double feedforwardOutput = 0;
+		double outputWithFeedforward = output + feedforwardOutput;
 		boolean wouldOverrun = (
-			(output > 0 && currentAngle > DoublePreference.ARM_MAX_ANGLE_DEGREES.get()) ||
-			(output < 0 && currentAngle < DoublePreference.ARM_MIN_ANGLE_DEGREES.get())
+			(outputWithFeedforward > 0 && currentAngle > DoublePreference.ARM_MAX_ANGLE_DEGREES.get()) ||
+			(outputWithFeedforward < 0 && currentAngle < DoublePreference.ARM_MIN_ANGLE_DEGREES.get())
 		);
-		double effectiveOutput = wouldOverrun ? 0 : output;
+		double effectiveOutput = wouldOverrun ? 0 : outputWithFeedforward;
 		
 		this.getMotorControllerStream().forEach(
 			(motorController) -> motorController.setVoltage(effectiveOutput)
