@@ -159,11 +159,9 @@ public class SwerveModule extends SubsystemBase {
 		
 	}
 	
-	double distanceOffset = 0;
-	
-	public void resetModuleDistance() {
+	public Translation2d getPositionInRobot() {
 		
-		distanceOffset = driveEncoder.getPosition() * .1;
+		return this.positionInRobot;
 		
 	}
 	

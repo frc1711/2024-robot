@@ -4,6 +4,7 @@ import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -57,8 +58,10 @@ public class ComplexCommands {
 			new Pose2d(2, 0, new Rotation2d(0)),
 			trajectoryConfig
 		);
+		
+		return new InstantCommand(() -> {});
 
-		return swerveSubsystem.commands.drive(trajectory, swerveSubsystem.getFieldRelativeHeadingRotation2d());
+//		return swerveSubsystem.commands.drive(trajectory, swerveSubsystem.getFieldRelativeHeadingRotation2d());
 	}
 	
 }

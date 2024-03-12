@@ -27,6 +27,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.configuration.CANDevice;
@@ -52,25 +53,15 @@ public class Swerve extends SubsystemBase {
 	
 	protected final PIDController headingPIDController;
 	
-	// private Odometry odometry;
-	
-	protected final SwerveDriveOdometry swerveDriveOdometry;
-	
-	protected final SwerveModulePosition[] modulePositions;
-	
 	protected final AHRS gyro;
 	
 	protected final SwerveDriveKinematics kinematics;
-
-	protected final HolonomicDriveController controller;
 	
 	protected boolean isHeadingLockEnabled;
 	
 	protected ChassisSpeeds currentRawChassisSpeeds;
 	
 	protected ChassisSpeeds currentActualChassisSpeeds;
-	
-	public final StartPosition startPosition;
 	
 	public final Swerve.Commands commands;
 	
@@ -133,33 +124,11 @@ public class Swerve extends SubsystemBase {
 		
 		this.headingPIDController = new PIDController(0, 0, 0);
 		this.gyro = new AHRS();
-		this.startPosition = startPosition;
-		
-		this.modulePositions = new SwerveModulePosition[] {
-			frontLeftSwerveModule.getPosition(),
-			frontRightSwerveModule.getPosition(),
-			rearLeftSwerveModule.getPosition(),
-			rearRightSwerveModule.getPosition()
-		};
-		
-		// odometry = new Odometry(gyro, Odometry.StartPosition.STATION_ONE);
-		kinematics = new SwerveDriveKinematics(
-			frontLeftSwerveModule.motorMeters,
-			frontRightSwerveModule.motorMeters,
-			rearLeftSwerveModule.motorMeters,
-			rearRightSwerveModule.motorMeters
-		);
-		swerveDriveOdometry = new SwerveDriveOdometry(
-			kinematics,
-			this.getFieldRelativeHeadingRotation2d(),
-			modulePositions,
-			new Pose2d(startPosition.translation, this.getFieldRelativeHeadingRotation2d())
-		);
-		
-		controller = new HolonomicDriveController(
-			new PIDController(0.01, 0, 0),
-			new PIDController(0.01, 0, 0),
-			new ProfiledPIDController(0.01, 0, 0, new Constraints(2 * Math.PI, .5))
+		this.kinematics = new SwerveDriveKinematics(
+			this.frontLeftSwerveModule.getPositionInRobot(),
+			this.frontRightSwerveModule.getPositionInRobot(),
+			this.rearLeftSwerveModule.getPositionInRobot(),
+			this.rearRightSwerveModule.getPositionInRobot()
 		);
 
 		// Create a new sendable field for each module
@@ -213,48 +182,10 @@ public class Swerve extends SubsystemBase {
 		
 	}
 	
-	/**
-	 * Runs the stop() method on each module
-	 */
 	public void stop() {
 		
 		this.driveFieldRelative(0, 0, 0);
 		this.getModuleStream().forEach(SwerveModule::stop);
-		
-	}
-	
-	public Pose2d updateOdometry() {
-		
-		return swerveDriveOdometry.update(
-			this.getFieldRelativeHeadingRotation2d(),
-			this.getWheelPositions()
-		);
-		
-	}
-	
-	public Pose2d getRobotPose() {
-		
-		return swerveDriveOdometry.getPoseMeters();
-		
-	}
-	
-	public void resetOdometry() {
-		
-		this.getModuleStream().forEach(SwerveModule::resetModuleDistance);
-		
-	}
-	
-	public SwerveDriveWheelPositions getWheelPositions() {
-		
-		modulePositions[0] = frontLeftSwerveModule.getPosition();
-		modulePositions[1] = frontRightSwerveModule.getPosition();
-		modulePositions[2] = rearLeftSwerveModule.getPosition();
-		modulePositions[3] = rearRightSwerveModule.getPosition();
-		return new SwerveDriveWheelPositions(modulePositions);
-		
-//		return new SwerveDriveWheelPositions(
-//			(SwerveModulePosition[]) this.getModuleStream().toArray()
-//		);
 		
 	}
 	
@@ -265,18 +196,12 @@ public class Swerve extends SubsystemBase {
 			this.getFieldRelativeHeading().in(Degrees)
 		);
 		
-		this.swerveDriveOdometry.resetPosition(
-			this.getFieldRelativeHeadingRotation2d(),
-			modulePositions,
-			this.updateOdometry()
-		);
-		
-	}
-	
-	public StartPosition getStartPosition() {
-		
-		return startPosition;
-		
+//		this.swerveDriveOdometry.resetPosition(
+//			this.getFieldRelativeHeadingRotation2d(),
+//			modulePositions,
+//			this.updateOdometry()
+//		);
+
 	}
 	
 	public Measure<Angle> getFieldRelativeHeading() {
@@ -403,8 +328,6 @@ public class Swerve extends SubsystemBase {
 		this.rearLeftSwerveModule.update(moduleStates[2]);
 		this.rearRightSwerveModule.update(moduleStates[3]);
 		
-		updateOdometry();
-		
 	}
 	
 	@Override
@@ -498,11 +421,12 @@ public class Swerve extends SubsystemBase {
 		
 		public Command calibrateOdometry() {
 			
-			return Swerve.this
-				.runOnce(Swerve.this::resetOdometry)
-				.withName("Calibrate Swerve Odometry")
-				.ignoringDisable(true);
-			
+			return new InstantCommand(() -> {});
+//			return Swerve.this
+//				.runOnce(Swerve.this::resetOdometry)
+//				.withName("Calibrate Swerve Odometry")
+//				.ignoringDisable(true);
+
 		}
 		
 		public Command setFieldRelativeHeading(Measure<Angle> heading) {
@@ -545,19 +469,19 @@ public class Swerve extends SubsystemBase {
 			
 		}
 		
-		public SwerveControllerCommand drive(Trajectory trajectory, Rotation2d rotation) {
-			
-			return new SwerveControllerCommand(
-				trajectory,
-				Swerve.this::getRobotPose,
-				Swerve.this.kinematics,
-				Swerve.this.controller,
-				() -> rotation,
-				(outputModuleStates) -> {},
-				Swerve.this
-			);
-			
-		}
+//		public SwerveControllerCommand drive(Trajectory trajectory, Rotation2d rotation) {
+//
+//			return new SwerveControllerCommand(
+//				trajectory,
+//				Swerve.this::getRobotPose,
+//				Swerve.this.kinematics,
+//				Swerve.this.controller,
+//				() -> rotation,
+//				(outputModuleStates) -> {},
+//				Swerve.this
+//			);
+//
+//		}
 		
 	}
 	
