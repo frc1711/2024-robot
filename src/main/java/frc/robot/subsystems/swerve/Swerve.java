@@ -131,7 +131,7 @@ public class Swerve extends SubsystemBase {
 			)
 		);
 		
-		this.headingPIDController = new PIDController(0.015, 0, 0);
+		this.headingPIDController = new PIDController(0, 0, 0);
 		this.gyro = new AHRS();
 		this.startPosition = startPosition;
 		
@@ -176,6 +176,12 @@ public class Swerve extends SubsystemBase {
 		this.commands = new Swerve.Commands();
 		
 		this.headingPIDController.enableContinuousInput(0, 360);
+		DoublePreference.SWERVE_HEADING_PID_KP
+			.useValue(this.headingPIDController::setP);
+		DoublePreference.SWERVE_HEADING_PID_KD
+			.useValue(this.headingPIDController::setD);
+		DoublePreference.SWERVE_HEADING_PID_TOLERANCE_DEGREES
+			.useValue(this.headingPIDController::setTolerance);
 		
 		this.calibrateFieldRelativeHeading();
 		

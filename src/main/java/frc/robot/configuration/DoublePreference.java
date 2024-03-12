@@ -30,6 +30,12 @@ public enum DoublePreference {
     
     SWERVE_DRIVE_PID_KD("Swerve Drive PID - Derivative Term", 0),
     
+    SWERVE_HEADING_PID_KP("Swerve Heading PID - Proportional Term", 0.015),
+    
+    SWERVE_HEADING_PID_KD("Swerve Heading PID - Derivative Term", 0),
+    
+    SWERVE_HEADING_PID_TOLERANCE_DEGREES("Swerve Heading PID - Tolerance (Degrees)", 0),
+    
     SHOOTER_SPEED("Shooter Speed", 1),
     
     INTAKE_SPEED("Intake Speed", 1),
