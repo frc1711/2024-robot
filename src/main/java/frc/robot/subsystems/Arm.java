@@ -247,22 +247,6 @@ public class Arm extends PIDSubsystem {
 		
 	}
 	
-	public void rotate(boolean shouldRaise) {
-		
-		double speed = DoublePreference.ARM_SPEED.get();
-		
-		this.rotate(shouldRaise ? speed : -speed);
-		
-	}
-
-	public void rotate(double speed) {
-		
-		this.getMotorControllerStream().forEach(
-			(motorController) -> motorController.set(speed)
-		);
-
-	}
-	
 	public void rotateToAngle(Measure<Angle> angle) {
 		
 		double effectiveDegrees = ControlsUtilities.applyClamp(
@@ -307,26 +291,6 @@ public class Arm extends PIDSubsystem {
 	}
 	
 	public class Commands {
-		
-		public Command raiseArm() {
-			
-			return Arm.this.startEnd(
-				() -> Arm.this.rotate(true),
-				Arm.this::stop
-			).onlyWhile(() -> !Arm.this.isArmOutsideUpperLimit())
-				.withName("Raise Arm");
-			
-		}
-		
-		public Command lowerArm() {
-			
-			return Arm.this.startEnd(
-				() -> Arm.this.rotate(false),
-				Arm.this::stop
-			).onlyWhile(() -> !Arm.this.isArmOutsideLowerLimit())
-				.withName("Lower Arm");
-			
-		}
 		
 		/**
 		 * Returns a Command that moves the arm to the resting angle and does
