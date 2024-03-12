@@ -45,7 +45,7 @@ public class RobotContainer {
 	public RobotContainer() {
 		
 		// Initialize the subsystems.
-		this.swerve = new Swerve(Swerve.StartPosition.STATION_ONE);
+		this.swerve = new Swerve();
 		this.shooter = new Shooter();
 		this.intake = new Intake();
 		this.arm = new Arm();

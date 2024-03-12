@@ -65,7 +65,7 @@ public class Swerve extends SubsystemBase {
 	
 	public final Swerve.Commands commands;
 	
-	public Swerve(StartPosition startPosition) {
+	public Swerve() {
 		
 		// The following wheelbase calculations assume that the center of the
 		// robot is the average (centerpoint) of the swerve modules, although
@@ -352,32 +352,6 @@ public class Swerve extends SubsystemBase {
 
 //		builder.addDoubleProperty("Swerve Odometry X Component", () -> updateOdometry().getX(), null);
 //		builder.addDoubleProperty("Swerve Odometry Y Component", () -> updateOdometry().getY(), null);
-		
-	}
-	
-	// TODO: Find coordinates of start positions
-	public enum StartPosition {
-		
-		STATION_ONE(new Translation2d(.8, 6.6), new Rotation2d(0)),
-		STATION_TWO(new Translation2d(0, 0), new Rotation2d(0)),
-		STATION_THREE(new Translation2d(0, 0), new Rotation2d(0));
-		
-		Translation2d translation;
-		
-		Rotation2d rotation;
-		
-		StartPosition(Translation2d translation, Rotation2d rotation) {
-			
-			this.translation = translation;
-			this.rotation = rotation;
-			
-		}
-		
-		public Translation2d getTranslation() {
-			
-			return translation;
-			
-		}
 		
 	}
 	
