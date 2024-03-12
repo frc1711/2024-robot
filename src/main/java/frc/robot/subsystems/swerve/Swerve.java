@@ -214,7 +214,7 @@ public class Swerve extends SubsystemBase {
 	
 	public Rotation2d getFieldRelativeHeadingRotation2d() {
 		
-		return this.gyro.getRotation2d()/*.rotateBy(Rotation2d.fromDegrees(90))*/;
+		return this.gyro.getRotation2d();
 		
 	}
 	
