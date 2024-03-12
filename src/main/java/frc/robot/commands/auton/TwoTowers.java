@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.ComplexCommands;
 import frc.robot.RobotContainer;
 import frc.robot.commands.auton.framework.PickupAuton;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
@@ -23,11 +22,11 @@ public class TwoTowers extends SequentialCommandGroup {
     
     // TODO: Determine timing and directions for drive autons
     this.addCommands(
-      ComplexCommands.shootAtAngle(robot, Degrees.of(55), 1),
+      robot.commands.shootAtAngle(Degrees.of(55), 1),
       new SwerveAuton(robot, 0, 0, new Rotation2d(Degrees.of(-30))).raceWith(new WaitCommand(0)),
       new PickupAuton(robot),
       new SwerveAuton(robot, -.15, 0, robot.swerve.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(3)),
-      ComplexCommands.shootAtAngle(robot, Degrees.of(55), 1)
+      robot.commands.shootAtAngle(Degrees.of(55), 1)
     );
     
   }

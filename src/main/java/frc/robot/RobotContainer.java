@@ -4,7 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.configuration.DIODevice;
 import frc.robot.controlsschemes.ControlsScheme;
@@ -35,6 +40,8 @@ public class RobotContainer {
 	
 	protected final ControlsScheme controlsScheme;
 	
+	public final Commands commands;
+	
 	public RobotContainer() {
 		
 		// Initialize the subsystems.
@@ -56,6 +63,7 @@ public class RobotContainer {
 		
 		// Initialize the controls scheme.
 		this.controlsScheme = new StandardTeleoperativeControlsScheme();
+		this.commands = new RobotContainer.Commands();
 		
 		// Shuffleboard.getTab("Subsystems").add("Arm", arm);
 		// Shuffleboard.getTab("Subsystems").add("Shooter", shooter);
@@ -91,6 +99,59 @@ public class RobotContainer {
 			this.driveController,
 			this.subsystemController
 		);
+		
+	}
+	
+	public class Commands {
+		
+		/**
+		 * Shoots a NOTE at the specified angle and speed (assuming that the
+		 * robot already has a NOTE in place, ready to shoot).
+		 *
+		 * @param angle The angle at which to shoot the NOTE.
+		 * @param shooterSpeed The speed at which to shoot the NOTE.
+		 * @return A command that shoots a NOTE at the specified angle and
+		 * speed.
+		 */
+		public Command shootAtAngle(
+			Measure<Angle> angle,
+			double shooterSpeed
+		) {
+			
+			Arm.Commands arm = RobotContainer.this.arm.commands;
+			Shooter.Commands shooter = RobotContainer.this.shooter.commands;
+			Intake.Commands intake = RobotContainer.this.intake.commands;
+			
+			Command prepareToShoot = arm.holdAtAngle(angle)
+				.alongWith(shooter.spinUp(shooterSpeed));
+			
+			Command waitUntilPreparedToShoot = new WaitCommand(1.5)
+				.until(RobotContainer.this.arm.getController()::atSetpoint);
+			
+			Command shoot = intake.intake().withTimeout(1);
+			
+			return waitUntilPreparedToShoot
+				.andThen(shoot)
+				.deadlineWith(prepareToShoot)
+				.finallyDo(RobotContainer.this.shooter::stop);
+			
+		}
+		
+		/**
+		 * Runs the intake until the upper beam break sensor is triggered.
+		 *
+		 * @return A command that runs the intake until the upper beam break
+		 * sensor is triggered.
+		 */
+		public Command intakeUntilNoteIsReady() {
+			
+			Intake.Commands intake = RobotContainer.this.intake.commands;
+			DigitalInput upperBeamBreakSensor =
+				RobotContainer.this.upperBeamBreakSensor;
+			
+			return intake.intake().until(upperBeamBreakSensor::get);
+			
+		}
 		
 	}
 	

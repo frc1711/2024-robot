@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.ComplexCommands;
 import frc.robot.RobotContainer;
 import frc.robot.commands.auton.King;
 import frc.robot.commands.auton.TwoTowers;
@@ -54,11 +53,9 @@ public enum Auton {
 			) ySpeed = 0.35;
 			
 			return new WaitCommand(DoublePreference.AUTON_START_DELAY.get())
-				.andThen(ComplexCommands.shootAtAngle(
-					robot,
-					Degrees.of(55),
-					1
-				).withTimeout(2))
+				.andThen(
+					robot.commands.shootAtAngle(Degrees.of(55), 1)
+						.withTimeout(2))
 				.andThen(new WaitCommand(DoublePreference.AUTON_ROLLOUT_DELAY.get()))
 				.andThen(new SwerveAuton(
 					robot,

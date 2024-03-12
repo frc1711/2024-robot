@@ -3,7 +3,6 @@ package frc.robot.controlsschemes;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.ComplexCommands;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -221,23 +220,17 @@ public class ControlsSchemeBuilder {
 		CommandXboxController controller
 	) {
 		
-		controller.x().whileTrue(ComplexCommands.shootAtAngle(
-			robot,
-			Degrees.of(55),
-			1
-		));
+		controller.x().whileTrue(
+			this.robot.commands.shootAtAngle(Degrees.of(55), 1)
+		);
 		
-		controller.b().whileTrue(ComplexCommands.shootAtAngle(
-			robot,
-			Degrees.of(95),
-			0.13
-		));
+		controller.b().whileTrue(
+			this.robot.commands.shootAtAngle(Degrees.of(95), 0.13)
+		);
 		
-		controller.y().whileTrue(ComplexCommands.shootAtAngle(
-			robot,
-			Degrees.of(40),
-			1
-		));
+		controller.y().whileTrue(
+			this.robot.commands.shootAtAngle(Degrees.of(42), 1)
+		);
 		
 		return this;
 		

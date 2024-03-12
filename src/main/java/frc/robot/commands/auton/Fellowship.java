@@ -6,7 +6,6 @@ package frc.robot.commands.auton;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.ComplexCommands;
 import frc.robot.RobotContainer;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
 import frc.robot.configuration.DoublePreference;
@@ -23,7 +22,7 @@ public class Fellowship extends SequentialCommandGroup {
     //TODO: Add shuffleboard preference for a delay between first shot and rollout
     addCommands(
         new WaitCommand(DoublePreference.AUTON_START_DELAY.get()),
-        ComplexCommands.shootAtAngle(robot, Degrees.of(55), 1),
+        robot.commands.shootAtAngle(Degrees.of(55), 1),
         new WaitCommand(DoublePreference.AUTON_ROLLOUT_DELAY.get()),
         new SwerveAuton(robot, .35, StartPosition.getSelectedStartPosition().autonYSpeed, robot.swerve.getFieldRelativeHeadingRotation2d()).raceWith(new WaitCommand(1.15))
     );
