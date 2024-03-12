@@ -93,6 +93,20 @@ public class Arm extends PIDSubsystem {
 			motorController.setOpenLoopRampRate(0.5);
 			motorController.setIdleMode(CANSparkBase.IdleMode.kBrake);
 			
+//			DoublePreference.ARM_MIN_ANGLE_DEGREES.useValue(
+//				angle -> motorController.setSoftLimit(
+//					CANSparkBase.SoftLimitDirection.kReverse,
+//					(float) angle
+//				)
+//			);
+//
+//			DoublePreference.ARM_MAX_ANGLE_DEGREES.useValue(
+//				angle -> motorController.setSoftLimit(
+//					CANSparkBase.SoftLimitDirection.kForward,
+//					(float) angle
+//				)
+//			);
+//
 //			motorController.enableSoftLimit(
 //				CANSparkBase.SoftLimitDirection.kReverse,
 //				true
@@ -101,16 +115,6 @@ public class Arm extends PIDSubsystem {
 //			motorController.enableSoftLimit(
 //				CANSparkBase.SoftLimitDirection.kForward,
 //				true
-//			);
-//
-//			motorController.setSoftLimit(
-//				CANSparkBase.SoftLimitDirection.kReverse,
-//				(float) Arm.MIN_ARM_ANGLE
-//			);
-//
-//			motorController.setSoftLimit(
-//				CANSparkBase.SoftLimitDirection.kForward,
-//				(float) Arm.MAX_ARM_ANGLE
 //			);
 			
 		});
