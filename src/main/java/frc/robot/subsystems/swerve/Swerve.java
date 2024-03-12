@@ -184,7 +184,7 @@ public class Swerve extends SubsystemBase {
 	
 	public void stop() {
 		
-		this.driveFieldRelative(0, 0, 0);
+		this.applyChassisSpeeds(new ChassisSpeeds(0, 0, 0), false);
 		this.getModuleStream().forEach(SwerveModule::stop);
 		
 	}
@@ -230,23 +230,16 @@ public class Swerve extends SubsystemBase {
 		
 	}
 	
-	public void driveFieldRelative(double x, double y, double rotation) {
+	public void applyChassisSpeeds(ChassisSpeeds chassisSpeeds, boolean fieldRelative) {
 		
-		this.applyFieldRelativeChassisSpeeds(
-			new ChassisSpeeds(x, y, rotation)
-		);
-		
-	}
-	
-	public void driveRobotRelative(double x, double y, double rotation) {
-		
-		this.applyChassisSpeeds(
-			new ChassisSpeeds(x, y, rotation)
-		);
-		
-	}
-	
-	public void applyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+		if (fieldRelative) {
+			
+			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+				chassisSpeeds,
+				this.getFieldRelativeHeadingRotation2d()
+			);
+			
+		}
 		
 		// Poll the current state of the heading lock.
 		boolean wasHeadingLockEnabled = this.isHeadingLockEnabled;
@@ -276,17 +269,6 @@ public class Swerve extends SubsystemBase {
 		
 		// Update the chassis speeds.
 		this.currentRawChassisSpeeds = chassisSpeeds;
-		
-	}
-	
-	public void applyFieldRelativeChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-		
-		this.applyChassisSpeeds(
-			ChassisSpeeds.fromFieldRelativeSpeeds(
-				chassisSpeeds,
-				gyro.getRotation2d()
-			)
-		);
 		
 	}
 	
@@ -443,10 +425,13 @@ public class Swerve extends SubsystemBase {
 				
 				Point xyPoint = xy.get();
 				
-				Swerve.this.driveFieldRelative(
-					xyPoint.x,
-					xyPoint.y,
-					rotation.getAsDouble()
+				Swerve.this.applyChassisSpeeds(
+					new ChassisSpeeds(
+						xyPoint.x,
+						xyPoint.y,
+						rotation.getAsDouble()
+					),
+					true
 				);
 				
 			});
@@ -459,10 +444,13 @@ public class Swerve extends SubsystemBase {
 				
 				Point xyPoint = xy.get();
 				
-				Swerve.this.driveRobotRelative(
-					xyPoint.x,
-					xyPoint.y,
-					rotation.getAsDouble()
+				Swerve.this.applyChassisSpeeds(
+					new ChassisSpeeds(
+						xyPoint.x,
+						xyPoint.y,
+						rotation.getAsDouble()
+					),
+					false
 				);
 				
 			});

@@ -6,6 +6,7 @@ package frc.robot.commands.auton.framework.basic;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.swerve.Swerve;
@@ -45,7 +46,10 @@ public class SwerveAuton extends Command {
 	@Override
 	public void execute() {
 		
-		this.swerveSubsystem.driveFieldRelative(xSpeed, ySpeed, 0);
+		this.swerveSubsystem.applyChassisSpeeds(
+			new ChassisSpeeds(xSpeed, ySpeed, 0),
+			true
+		);
 		
 	}
 	

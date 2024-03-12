@@ -50,7 +50,10 @@ public class RotateAuton extends Command {
 			rotation.getDegrees()
 		);
 		
-		swerveSubsystem.applyChassisSpeeds(new ChassisSpeeds(0, 0, rotationSpeed));
+		swerveSubsystem.applyChassisSpeeds(
+			new ChassisSpeeds(0, 0, rotationSpeed),
+			false
+		);
 		
 	}
 	
