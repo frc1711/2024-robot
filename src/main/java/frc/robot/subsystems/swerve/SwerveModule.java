@@ -79,6 +79,11 @@ public class SwerveModule extends SubsystemBase {
 	protected final DoublePreference steeringEncoderOffsetPreference;
 	
 	/**
+	 * The position of this module within the robot.
+	 */
+	protected final Translation2d positionInRobot;
+	
+	/**
 	 * Initializes a new SwerveModule with the given motor controllers and
 	 * encoders.
 	 *
@@ -90,12 +95,14 @@ public class SwerveModule extends SubsystemBase {
 	 * current heading of this module.
 	 * @param encoderOffsetPreference The preference that stores the current
 	 * angular offset of the steering encoder for this module.
+	 * @param positionInRobot The position of this module within the robot.
 	 */
 	public SwerveModule(
 		int steerMotorControllerCANID,
 		int driveMotorControllerCANID,
 		int encoderCANID,
-		DoublePreference encoderOffsetPreference
+		DoublePreference encoderOffsetPreference,
+		Translation2d positionInRobot
 	) {
 		
 		this.steerMotorController =
@@ -120,6 +127,7 @@ public class SwerveModule extends SubsystemBase {
 		this.steerPIDController = new PIDController(0, 0, 0);
 		this.drivePIDController = new PIDController(0, 0, 0);
 		this.steeringEncoderOffsetPreference = encoderOffsetPreference;
+		this.positionInRobot = positionInRobot;
 		
 		// Configure the steering encoder.
 		this.driveEncoder.setPositionConversionFactor(1 / (2 * Math.PI));
