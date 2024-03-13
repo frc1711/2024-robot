@@ -72,7 +72,7 @@ public class RobotContainer {
 		this.triggers = new RobotContainer.Triggers();
 		
 		Shuffleboard.getTab("Subsystems").add("Swerve", this.swerve);
-		// Shuffleboard.getTab("Subsystems").add("Shooter", this.shooter);
+		Shuffleboard.getTab("Subsystems").add("Shooter", this.shooter);
 		// Shuffleboard.getTab("Subsystems").add("Intake", this.intake);
 		Shuffleboard.getTab("Subsystems").add("Arm", this.arm);
 		
