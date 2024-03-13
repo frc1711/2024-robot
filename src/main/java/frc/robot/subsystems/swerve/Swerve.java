@@ -15,10 +15,12 @@ import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.configuration.CANDevice;
@@ -412,6 +414,27 @@ public class Swerve extends SubsystemBase {
 				);
 				
 			});
+			
+		}
+		
+		public Command driveForTime(
+			Measure<Angle> translationAngle,
+			double translationSpeed,
+			Measure<Angle> heading,
+			Measure<Time> duration
+		) {
+			
+			return new FunctionalCommand(
+				() -> Swerve.this.setFieldRelativeHeadingSetpoint(heading),
+				() -> Swerve.this.applyChassisSpeeds(new ChassisSpeeds(
+					Math.cos(translationAngle.in(Radians)) * translationSpeed,
+					Math.sin(translationAngle.in(Radians)) * translationSpeed,
+					0
+				), true),
+				(wasInterrupted) -> Swerve.this.stop(),
+				() -> false,
+				Swerve.this
+			).withTimeout(duration.in(Seconds));
 			
 		}
 		
