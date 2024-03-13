@@ -110,6 +110,26 @@ public class RobotContainer {
 	
 	public class Commands {
 		
+		protected Command prepareToShootAtAngle(
+			Measure<Angle> angle,
+			double shooterSpeed
+		) {
+			
+			Arm.Commands arm = RobotContainer.this.arm.commands;
+			Shooter.Commands shooter = RobotContainer.this.shooter.commands;
+			
+			return arm.goToRestingAngle(angle)
+				.alongWith(shooter.spinUp(shooterSpeed, 0.05));
+			
+		}
+		
+		protected Command feedShooter() {
+			
+			return RobotContainer.this.intake.commands.intake()
+				.withTimeout(1);
+			
+		}
+		
 		/**
 		 * Shoots a NOTE at the specified angle and speed (assuming that the
 		 * robot already has a NOTE in place, ready to shoot).
@@ -124,22 +144,42 @@ public class RobotContainer {
 			double shooterSpeed
 		) {
 			
-			Arm.Commands arm = RobotContainer.this.arm.commands;
-			Shooter.Commands shooter = RobotContainer.this.shooter.commands;
-			Intake.Commands intake = RobotContainer.this.intake.commands;
+			return this.shootAtAngle(
+				angle,
+				shooterSpeed,
+				1.5,
+				0.5
+			);
 			
-			Command prepareToShoot = arm.holdAtAngle(angle)
-				.alongWith(shooter.spinUp(shooterSpeed));
+		}
+		
+		public Command shootAtAngle(
+			Measure<Angle> angle,
+			double shooterSpeed,
+			double armMovementTimeout,
+			double armSettlingTime
+		) {
 			
-			Command waitUntilPreparedToShoot = new WaitCommand(1.5)
-				.until(RobotContainer.this.arm.getController()::atSetpoint);
+			return this.prepareToShootAtAngle(angle, shooterSpeed)
+				.withTimeout(armMovementTimeout)
+				.andThen(new WaitCommand(armSettlingTime))
+				.andThen(this.feedShooter())
+				.finallyDo(() -> {
+					RobotContainer.this.shooter.stop();
+					RobotContainer.this.arm.setRestingAngle(Degrees.of(0));
+				});
 			
-			Command shoot = intake.intake().withTimeout(1);
+		}
+		
+		public Command makeToast() {
 			
-			return waitUntilPreparedToShoot
-				.andThen(shoot)
-				.deadlineWith(prepareToShoot)
-				.finallyDo(RobotContainer.this.shooter::stop);
+			return this.prepareToShootAtAngle(Degrees.of(95), 0.13)
+				.andThen(this.feedShooter())
+				.andThen(new WaitCommand(1))
+				.finallyDo(() -> {
+					RobotContainer.this.shooter.stop();
+					RobotContainer.this.arm.setRestingAngle(Degrees.of(0));
+				});
 			
 		}
 		
