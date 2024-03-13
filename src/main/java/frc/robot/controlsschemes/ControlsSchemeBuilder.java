@@ -220,16 +220,15 @@ public class ControlsSchemeBuilder {
 		CommandXboxController controller
 	) {
 		
-		controller.x().whileTrue(
-			this.robot.commands.shootAtAngle(Degrees.of(55), 1)
-		);
+		RobotContainer.Commands robot = this.robot.commands;
 		
-		controller.b().whileTrue(
-			this.robot.commands.shootAtAngle(Degrees.of(95), 0.13)
-		);
-		
-		controller.y().whileTrue(
-			this.robot.commands.shootAtAngle(Degrees.of(42), 1)
+		controller.x().whileTrue(robot.shootAtAngle(Degrees.of(55), 1));
+		controller.b().whileTrue(this.robot.commands.makeToast());
+		controller.y().whileTrue(robot.shootAtAngle(Degrees.of(42), 1));
+		controller.a().whileTrue(
+			this.robot.shooter.commands.shoot()
+				.alongWith(this.robot.intake.commands.intake())
+				.withTimeout(1)
 		);
 		
 		return this;
