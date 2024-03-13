@@ -1,10 +1,13 @@
 package frc.robot.configuration;
 
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.auton.King;
@@ -14,6 +17,7 @@ import frc.robot.commands.auton.framework.basic.SwerveAuton;
 import java.util.function.Function;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Seconds;
 
 public enum Auton {
 	
@@ -75,6 +79,85 @@ public enum Auton {
 	THREE_NOTE(
 		"Return of the King (Three Note)",
 		King::new
+	),
+	
+	FOUR_NOTE(
+		"Return of the King (Four Note)",
+		robot -> {
+			
+			Measure<Time> driveTrainSettlingWaitTime =
+				Seconds.of(0.25);
+			
+			return robot.commands.shootAtAngle(Degrees.of(55), 1)
+				.andThen(
+					robot.swerve.commands.driveForTime(
+						Degrees.of(-47),
+						0.5,
+						Degrees.of(0),
+						Seconds.of(1.1)
+					).andThen(
+						new WaitCommand(driveTrainSettlingWaitTime.in(Seconds))
+					).andThen(
+						robot.swerve.commands.driveForTime(
+							Degrees.of(-49 + 180),
+							0.5,
+							Degrees.of(0),
+							Seconds.of(1.15)
+						).alongWith(
+							new InstantCommand(robot.shooter::shoot)
+						)
+					).alongWith(
+						robot.commands.intakeUntilNoteIsReady().withTimeout(4)
+					)
+				).andThen(
+					robot.commands.shootAtAngle(Degrees.of(55), 1, 0.5, 0.25)
+				).andThen(
+					robot.swerve.commands.driveForTime(
+						Degrees.of(0),
+						0.5,
+						Degrees.of(0),
+						Seconds.of(0.75)
+					).andThen(
+						new WaitCommand(driveTrainSettlingWaitTime.in(Seconds))
+					).andThen(
+						robot.swerve.commands.driveForTime(
+							Degrees.of(180),
+							0.5,
+							Degrees.of(0),
+							Seconds.of(0.75)
+						).alongWith(
+							new InstantCommand(robot.shooter::shoot)
+						)
+					).alongWith(
+						robot.commands.intakeUntilNoteIsReady().withTimeout(4)
+					)
+				).andThen(
+					robot.commands.shootAtAngle(Degrees.of(55), 1, 0.5, 0.25)
+				).andThen(
+					robot.swerve.commands.driveForTime(
+						Degrees.of(49),
+						0.5,
+						Degrees.of(0),
+						Seconds.of(1.1)
+					).andThen(
+						new WaitCommand(driveTrainSettlingWaitTime.in(Seconds))
+					).andThen(
+						robot.swerve.commands.driveForTime(
+							Degrees.of(51 + 180),
+							0.5,
+							Degrees.of(0),
+							Seconds.of(1.15)
+						).alongWith(
+							new InstantCommand(robot.shooter::shoot)
+						)
+					).alongWith(
+						robot.commands.intakeUntilNoteIsReady().withTimeout(4)
+					)
+				).andThen(
+					robot.commands.shootAtAngle(Degrees.of(55), 1, 0.5, 0.25)
+				);
+			
+		}
 	);
 	
 	/**
