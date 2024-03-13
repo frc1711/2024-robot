@@ -6,12 +6,15 @@ package frc.robot;
 
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.configuration.Auton;
 import frc.robot.configuration.DIODevice;
 import frc.robot.controlsschemes.ControlsScheme;
 import frc.robot.controlsschemes.SingleControllerTeleoperativeControlsScheme;
@@ -21,7 +24,8 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
 
-import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Seconds;
 
 public class RobotContainer {
 	
@@ -171,6 +175,17 @@ public class RobotContainer {
 			
 		}
 		
+		public Command shootBelliedUpToSubwoofer() {
+			
+			return this.shootAtAngle(
+				Degrees.of(55),
+				1,
+				0.5,
+				0.25
+			);
+			
+		}
+		
 		public Command makeToast() {
 			
 			return this.prepareToShootAtAngle(Degrees.of(95), 0.13)
@@ -196,6 +211,86 @@ public class RobotContainer {
 				RobotContainer.this.upperBeamBreakSensor;
 			
 			return intake.intake().until(upperBeamBreakSensor::get);
+			
+		}
+		
+		public Command grabNoteFromMiddlePosition(
+			Measure<Angle> noteHeading,
+			double speed,
+			Measure<Time> driveTime
+		) {
+			
+			Swerve.Commands swerve = RobotContainer.this.swerve.commands;
+			Measure<Time> driveTrainSettlingWaitTime = Seconds.of(0.25);
+			
+			Command driveToNote = swerve.driveForTime(
+				noteHeading,
+				speed,
+				Degrees.of(0),
+				driveTime
+			);
+			
+			Command waitForDriveTrainToSettle = new WaitCommand(
+				driveTrainSettlingWaitTime.in(Seconds)
+			);
+			
+			Command returnToSubwoofer = swerve.driveForTime(
+				noteHeading.plus(Rotations.of(0.5)),
+				speed,
+				Degrees.of(0),
+				driveTime.plus(Seconds.of(0.05))
+			);
+			
+			Command spinUpShooter = new InstantCommand(
+				RobotContainer.this.shooter::shoot
+			);
+			
+			Command intakeNote = this.intakeUntilNoteIsReady()
+				.withTimeout(4);
+			
+			return driveToNote
+				.andThen(waitForDriveTrainToSettle)
+				.andThen(returnToSubwoofer/*.alongWith(spinUpShooter)*/)
+				.alongWith(intakeNote);
+			
+		}
+		
+		public Command grabNote1FromMiddlePosition(
+			double speed,
+			Measure<Time> driveTime
+		) {
+			
+			return this.grabNoteFromMiddlePosition(
+				Degrees.of(49),
+				speed,
+				driveTime
+			);
+			
+		}
+		
+		public Command grabNote2FromMiddlePosition(
+			double speed,
+			Measure<Time> driveTime
+		) {
+			
+			return this.grabNoteFromMiddlePosition(
+				Degrees.of(0),
+				speed,
+				driveTime
+			);
+			
+		}
+		
+		public Command grabNote3FromMiddlePosition(
+			double speed,
+			Measure<Time> driveTime
+		) {
+			
+			return this.grabNoteFromMiddlePosition(
+				Degrees.of(-47),
+				speed,
+				driveTime
+			);
 			
 		}
 		
