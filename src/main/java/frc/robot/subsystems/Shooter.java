@@ -131,15 +131,15 @@ public class Shooter extends SubsystemBase {
 			
 		}
 		
-		public Command spinUp(double speed) {
+		public Command spinUp(double speed, double tolerance) {
 			
 			return new FunctionalCommand(
 				() -> Shooter.this.shoot(speed),
 				() -> {},
 				(wasInterrupted) -> {},
 				() ->
-					Shooter.this.leftShooterMotorController.getAppliedOutput() >= (speed * 0.95) &&
-					Shooter.this.rightShooterMotorController.getAppliedOutput() >= (speed * 0.95),
+					(Math.abs(Shooter.this.leftShooterMotorController.getAppliedOutput() - speed) <= tolerance) &&
+					(Math.abs(Shooter.this.rightShooterMotorController.getAppliedOutput() - speed) <= tolerance),
 				Shooter.this
 			);
 			
@@ -169,8 +169,8 @@ public class Shooter extends SubsystemBase {
 				Shooter.this.rightShooterMotorController.getAppliedOutput();
 			
 			return new Trigger(() ->
-				Math.abs(leftOutput - speed) < tolerance &&
-				Math.abs(rightOutput - speed) < tolerance
+				(Math.abs(leftOutput - speed) <= tolerance) &&
+				(Math.abs(rightOutput - speed) <= tolerance)
 			);
 			
 		}
