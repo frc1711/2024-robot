@@ -1,6 +1,5 @@
 package frc.robot.configuration;
 
-import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -8,15 +7,15 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.auton.King;
-import frc.robot.commands.auton.TwoTowers;
 import frc.robot.commands.auton.framework.basic.SwerveAuton;
-import frc.robot.subsystems.swerve.Swerve;
 
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -72,10 +71,46 @@ public enum Auton {
 		}
 	),
 	
-	TWO_NOTE(
-		"The Two Towers (Two Note)",
-		TwoTowers::new
-	),
+	TWO_NOTE("The Two Towers (Two Note)", robotContainer -> {
+		
+		RobotContainer.Commands robot = robotContainer.commands;
+		Supplier<Alliance> getAlliance = () ->
+			DriverStation.getAlliance().orElse(Auton.getDefaultAlliance());
+		
+		Command blueAmpRedSource = robot.shootBelliedUpToSubwoofer()
+			.andThen(robot.grabNoteAndReturn(
+				Degrees.of(60),
+				0.35,
+				Seconds.of(1)
+			)).andThen(robot.shootBelliedUpToSubwoofer());
+		
+		Command blueSourceRedAmp = robot.shootBelliedUpToSubwoofer()
+			.andThen(robot.grabNoteAndReturn(
+				Degrees.of(-60),
+				0.35,
+				Seconds.of(1)
+			)).andThen(robot.shootBelliedUpToSubwoofer());
+		
+		Command middle = robot.shootBelliedUpToSubwoofer()
+			.andThen(robot.grabNoteAndReturn(
+				Degrees.of(0),
+				0.35,
+				Seconds.of(1)
+			)).andThen(robot.shootBelliedUpToSubwoofer());
+		
+		return new SelectCommand<StartPosition>(Map.ofEntries(
+			Map.entry(StartPosition.AMP_SIDE, new SelectCommand<Alliance>(Map.ofEntries(
+				Map.entry(Alliance.Red, blueSourceRedAmp),
+				Map.entry(Alliance.Blue, blueAmpRedSource)
+			), getAlliance)),
+			Map.entry(StartPosition.MIDDLE, middle),
+			Map.entry(StartPosition.SOURCE_SIDE, new SelectCommand<Alliance>(Map.ofEntries(
+				Map.entry(Alliance.Red, blueAmpRedSource),
+				Map.entry(Alliance.Blue, blueSourceRedAmp)
+			), getAlliance))
+		), StartPosition::getSelectedStartPosition);
+		
+	}),
 	
 	THREE_NOTE(
 		"Return of the King (Three Note)",
