@@ -98,13 +98,13 @@ public enum Auton {
 				Seconds.of(1)
 			)).andThen(robot.shootBelliedUpToSubwoofer());
 		
-		return new SelectCommand<StartPosition>(Map.ofEntries(
-			Map.entry(StartPosition.AMP_SIDE, new SelectCommand<Alliance>(Map.ofEntries(
+		return new SelectCommand<>(Map.ofEntries(
+			Map.entry(StartPosition.AMP_SIDE, new SelectCommand<>(Map.ofEntries(
 				Map.entry(Alliance.Red, blueSourceRedAmp),
 				Map.entry(Alliance.Blue, blueAmpRedSource)
 			), getAlliance)),
 			Map.entry(StartPosition.MIDDLE, middle),
-			Map.entry(StartPosition.SOURCE_SIDE, new SelectCommand<Alliance>(Map.ofEntries(
+			Map.entry(StartPosition.SOURCE_SIDE, new SelectCommand<>(Map.ofEntries(
 				Map.entry(Alliance.Red, blueAmpRedSource),
 				Map.entry(Alliance.Blue, blueSourceRedAmp)
 			), getAlliance))
