@@ -193,7 +193,7 @@ public class RobotContainer {
 			return this.shootAtAngle(
 				Degrees.of(55),
 				1,
-				0.5,
+				1,
 				0.25
 			);
 			
