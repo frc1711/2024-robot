@@ -77,36 +77,39 @@ public enum Auton {
 		Supplier<Alliance> getAlliance = () ->
 			DriverStation.getAlliance().orElse(Auton.getDefaultAlliance());
 		
-		Command blueAmpRedSource = robot.shootBelliedUpToSubwoofer()
-			.andThen(robot.grabNoteAndReturn(
-				Degrees.of(60),
-				0.35,
-				Seconds.of(1)
-			)).andThen(robot.shootBelliedUpToSubwoofer());
-		
-		Command blueSourceRedAmp = robot.shootBelliedUpToSubwoofer()
+		Supplier<Command> blueAmpRedSource = () ->
+			robot.shootBelliedUpToSubwoofer()
 			.andThen(robot.grabNoteAndReturn(
 				Degrees.of(-60),
 				0.35,
-				Seconds.of(1)
+				Seconds.of(1.65)
 			)).andThen(robot.shootBelliedUpToSubwoofer());
 		
-		Command middle = robot.shootBelliedUpToSubwoofer()
+		Command middle =
+			robot.shootBelliedUpToSubwoofer()
 			.andThen(robot.grabNoteAndReturn(
 				Degrees.of(0),
 				0.35,
 				Seconds.of(1)
 			)).andThen(robot.shootBelliedUpToSubwoofer());
 		
+		Supplier<Command> blueSourceRedAmp = () ->
+			robot.shootBelliedUpToSubwoofer()
+			.andThen(robot.grabNoteAndReturn(
+				Degrees.of(65),
+				0.35,
+				Seconds.of(1.65)
+			)).andThen(robot.shootBelliedUpToSubwoofer());
+		
 		return new SelectCommand<>(Map.ofEntries(
 			Map.entry(StartPosition.AMP_SIDE, new SelectCommand<>(Map.ofEntries(
-				Map.entry(Alliance.Red, blueSourceRedAmp),
-				Map.entry(Alliance.Blue, blueAmpRedSource)
+				Map.entry(Alliance.Red, blueSourceRedAmp.get()),
+				Map.entry(Alliance.Blue, blueAmpRedSource.get())
 			), getAlliance)),
 			Map.entry(StartPosition.MIDDLE, middle),
 			Map.entry(StartPosition.SOURCE_SIDE, new SelectCommand<>(Map.ofEntries(
-				Map.entry(Alliance.Red, blueAmpRedSource),
-				Map.entry(Alliance.Blue, blueSourceRedAmp)
+				Map.entry(Alliance.Red, blueAmpRedSource.get()),
+				Map.entry(Alliance.Blue, blueSourceRedAmp.get())
 			), getAlliance))
 		), StartPosition::getSelectedStartPosition);
 		
