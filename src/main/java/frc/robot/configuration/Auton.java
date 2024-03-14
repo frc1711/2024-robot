@@ -87,7 +87,7 @@ public enum Auton {
 		robotContainer -> {
 			
 			double translationSpeed = 0.5;
-			Measure<Time> diagonalDriveTime = Seconds.of(1.1);
+			Measure<Time> diagonalDriveTime = Seconds.of(1.15);
 			RobotContainer.Commands robot = robotContainer.commands;
 			
 			return robot.shootBelliedUpToSubwoofer()
