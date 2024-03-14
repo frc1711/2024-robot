@@ -127,10 +127,25 @@ public class RobotContainer {
 			
 		}
 		
+		/**
+		 * Runs the intake for a short period of time to feed a NOTE into the
+		 * shooter.
+		 *
+		 * @return A command that runs the intake for a short period of time to
+		 * feed a NOTE into the shooter.
+		 */
 		protected Command feedShooter() {
 			
-			return RobotContainer.this.intake.commands.intake()
-				.withTimeout(1);
+			Intake.Commands intake = RobotContainer.this.intake.commands;
+			DigitalInput upperBeamBreakSensor =
+				RobotContainer.this.upperBeamBreakSensor;
+			
+			return intake.intake()
+				.until(upperBeamBreakSensor::get)
+				.andThen(intake.intake())
+				.withTimeout(0.25)
+				.andThen(intake.intake())
+				.until(() -> !upperBeamBreakSensor.get());
 			
 		}
 		
