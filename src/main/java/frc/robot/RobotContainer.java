@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.configuration.DIODevice;
 import frc.robot.controlsschemes.ControlsScheme;
 import frc.robot.controlsschemes.SingleControllerTeleoperativeControlsScheme;
+import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -69,7 +70,7 @@ public class RobotContainer {
 		this.subsystemController = new CommandXboxController(1);
 		
 		// Initialize the controls scheme.
-		this.controlsScheme = new SingleControllerTeleoperativeControlsScheme();
+		this.controlsScheme = new StandardTeleoperativeControlsScheme();
 		this.commands = new RobotContainer.Commands();
 		this.triggers = new RobotContainer.Triggers();
 		
