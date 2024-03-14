@@ -138,10 +138,14 @@ public class RobotContainer {
 			DigitalInput upperBeamBreakSensor =
 				RobotContainer.this.upperBeamBreakSensor;
 			
+			// Run the intake until the upper beam break sensor is tripped.
 			return intake.intake()
 				.until(upperBeamBreakSensor::get)
+				// ...and then run the intake for another 1/4 of a second.
 				.andThen(intake.intake())
 				.withTimeout(0.25)
+				// ...and then run the intake until the upper beam break sensor
+				// is NO LONGER tripped.
 				.andThen(intake.intake())
 				.until(() -> !upperBeamBreakSensor.get());
 			
