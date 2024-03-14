@@ -261,7 +261,7 @@ public class RobotContainer {
 		) {
 			
 			return this.grabNoteAndReturn(
-				Degrees.of(49),
+				Degrees.of(52),
 				speed,
 				driveTime
 			);
@@ -287,7 +287,7 @@ public class RobotContainer {
 		) {
 			
 			return this.grabNoteAndReturn(
-				Degrees.of(-47),
+				Degrees.of(-50),
 				speed,
 				driveTime
 			);
