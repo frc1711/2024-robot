@@ -214,7 +214,7 @@ public class RobotContainer {
 			
 		}
 		
-		public Command grabNoteFromMiddlePosition(
+		public Command grabNoteAndReturn(
 			Measure<Angle> noteHeading,
 			double speed,
 			Measure<Time> driveTime
@@ -260,7 +260,7 @@ public class RobotContainer {
 			Measure<Time> driveTime
 		) {
 			
-			return this.grabNoteFromMiddlePosition(
+			return this.grabNoteAndReturn(
 				Degrees.of(49),
 				speed,
 				driveTime
@@ -273,7 +273,7 @@ public class RobotContainer {
 			Measure<Time> driveTime
 		) {
 			
-			return this.grabNoteFromMiddlePosition(
+			return this.grabNoteAndReturn(
 				Degrees.of(0),
 				speed,
 				driveTime
@@ -286,7 +286,7 @@ public class RobotContainer {
 			Measure<Time> driveTime
 		) {
 			
-			return this.grabNoteFromMiddlePosition(
+			return this.grabNoteAndReturn(
 				Degrees.of(-47),
 				speed,
 				driveTime
