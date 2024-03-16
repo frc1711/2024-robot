@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.configuration.DIODevice;
+import frc.robot.configuration.DoublePreference;
 import frc.robot.controlsschemes.ControlsScheme;
-import frc.robot.controlsschemes.SingleControllerTeleoperativeControlsScheme;
 import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -309,6 +309,18 @@ public class RobotContainer {
 				speed,
 				driveTime
 			);
+			
+		}
+		
+		public Command waitToStartAuton() {
+			
+			return new WaitCommand(DoublePreference.AUTON_START_DELAY.get());
+			
+		}
+		
+		public Command waitToRolloutInAuton() {
+			
+			return new WaitCommand(DoublePreference.AUTON_ROLLOUT_DELAY.get());
 			
 		}
 		
