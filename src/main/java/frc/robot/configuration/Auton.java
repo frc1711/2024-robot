@@ -36,42 +36,70 @@ public enum Auton {
 		).withTimeout(2)
 	),
 	
-	ONE_NOTE(
-		"Fellowship of the Ring (One Note)",
-		robot -> {
+	ONE_NOTE_NO_LINE_CROSS(
+		"Fellowship of the Ring (One Note - No Line Cross)",
+		robotContainer -> {
 			
-			double xSpeed = 0.35;
-			double ySpeed = 0;
+			RobotContainer.Commands robot = robotContainer.commands;
 			
-			StartPosition startPosition = StartPosition.getSelectedStartPosition();
-			Alliance alliance = DriverStation.getAlliance()
-				.orElse(Auton.getDefaultAlliance());
-			
-			if (
-				(startPosition == StartPosition.SOURCE_SIDE && alliance == Alliance.Red) ||
-				(startPosition == StartPosition.AMP_SIDE && alliance == Alliance.Blue)
-			) ySpeed = -0.35;
-			else if (
-				(startPosition == StartPosition.AMP_SIDE && alliance == Alliance.Red) ||
-				(startPosition == StartPosition.SOURCE_SIDE && alliance == Alliance.Blue)
-			) ySpeed = 0.35;
-			
-			return new WaitCommand(DoublePreference.AUTON_START_DELAY.get())
-				.andThen(
-					robot.commands.shootAtAngle(Degrees.of(55), 1)
-						.withTimeout(2))
-				.andThen(new WaitCommand(DoublePreference.AUTON_ROLLOUT_DELAY.get()))
-				.andThen(new SwerveAuton(
-					robot,
-					xSpeed,
-					ySpeed,
-					robot.swerve.getFieldRelativeHeadingRotation2d()
-				).withTimeout(1.15));
+			return robot.waitToStartAuton()
+				.andThen(robot.shootBelliedUpToSubwoofer());
 			
 		}
 	),
 	
-	TWO_NOTE("The Two Towers (Two Note)", robotContainer -> {
+	ONE_NOTE_WITH_LINE_CROSS("One Note - Cross Line", robotContainer -> {
+		
+		RobotContainer.Commands robot = robotContainer.commands;
+		Supplier<Alliance> getAlliance = () ->
+			DriverStation.getAlliance().orElse(Auton.getDefaultAlliance());
+		
+		Supplier<Command> blueAmpRedSource = () ->
+			robot.shootBelliedUpToSubwoofer()
+				.andThen(robot.waitToRolloutInAuton())
+				.andThen(robotContainer.swerve.commands.driveForTime(
+					Degrees.of(-60),
+					0.35,
+					Degrees.of(0),
+					Seconds.of(1.5)
+				));
+		
+		Command middle = robot.shootBelliedUpToSubwoofer()
+			.andThen(robot.waitToRolloutInAuton())
+			.andThen(robotContainer.swerve.commands.driveForTime(
+				Degrees.of(0),
+				0.35,
+				Degrees.of(0),
+				Seconds.of(1)
+			));
+		
+		Supplier<Command> blueSourceRedAmp = () ->
+			robot.shootBelliedUpToSubwoofer()
+				.andThen(robot.waitToRolloutInAuton())
+				.andThen(robotContainer.swerve.commands.driveForTime(
+					Degrees.of(60),
+					0.35,
+					Degrees.of(0),
+					Seconds.of(1.5)
+				));
+		
+		return robot.waitToStartAuton().andThen(
+			new SelectCommand<>(Map.ofEntries(
+				Map.entry(StartPosition.AMP_SIDE, new SelectCommand<>(Map.ofEntries(
+					Map.entry(Alliance.Red, blueSourceRedAmp.get()),
+					Map.entry(Alliance.Blue, blueAmpRedSource.get())
+				), getAlliance)),
+				Map.entry(StartPosition.MIDDLE, middle),
+				Map.entry(StartPosition.SOURCE_SIDE, new SelectCommand<>(Map.ofEntries(
+					Map.entry(Alliance.Red, blueAmpRedSource.get()),
+					Map.entry(Alliance.Blue, blueSourceRedAmp.get())
+				), getAlliance))
+			), StartPosition::getSelectedStartPosition)
+		);
+		
+	}),
+	
+	TWO_NOTE("Two Note", robotContainer -> {
 		
 		RobotContainer.Commands robot = robotContainer.commands;
 		Supplier<Alliance> getAlliance = () ->
@@ -115,29 +143,35 @@ public enum Auton {
 		
 	}),
 	
-	THREE_NOTE(
-		"Return of the King (Three Note)",
-		King::new
-	),
+	THREE_NOTE("Three Note (MIDDLE POSITION ONLY)", robotContainer -> {
+		
+		double translationSpeed = 0.5;
+		Measure<Time> diagonalDriveTime = Seconds.of(1.15);
+		RobotContainer.Commands robot = robotContainer.commands;
+		
+		return robot.shootBelliedUpToSubwoofer()
+			.andThen(robot.grabNote3FromMiddlePosition(translationSpeed, diagonalDriveTime))
+			.andThen(robot.shootBelliedUpToSubwoofer())
+			.andThen(robot.grabNote2FromMiddlePosition(translationSpeed, Seconds.of(0.75)))
+			.andThen(robot.shootBelliedUpToSubwoofer());
+		
+	}),
 	
-	FOUR_NOTE(
-		"Return of the King (Four Note)",
-		robotContainer -> {
+	FOUR_NOTE("Four Note (MIDDLE POSITION ONLY)", robotContainer -> {
 			
-			double translationSpeed = 0.5;
-			Measure<Time> diagonalDriveTime = Seconds.of(1.15);
-			RobotContainer.Commands robot = robotContainer.commands;
-			
-			return robot.shootBelliedUpToSubwoofer()
-				.andThen(robot.grabNote3FromMiddlePosition(translationSpeed, diagonalDriveTime))
-				.andThen(robot.shootBelliedUpToSubwoofer())
-				.andThen(robot.grabNote2FromMiddlePosition(translationSpeed, Seconds.of(0.75)))
-				.andThen(robot.shootBelliedUpToSubwoofer())
-				.andThen(robot.grabNote1FromMiddlePosition(translationSpeed, diagonalDriveTime))
-				.andThen(robot.shootBelliedUpToSubwoofer());
-			
-		}
-	);
+		double translationSpeed = 0.5;
+		Measure<Time> diagonalDriveTime = Seconds.of(1.15);
+		RobotContainer.Commands robot = robotContainer.commands;
+		
+		return robot.shootBelliedUpToSubwoofer()
+			.andThen(robot.grabNote3FromMiddlePosition(translationSpeed, diagonalDriveTime))
+			.andThen(robot.shootBelliedUpToSubwoofer())
+			.andThen(robot.grabNote2FromMiddlePosition(translationSpeed, Seconds.of(0.75)))
+			.andThen(robot.shootBelliedUpToSubwoofer())
+			.andThen(robot.grabNote1FromMiddlePosition(translationSpeed, diagonalDriveTime))
+			.andThen(robot.shootBelliedUpToSubwoofer());
+		
+	});
 	
 	/**
 	 * The Shuffleboard widget used for selecting the auton to run.
