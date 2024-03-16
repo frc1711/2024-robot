@@ -155,6 +155,19 @@ public enum Auton {
 			.andThen(robot.grabNote2FromMiddlePosition(translationSpeed, Seconds.of(0.75)))
 			.andThen(robot.shootBelliedUpToSubwoofer());
 		
+		return new SelectCommand<>(Map.ofEntries(
+			Map.entry(Alliance.Blue, robot.shootBelliedUpToSubwoofer()
+				.andThen(robot.grabNote3FromMiddlePosition(translationSpeed, diagonalDriveTime))
+				.andThen(robot.shootBelliedUpToSubwoofer())
+				.andThen(robot.grabNote2FromMiddlePosition(translationSpeed, Seconds.of(0.75)))
+				.andThen(robot.shootBelliedUpToSubwoofer())),
+			Map.entry(Alliance.Red, robot.shootBelliedUpToSubwoofer()
+				.andThen(robot.grabNote1FromMiddlePosition(translationSpeed, diagonalDriveTime))
+				.andThen(robot.shootBelliedUpToSubwoofer())
+				.andThen(robot.grabNote2FromMiddlePosition(translationSpeed, Seconds.of(0.75)))
+				.andThen(robot.shootBelliedUpToSubwoofer()))
+		), () -> DriverStation.getAlliance().orElse(Auton.getDefaultAlliance()));
+		
 	}),
 	
 	FOUR_NOTE("Four Note (MIDDLE POSITION ONLY)", robotContainer -> {
@@ -163,13 +176,22 @@ public enum Auton {
 		Measure<Time> diagonalDriveTime = Seconds.of(1.15);
 		RobotContainer.Commands robot = robotContainer.commands;
 		
-		return robot.shootBelliedUpToSubwoofer()
-			.andThen(robot.grabNote3FromMiddlePosition(translationSpeed, diagonalDriveTime))
-			.andThen(robot.shootBelliedUpToSubwoofer())
-			.andThen(robot.grabNote2FromMiddlePosition(translationSpeed, Seconds.of(0.75)))
-			.andThen(robot.shootBelliedUpToSubwoofer())
-			.andThen(robot.grabNote1FromMiddlePosition(translationSpeed, diagonalDriveTime))
-			.andThen(robot.shootBelliedUpToSubwoofer());
+		return new SelectCommand<>(Map.ofEntries(
+			Map.entry(Alliance.Blue, robot.shootBelliedUpToSubwoofer()
+				.andThen(robot.grabNote3FromMiddlePosition(translationSpeed, diagonalDriveTime))
+				.andThen(robot.shootBelliedUpToSubwoofer())
+				.andThen(robot.grabNote2FromMiddlePosition(translationSpeed, Seconds.of(0.75)))
+				.andThen(robot.shootBelliedUpToSubwoofer())
+				.andThen(robot.grabNote1FromMiddlePosition(translationSpeed, diagonalDriveTime))
+				.andThen(robot.shootBelliedUpToSubwoofer())),
+			Map.entry(Alliance.Red, robot.shootBelliedUpToSubwoofer()
+				.andThen(robot.grabNote1FromMiddlePosition(translationSpeed, diagonalDriveTime))
+				.andThen(robot.shootBelliedUpToSubwoofer())
+				.andThen(robot.grabNote2FromMiddlePosition(translationSpeed, Seconds.of(0.75)))
+				.andThen(robot.shootBelliedUpToSubwoofer())
+				.andThen(robot.grabNote3FromMiddlePosition(translationSpeed, diagonalDriveTime))
+				.andThen(robot.shootBelliedUpToSubwoofer()))
+		), () -> DriverStation.getAlliance().orElse(Auton.getDefaultAlliance()));
 		
 	});
 	
