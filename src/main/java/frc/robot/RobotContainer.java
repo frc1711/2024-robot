@@ -272,16 +272,12 @@ public class RobotContainer {
 				driveTime.plus(Seconds.of(0.05))
 			);
 			
-			Command spinUpShooter = new InstantCommand(
-				RobotContainer.this.shooter::shoot
-			);
-			
 			Command intakeNote = this.intakeUntilNoteIsReady()
 				.withTimeout(4);
 			
 			return driveToNote
 				.andThen(waitForDriveTrainToSettle)
-				.andThen(returnToSubwoofer/*.alongWith(spinUpShooter)*/)
+				.andThen(returnToSubwoofer)
 				.alongWith(intakeNote);
 			
 		}
