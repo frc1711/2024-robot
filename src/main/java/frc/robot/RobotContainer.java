@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.configuration.DIODevice;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.controlsschemes.ControlsScheme;
@@ -47,8 +46,6 @@ public class RobotContainer {
 	
 	public final Commands commands;
 	
-	public final Triggers triggers;
-	
 	public RobotContainer() {
 		
 		// Initialize the subsystems.
@@ -71,7 +68,6 @@ public class RobotContainer {
 		// Initialize the controls scheme.
 		this.controlsScheme = new StandardTeleoperativeControlsScheme();
 		this.commands = new RobotContainer.Commands();
-		this.triggers = new RobotContainer.Triggers();
 		
 		Shuffleboard.getTab("Subsystems").add("Swerve", this.swerve);
 		Shuffleboard.getTab("Subsystems").add("Shooter", this.shooter);
@@ -329,23 +325,6 @@ public class RobotContainer {
 		public Command waitToRolloutInAuton() {
 			
 			return new WaitCommand(DoublePreference.AUTON_ROLLOUT_DELAY.get());
-			
-		}
-		
-	}
-	
-	public class Triggers {
-		
-		public Trigger isRobotPreparedToShoot(
-			Measure<Angle> angle,
-			double shooterSpeed
-		) {
-			
-			Arm.Triggers arm = RobotContainer.this.arm.triggers;
-			Shooter.Triggers shooter = RobotContainer.this.shooter.triggers;
-			
-			return arm.armIsAtAngle(angle, Degrees.of(1));
-//				.and(shooter.isAtSpeed(shooterSpeed, 0.05));
 			
 		}
 		
