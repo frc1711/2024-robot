@@ -188,7 +188,7 @@ public enum Auton {
 	/**
 	 * The default auton to run if no auton is explicitly selected.
 	 */
-	private static final Auton DEFAULT_AUTON = Auton.TWO_NOTE;
+	private static final Auton DEFAULT_AUTON = Auton.FOUR_NOTE;
 	
 	/**
 	 * A flag indicating whether or not the Shuffleboard auton selector has been
