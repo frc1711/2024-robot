@@ -250,7 +250,7 @@ public class RobotContainer {
 			
 			return intake.intake()
 				.until(() -> RobotContainer.this.debouncedUpperBeamBreakSensorValue)
-				.andThen(intake.outtake().withTimeout(0.25));
+				.andThen(intake.outtake().withTimeout(0.1));
 			
 		}
 		
