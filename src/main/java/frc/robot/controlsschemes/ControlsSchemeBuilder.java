@@ -174,10 +174,8 @@ public class ControlsSchemeBuilder {
 		controller.rightTrigger(TRIGGER_THRESHOLD).whileTrue(
 			new SelectCommand<>(Map.ofEntries(
 				Map.entry(true, intake.intake()),
-				Map.entry(false, intake.intake().until(
-					this.robot.upperBeamBreakSensor::get
-				))
-			), this.robot.upperBeamBreakSensor::get)
+				Map.entry(false, this.robot.commands.intakeUntilNoteIsReady())
+			), () -> this.robot.debouncedUpperBeamBreakSensorValue)
 		);
 		
 		return this;
