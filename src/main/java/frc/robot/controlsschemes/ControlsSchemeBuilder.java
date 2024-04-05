@@ -235,4 +235,24 @@ public class ControlsSchemeBuilder {
 		
 	}
 	
+	/**
+	 * Registers the right bumper of the given controller to hold the arm at the
+	 * 'climbing angle' while held.
+	 *
+	 * @param controller The controller that should be registered to handle the
+	 * given controls.
+	 * @return This builder, for method chaining.
+	 */
+	public ControlsSchemeBuilder useRightBumperToClimb(
+		CommandXboxController controller
+	) {
+		
+		controller.rightBumper().whileTrue(
+			this.robot.arm.commands.holdAtAngle(Degrees.of(100))
+		);
+		
+		return this;
+		
+	}
+	
 }
