@@ -224,7 +224,7 @@ public class ControlsSchemeBuilder {
 		
 		controller.x().whileTrue(robot.shootAtAngle(Degrees.of(55), 1));
 		controller.b().whileTrue(this.robot.commands.makeToast());
-		controller.y().whileTrue(robot.shootAtAngle(Degrees.of(42), 1));
+		controller.y().whileTrue(robot.shootAtAngle(Degrees.of(38.5), 1));
 		controller.a().whileTrue(
 			this.robot.shooter.commands.shoot()
 				.alongWith(this.robot.intake.commands.intake())
