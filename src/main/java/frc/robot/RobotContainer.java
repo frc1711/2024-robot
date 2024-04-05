@@ -228,7 +228,7 @@ public class RobotContainer {
 		
 		public Command makeToast() {
 			
-			return this.prepareToShootAtAngle(Degrees.of(95), 0.145)
+			return this.prepareToShootAtAngle(Degrees.of(95), 0.16)
 				.andThen(this.feedShooter())
 				.andThen(new WaitCommand(1))
 				.finallyDo(() -> {
