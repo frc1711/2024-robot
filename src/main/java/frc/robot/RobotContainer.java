@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
@@ -38,6 +39,10 @@ public class RobotContainer {
 	
 	public final DigitalInput lowerBeamBreakSensor;
 	
+	public final Debouncer upperBeamBreakDebouncer;
+	
+	public boolean debouncedUpperBeamBreakSensorValue;
+	
 	protected final CommandXboxController driveController;
 	
 	protected final CommandXboxController subsystemController;
@@ -61,6 +66,13 @@ public class RobotContainer {
 		this.lowerBeamBreakSensor =
 			new DigitalInput(DIODevice.INTAKE_LOWER_BEAM_BREAK_SENSOR.id);
 		
+		this.upperBeamBreakDebouncer = new Debouncer(
+			0.05,
+			Debouncer.DebounceType.kBoth
+		);
+		
+		this.debouncedUpperBeamBreakSensorValue = false;
+		
 		// Initialize the controller instances.
 		this.driveController = new CommandXboxController(0);
 		this.subsystemController = new CommandXboxController(1);
@@ -73,6 +85,19 @@ public class RobotContainer {
 		Shuffleboard.getTab("Subsystems").add("Shooter", this.shooter);
 		// Shuffleboard.getTab("Subsystems").add("Intake", this.intake);
 		Shuffleboard.getTab("Subsystems").add("Arm", this.arm);
+		Shuffleboard.getTab("Subsystems").addBoolean(
+			"debounced upper bb",
+			() -> this.debouncedUpperBeamBreakSensorValue
+		);
+		
+	}
+	
+	public void robotPeriodic() {
+		
+		this.debouncedUpperBeamBreakSensorValue =
+			this.upperBeamBreakDebouncer.calculate(
+				this.upperBeamBreakSensor.get()
+			);
 		
 	}
 	
@@ -131,20 +156,9 @@ public class RobotContainer {
 		protected Command feedShooter() {
 			
 			Intake.Commands intake = RobotContainer.this.intake.commands;
-			DigitalInput upperBeamBreakSensor =
-				RobotContainer.this.upperBeamBreakSensor;
 			
-			// Run the intake until the upper beam break sensor is tripped.
-			return intake.intake()
-				.until(upperBeamBreakSensor::get)
-				// ...and then run the intake for another 1/4 of a second.
-				.andThen(intake.intake())
-				.withTimeout(0.25)
-				// ...and then run the intake until the upper beam break sensor
-				// is NO LONGER tripped.
-				.andThen(intake.intake())
-				.until(() -> !upperBeamBreakSensor.get());
-			
+			return intake.intake().withTimeout(2);
+		
 		}
 		
 		/**
@@ -233,10 +247,10 @@ public class RobotContainer {
 		public Command intakeUntilNoteIsReady() {
 			
 			Intake.Commands intake = RobotContainer.this.intake.commands;
-			DigitalInput upperBeamBreakSensor =
-				RobotContainer.this.upperBeamBreakSensor;
 			
-			return intake.intake().until(upperBeamBreakSensor::get);
+			return intake.intake()
+				.until(() -> RobotContainer.this.debouncedUpperBeamBreakSensorValue)
+				.andThen(intake.outtake().withTimeout(0.25));
 			
 		}
 		
