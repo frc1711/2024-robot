@@ -19,7 +19,8 @@ public class SingleControllerTeleoperativeControlsScheme
 			.useControllerJoysticksForDriving(controller1)
 			.useControllerDPadForSnappingToHeading(controller1)
 			.useControllerTriggersForIntakingAndOuttaking(controller1)
-			.useABXYButtonsForShooting(controller1);
+			.useABXYButtonsForShooting(controller1)
+			.useRightBumperToClimb(controller1);
 		
 	}
 	

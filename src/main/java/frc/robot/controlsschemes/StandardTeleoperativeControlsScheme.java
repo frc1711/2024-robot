@@ -21,7 +21,8 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 			.useControllerDPadForSnappingToHeading(controller1)
 			.useControllerTriggersForIntakingAndOuttaking(controller1)
 			.useControllerTriggersForIntakingAndOuttaking(controller2)
-			.useABXYButtonsForShooting(controller2);
+			.useABXYButtonsForShooting(controller2)
+			.useRightBumperToClimb(controller2);
 		
 	}
 	
