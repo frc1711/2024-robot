@@ -37,14 +37,8 @@ public enum Auton {
 	
 	ONE_NOTE_NO_LINE_CROSS(
 		"Fellowship of the Ring (One Note - No Line Cross)",
-		robotContainer -> {
-			
-			RobotContainer.Commands robot = robotContainer.commands;
-			
-			return robot.waitToStartAuton()
-				.andThen(robot.shootBelliedUpToSubwoofer());
-			
-		}
+		robot -> robot.commands.waitToStartAuton()
+			.andThen(robot.commands.shootBelliedUpToSubwoofer())
 	),
 	
 	ONE_NOTE_WITH_LINE_CROSS("One Note - Cross Line", robotContainer -> {
