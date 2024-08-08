@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
-import frc.robot.commands.auton.framework.basic.SwerveAuton;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -27,12 +26,13 @@ public enum Auton {
 	
 	CROSS_THE_LINE(
 		"Battle of the Five Armies (No Note - Cross the Line)",
-		robot -> new SwerveAuton(
-			robot,
-			0.35,
-			0,
-			robot.swerve.getFieldRelativeHeadingRotation2d()
-		).withTimeout(2)
+		robot -> robot.commands.waitToStartAuton()
+			.andThen(robot.swerve.commands.driveForTime(
+				Degrees.of(0),
+				0.35,
+				Degrees.of(0),
+				Seconds.of(1)
+			))
 	),
 	
 	ONE_NOTE_NO_LINE_CROSS(
