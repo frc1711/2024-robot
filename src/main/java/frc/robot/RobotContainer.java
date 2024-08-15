@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -17,13 +15,13 @@ import frc.robot.configuration.DIODevice;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.controlsschemes.ControlsScheme;
 import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
+import frc.robot.devicewrappers.RaptorsLaserCanBooleanSupplier;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.units.Units.Seconds;
 
 public class RobotContainer {
 	
@@ -35,13 +33,7 @@ public class RobotContainer {
 	
 	public final Arm arm;
 	
-	public final DigitalInput upperBeamBreakSensor;
-	
-	public final DigitalInput lowerBeamBreakSensor;
-	
-	public final Debouncer upperBeamBreakDebouncer;
-	
-	public boolean debouncedUpperBeamBreakSensorValue;
+	public final RaptorsLaserCanBooleanSupplier upperBeamBreakSensor;
 	
 	protected final CommandXboxController driveController;
 	
@@ -59,19 +51,10 @@ public class RobotContainer {
 		this.intake = new Intake();
 		this.arm = new Arm();
 		
-		// Initialize the various sensors on the robot.
-		this.upperBeamBreakSensor =
-			new DigitalInput(DIODevice.INTAKE_UPPER_BEAM_BREAK_SENSOR.id);
-		
-		this.lowerBeamBreakSensor =
-			new DigitalInput(DIODevice.INTAKE_LOWER_BEAM_BREAK_SENSOR.id);
-		
-		this.upperBeamBreakDebouncer = new Debouncer(
-			0.05,
-			Debouncer.DebounceType.kBoth
+		this.upperBeamBreakSensor = new RaptorsLaserCanBooleanSupplier(
+			DIODevice.INTAKE_UPPER_BEAM_BREAK_SENSOR.id,
+			(distance) -> distance.in(Inches) < 8
 		);
-		
-		this.debouncedUpperBeamBreakSensorValue = false;
 		
 		// Initialize the controller instances.
 		this.driveController = new CommandXboxController(0);
@@ -86,19 +69,16 @@ public class RobotContainer {
 		// Shuffleboard.getTab("Subsystems").add("Intake", this.intake);
 		Shuffleboard.getTab("Subsystems").add("Arm", this.arm);
 		Shuffleboard.getTab("Subsystems").addBoolean(
-			"debounced upper bb",
-			() -> this.debouncedUpperBeamBreakSensorValue
+			"Upper Beambreak",
+			this.upperBeamBreakSensor::getAsBoolean
 		);
 		
 	}
 	
 	public void robotPeriodic() {
-		
-		this.debouncedUpperBeamBreakSensorValue =
-			this.upperBeamBreakDebouncer.calculate(
-				this.upperBeamBreakSensor.get()
-			);
-		
+	
+	
+	
 	}
 	
 	public void initTeleop() {
@@ -156,8 +136,13 @@ public class RobotContainer {
 		protected Command feedShooter() {
 			
 			Intake.Commands intake = RobotContainer.this.intake.commands;
+			Command intakeUntilBeamBreak = intake.intake()
+				.until(RobotContainer.this.upperBeamBreakSensor);
+			Command intakeUntilPastBeamBreak = intake.intake().until(
+				() -> !RobotContainer.this.upperBeamBreakSensor.getAsBoolean()
+			);
 			
-			return intake.intake().withTimeout(2);
+			return intakeUntilBeamBreak.andThen(intakeUntilPastBeamBreak);
 		
 		}
 		
@@ -228,9 +213,11 @@ public class RobotContainer {
 		
 		public Command makeToast() {
 			
-			return this.prepareToShootAtAngle(Degrees.of(95), 0.16)
+			Arm.Commands arm = RobotContainer.this.arm.commands;
+			
+			return this.prepareToShootAtAngle(Degrees.of(92), 0.13)
 				.andThen(this.feedShooter())
-				.andThen(new WaitCommand(1))
+				.andThen(arm.holdAtAngle(Degrees.of(90)).withTimeout(1))
 				.finallyDo(() -> {
 					RobotContainer.this.shooter.stop();
 					RobotContainer.this.arm.setRestingAngle(Degrees.of(0));
@@ -247,10 +234,11 @@ public class RobotContainer {
 		public Command intakeUntilNoteIsReady() {
 			
 			Intake.Commands intake = RobotContainer.this.intake.commands;
+			Command intakeUntilBeamBreak = intake.intake()
+				.until(RobotContainer.this.upperBeamBreakSensor);
+			Command correctNotePosition = intake.outtake().withTimeout(0.1);
 			
-			return intake.intake()
-				.until(() -> RobotContainer.this.debouncedUpperBeamBreakSensorValue)
-				.andThen(intake.outtake().withTimeout(0.1));
+			return intakeUntilBeamBreak.andThen(correctNotePosition);
 			
 		}
 		

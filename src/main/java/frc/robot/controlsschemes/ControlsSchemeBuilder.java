@@ -175,7 +175,7 @@ public class ControlsSchemeBuilder {
 			new SelectCommand<>(Map.ofEntries(
 				Map.entry(true, intake.intake()),
 				Map.entry(false, this.robot.commands.intakeUntilNoteIsReady())
-			), () -> this.robot.debouncedUpperBeamBreakSensorValue)
+			), this.robot.upperBeamBreakSensor)
 		);
 		
 		return this;
@@ -193,15 +193,15 @@ public class ControlsSchemeBuilder {
 	public ControlsSchemeBuilder rumbleControllerWhenNoteInIntake(
 		CommandXboxController controller
 	) {
-		
-		double rumbleIntensity =
-			this.robot.lowerBeamBreakSensor.get() ? 0.5 : 0;
-		
-		controller.getHID().setRumble(
-			GenericHID.RumbleType.kBothRumble,
-			rumbleIntensity
-		);
-		
+	
+//		double rumbleIntensity =
+//			this.robot.lowerBeamBreakSensor.get() ? 0.5 : 0;
+//
+//		controller.getHID().setRumble(
+//			GenericHID.RumbleType.kBothRumble,
+//			rumbleIntensity
+//		);
+
 		return this;
 		
 	}
