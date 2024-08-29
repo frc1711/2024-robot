@@ -152,10 +152,28 @@ public class Intake extends SubsystemBase {
             
         }
         
+        public Command intake(double speed) {
+            
+            return Intake.this.startEnd(
+                () -> Intake.this.intake(speed),
+                Intake.this::stop
+            );
+            
+        }
+        
         public Command outtake() {
             
             return Intake.this.startEnd(
                 () -> Intake.this.intake(true),
+                Intake.this::stop
+            );
+            
+        }
+        
+        public Command outtake(double speed) {
+            
+            return Intake.this.startEnd(
+                () -> Intake.this.intake(speed, true),
                 Intake.this::stop
             );
             
