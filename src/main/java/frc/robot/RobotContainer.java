@@ -20,7 +20,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
-
+import java.util.function.BooleanSupplier;
 import static edu.wpi.first.units.Units.*;
 
 public class RobotContainer {
@@ -146,6 +146,31 @@ public class RobotContainer {
 		
 		}
 		
+		public Command correctNotePosition() {
+			
+			Intake.Commands intake = RobotContainer.this.intake.commands;
+			Shooter.Commands shooter = RobotContainer.this.shooter.commands;
+			BooleanSupplier upperBeamBreakIsNotBroken =
+				() -> !RobotContainer.this.upperBeamBreakSensor.getAsBoolean();
+			
+			Command quickCorrect = intake.outtake(0.5)
+				.alongWith(shooter.shoot(-0.5))
+				.until(upperBeamBreakIsNotBroken);
+			
+			Command advanceToSensor = intake.intake(0.25)
+				.until(RobotContainer.this.upperBeamBreakSensor);
+			
+			Command accurateCorrect = intake.outtake(0.1)
+				.until(upperBeamBreakIsNotBroken);
+			
+			Command correctNotePosition = quickCorrect
+				.andThen(advanceToSensor)
+				.andThen(accurateCorrect);
+			
+			return correctNotePosition.unless(upperBeamBreakIsNotBroken);
+			
+		}
+		
 		/**
 		 * Shoots a NOTE at the specified angle and speed (assuming that the
 		 * robot already has a NOTE in place, ready to shoot).
@@ -233,12 +258,8 @@ public class RobotContainer {
 		 */
 		public Command intakeUntilNoteIsReady() {
 			
-			Intake.Commands intake = RobotContainer.this.intake.commands;
-			Command intakeUntilBeamBreak = intake.intake()
+			return RobotContainer.this.intake.commands.intake()
 				.until(RobotContainer.this.upperBeamBreakSensor);
-			Command correctNotePosition = intake.outtake().withTimeout(0.1);
-			
-			return intakeUntilBeamBreak.andThen(correctNotePosition);
 			
 		}
 		

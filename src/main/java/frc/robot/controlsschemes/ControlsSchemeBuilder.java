@@ -61,7 +61,6 @@ public class ControlsSchemeBuilder {
 		
 		Arm.Commands arm = this.robot.arm.commands;
 		Shooter.Commands shooter = this.robot.shooter.commands;
-		Intake.Commands intake = this.robot.intake.commands;
 		
 		this.robot.arm.setDefaultCommand(
 			arm.holdAtAngle(Degrees.of(0))
@@ -69,7 +68,9 @@ public class ControlsSchemeBuilder {
 		
 		this.robot.shooter.setDefaultCommand(shooter.stop());
 		
-		this.robot.intake.setDefaultCommand(intake.stop());
+		this.robot.intake.setDefaultCommand(
+			this.robot.commands.correctNotePosition()
+		);
 		
 		return this;
 		
