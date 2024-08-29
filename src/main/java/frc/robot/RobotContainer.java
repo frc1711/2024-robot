@@ -122,7 +122,7 @@ public class RobotContainer {
 			Shooter.Commands shooter = RobotContainer.this.shooter.commands;
 			
 			return arm.goToRestingAngle(angle)
-				.alongWith(shooter.spinUp(shooterSpeed, 0.05));
+				.alongWith(shooter.spinUp(shooterSpeed, 0.25));
 			
 		}
 		
@@ -188,8 +188,8 @@ public class RobotContainer {
 			return this.shootAtAngle(
 				angle,
 				shooterSpeed,
-				1.5,
-				0.5
+				1.25,
+				0
 			);
 			
 		}
