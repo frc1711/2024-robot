@@ -19,6 +19,8 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 			.useControllerSelectButtonToCalibrateFieldRelativeHeading(controller1)
 			.useControllerJoysticksForDriving(controller1)
 			.useControllerDPadForSnappingToHeading(controller1)
+			.useBumpersForRelativeHeadingSnapping(controller1)
+			.useRightJoystickClickToCorrectHeading(controller1)
 			.useControllerTriggersForIntakingAndOuttaking(controller1)
 			.useControllerTriggersForIntakingAndOuttaking(controller2)
 			.useABXYButtonsForShooting(controller2)

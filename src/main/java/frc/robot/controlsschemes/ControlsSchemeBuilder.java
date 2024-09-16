@@ -8,6 +8,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.util.ControlsUtilities;
 import frc.robot.util.DoubleSupplierBuilder;
 import frc.robot.util.PointSupplierBuilder;
 
@@ -146,6 +147,64 @@ public class ControlsSchemeBuilder {
 		controller.povLeft().onTrue(swerve.setFieldRelativeHeading(Degrees.of(90)));
 		controller.povDown().onTrue(swerve.setFieldRelativeHeading(Degrees.of(180)));
 		controller.povRight().onTrue(swerve.setFieldRelativeHeading(Degrees.of(270)));
+		
+		return this;
+		
+	}
+	
+	public ControlsSchemeBuilder useBumpersForRelativeHeadingSnapping(
+		CommandXboxController controller
+	) {
+		
+		double increment = 90;
+		
+		controller.leftBumper().onTrue(this.robot.swerve.runOnce(() -> {
+			
+			double currentHeading = this.robot.swerve.getFieldRelativeHeading()
+				.in(Degrees);
+			
+			currentHeading += increment;
+			currentHeading = Math.rint(currentHeading/increment) * increment;
+			currentHeading = ControlsUtilities.normalizeToRange(currentHeading, 0, 360);
+			
+			this.robot.swerve.setFieldRelativeHeadingSetpoint(Degrees.of(currentHeading));
+			
+		}));
+		
+		controller.rightBumper().onTrue(this.robot.swerve.runOnce(() -> {
+			
+			double currentHeading = this.robot.swerve.getFieldRelativeHeading()
+				.in(Degrees);
+			
+			currentHeading -= increment;
+			currentHeading = Math.rint(currentHeading/increment) * increment;
+			currentHeading = ControlsUtilities.normalizeToRange(currentHeading, 0, 360);
+			
+			this.robot.swerve.setFieldRelativeHeadingSetpoint(Degrees.of(currentHeading));
+			
+		}));
+		
+		return this;
+		
+	}
+	
+	public ControlsSchemeBuilder useRightJoystickClickToCorrectHeading(
+		CommandXboxController controller
+	) {
+		
+		double increment = 90;
+		
+		controller.rightStick().onTrue(this.robot.swerve.runOnce(() -> {
+			
+			double currentHeading = this.robot.swerve.getFieldRelativeHeading()
+				.in(Degrees);
+			
+			currentHeading = Math.rint(currentHeading/increment) * increment;
+			currentHeading = ControlsUtilities.normalizeToRange(currentHeading, 0, 360);
+			
+			this.robot.swerve.setFieldRelativeHeadingSetpoint(Degrees.of(currentHeading));
+			
+		}));
 		
 		return this;
 		
