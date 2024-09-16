@@ -161,6 +161,17 @@ public class Intake extends SubsystemBase {
             
         }
         
+        public Command featherIntake() {
+            
+            Command startIntaking = this.intake().withTimeout(2);
+            Command featherIn = this.intake().withTimeout(0.5);
+            Command featherOut = this.outtake().withTimeout(0.25);
+            Command feather = featherIn.andThen(featherOut).repeatedly();
+            
+            return startIntaking.andThen(feather);
+            
+        }
+        
         public Command outtake() {
             
             return Intake.this.startEnd(
