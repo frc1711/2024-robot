@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.*;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -45,6 +46,9 @@ public class Arm extends PIDSubsystem {
 	public final Arm.Commands commands;
 	
 	public final Arm.Triggers triggers;
+	
+	public final SendableChooser<CANSparkBase.IdleMode> armModeChooser =
+		new SendableChooser<>();
 	
 	public Arm() {
 		
@@ -141,6 +145,18 @@ public class Arm extends PIDSubsystem {
 		);
 		
 		Shuffleboard.getTab("Subsystems").add(this.commands.calibrateArm());
+		
+		this.armModeChooser.setDefaultOption("Normal Mode", CANSparkBase.IdleMode.kBrake);
+		this.armModeChooser.addOption("Maintenance Mode", CANSparkBase.IdleMode.kCoast);
+		this.armModeChooser.onChange((mode) ->
+			this.getMotorControllerStream().forEach(
+				(motorController) -> motorController.setIdleMode(mode)
+			)
+		);
+		Shuffleboard.getTab("Calibration").add(
+			"Arm Mode Chooser",
+			this.armModeChooser
+		);
 		
 	}
 	
