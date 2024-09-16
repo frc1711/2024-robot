@@ -17,6 +17,7 @@ import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.configuration.CANDevice;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.configuration.RobotDimensions;
+import frc.robot.util.ControlsUtilities;
 import frc.robot.util.Point;
 
 import java.util.function.DoubleSupplier;
@@ -323,6 +325,29 @@ public class Swerve extends SubsystemBase {
 		frontRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-135)));
 		rearLeftSwerveModule.update(new SwerveModuleState(0, new Rotation2d(45)));
 		rearRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-45)));
+		
+	}
+	
+	@Override
+	public void initSendable(SendableBuilder builder) {
+		
+		builder.addDoubleProperty(
+			"Heading",
+			() -> ControlsUtilities.normalizeToRange(
+				this.getFieldRelativeHeading().in(Degrees),
+				-180,
+				180
+			),
+			null
+		);
+		
+		builder.addDoubleProperty(
+			"Heading Setpoint",
+			this.headingPIDController::getSetpoint,
+			(double newHeading) -> this.setFieldRelativeHeadingSetpoint(
+				Degrees.of(newHeading)
+			)
+		);
 		
 	}
 	
