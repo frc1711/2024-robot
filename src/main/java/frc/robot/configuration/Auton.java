@@ -25,7 +25,7 @@ public enum Auton {
 	),
 	
 	CROSS_THE_LINE(
-		"Battle of the Five Armies (No Note - Cross the Line)",
+		"Cross the Line (No Shooting)",
 		robot -> robot.commands.waitToStartAuton()
 			.andThen(robot.swerve.commands.driveForTime(
 				Degrees.of(0),
@@ -36,12 +36,12 @@ public enum Auton {
 	),
 	
 	ONE_NOTE_NO_LINE_CROSS(
-		"Fellowship of the Ring (One Note - No Line Cross)",
+		"One Note (No Line Cross)",
 		robot -> robot.commands.waitToStartAuton()
 			.andThen(robot.commands.shootBelliedUpToSubwoofer())
 	),
 	
-	ONE_NOTE_WITH_LINE_CROSS("One Note - Cross Line", robotContainer -> {
+	ONE_NOTE_WITH_LINE_CROSS("One Note + Cross Line", robotContainer -> {
 		
 		RobotContainer.Commands robot = robotContainer.commands;
 		Supplier<Alliance> getAlliance = () ->
@@ -92,7 +92,7 @@ public enum Auton {
 		
 	}),
 	
-	TWO_NOTE("Two Note", robotContainer -> {
+	TWO_NOTE("Two Note + Line Cross", robotContainer -> {
 		
 		RobotContainer.Commands robot = robotContainer.commands;
 		Supplier<Alliance> getAlliance = () ->
@@ -136,7 +136,7 @@ public enum Auton {
 		
 	}),
 	
-	THREE_NOTE("Three Note (MIDDLE POSITION ONLY)", robotContainer -> {
+	THREE_NOTE("Three Note + Line Cross (MIDDLE POSITION ONLY)", robotContainer -> {
 		
 		double translationSpeed = 0.5;
 		Measure<Time> diagonalDriveTime = Seconds.of(1.15);
@@ -157,7 +157,7 @@ public enum Auton {
 		
 	}),
 	
-	FOUR_NOTE("Four Note (MIDDLE POSITION ONLY)", robotContainer -> {
+	FOUR_NOTE("Four Note + Cross Line (MIDDLE POSITION ONLY)", robotContainer -> {
 			
 		double translationSpeed = 0.5;
 		Measure<Time> diagonalDriveTime = Seconds.of(1.15);
