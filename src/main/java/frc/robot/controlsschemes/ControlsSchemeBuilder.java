@@ -1,6 +1,6 @@
 package frc.robot.controlsschemes;
 
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer;
@@ -177,6 +177,12 @@ public class ControlsSchemeBuilder {
 				Map.entry(true, intake.intake()),
 				Map.entry(false, this.robot.commands.intakeUntilNoteIsReady())
 			), this.robot.upperBeamBreakSensor)
+				.alongWith(new FunctionalCommand(
+					() -> this.robot.swerve.setSpeedMultiplier(0.3),
+					() -> {},
+					(wasInterrupted) -> this.robot.swerve.setSpeedMultiplier(1),
+					() -> false
+				))
 		);
 		
 		return this;
