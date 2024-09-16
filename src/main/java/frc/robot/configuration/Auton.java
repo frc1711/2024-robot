@@ -178,7 +178,7 @@ public enum Auton {
 				.andThen(robot.shootBelliedUpToSubwoofer())
 				.andThen(robot.grabNote3FromMiddlePosition(translationSpeed, diagonalDriveTime))
 				.andThen(robot.shootBelliedUpToSubwoofer()))
-		), () -> DriverStation.getAlliance().orElse(Auton.getDefaultAlliance())));
+		), () -> DriverStation.getAlliance().orElse(Auton.getDefaultAlliance()));
 		
 	});
 	
