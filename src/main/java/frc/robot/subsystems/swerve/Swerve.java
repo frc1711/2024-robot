@@ -54,6 +54,8 @@ public class Swerve extends SubsystemBase {
 	
 	protected boolean isHeadingLockEnabled;
 	
+	protected double speedMultiplier;
+	
 	protected ChassisSpeeds currentRawChassisSpeeds;
 	
 	protected ChassisSpeeds currentActualChassisSpeeds;
@@ -140,6 +142,7 @@ public class Swerve extends SubsystemBase {
 		// RobotContainer.putSendable("kinematics", odometry);
 		
 		this.isHeadingLockEnabled = true;
+		this.speedMultiplier = 1;
 		this.currentRawChassisSpeeds = new ChassisSpeeds(0, 0, 0);
 		this.currentActualChassisSpeeds = new ChassisSpeeds(0, 0, 0);
 		this.commands = new Swerve.Commands();
@@ -291,6 +294,8 @@ public class Swerve extends SubsystemBase {
 		
 		chassisSpeeds.omegaRadiansPerSecond *= 1.5;
 		
+		chassisSpeeds = chassisSpeeds.times(this.speedMultiplier);
+		
 		// Update the chassis speeds.
 		this.currentRawChassisSpeeds = chassisSpeeds;
 		
@@ -299,6 +304,16 @@ public class Swerve extends SubsystemBase {
 	public void setFieldRelativeHeadingSetpoint(Measure<Angle> heading) {
 		
 		this.headingPIDController.setSetpoint(heading.in(Degrees));
+		
+	}
+	
+	public void setSpeedMultiplier(double speedMultiplier) {
+		
+		this.speedMultiplier = ControlsUtilities.applyClamp(
+			speedMultiplier,
+			0,
+			1
+		);
 		
 	}
 	
