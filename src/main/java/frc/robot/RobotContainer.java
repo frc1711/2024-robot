@@ -9,6 +9,7 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.configuration.DIODevice;
@@ -258,8 +259,10 @@ public class RobotContainer {
 		 */
 		public Command intakeUntilNoteIsReady() {
 			
-			return RobotContainer.this.intake.commands.intake()
-				.until(RobotContainer.this.upperBeamBreakSensor);
+			return RobotContainer.this.intake.commands.featherIntake()
+				.until(RobotContainer.this.upperBeamBreakSensor)
+				.andThen(new InstantCommand(() -> RobotContainer.this.swerve.setSpeedMultiplier(1)))
+				.andThen(this.correctNotePosition());
 			
 		}
 		
