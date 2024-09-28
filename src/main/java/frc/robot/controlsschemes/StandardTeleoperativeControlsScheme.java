@@ -18,6 +18,7 @@ public class StandardTeleoperativeControlsScheme implements ControlsScheme {
 		(new ControlsSchemeBuilder(robot)).configureDefaultRobotCommands()
 			.useControllerSelectButtonToCalibrateFieldRelativeHeading(controller1)
 			.useControllerJoysticksForDriving(controller1)
+			.useAButtonAsSlowMode(controller1)
 			.useControllerDPadForSnappingToHeading(controller1)
 			.useBumpersForRelativeHeadingSnapping(controller1)
 			.useRightJoystickClickToCorrectHeading(controller1)
