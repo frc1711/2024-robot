@@ -301,7 +301,7 @@ public class RobotContainer {
 				noteHeading.plus(Rotations.of(0.5)),
 				speed,
 				Degrees.of(0),
-				driveTime.plus(Seconds.of(0.05))
+				driveTime
 			);
 			
 			Command intakeNote = this.intakeUntilNoteIsReady()
