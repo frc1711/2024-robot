@@ -426,7 +426,7 @@ public class Swerve extends SubsystemBase {
 		
 		public Command slowDownWhile(double speedMultiplier, Command command) {
 			
-			return command.alongWith(this.slowDown(speedMultiplier));
+			return command.deadlineWith(this.slowDown(speedMultiplier));
 			
 		}
 		
