@@ -149,7 +149,9 @@ public class RobotContainer {
 				() -> !RobotContainer.this.upperBeamBreakSensor.getAsBoolean()
 			);
 			
-			return intakeUntilBeamBreak.andThen(intakeUntilPastBeamBreak);
+			return intakeUntilBeamBreak
+				.andThen(intakeUntilPastBeamBreak)
+				.withTimeout(1);
 		
 		}
 		
