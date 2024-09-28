@@ -344,29 +344,6 @@ public class Swerve extends SubsystemBase {
 	}
 	
 	@Override
-	public void initSendable(SendableBuilder builder) {
-		
-		builder.addDoubleProperty(
-			"Heading",
-			() -> ControlsUtilities.normalizeToRange(
-				this.getFieldRelativeHeading().in(Degrees),
-				-180,
-				180
-			),
-			null
-		);
-		
-		builder.addDoubleProperty(
-			"Heading Setpoint",
-			this.headingPIDController::getSetpoint,
-			(double newHeading) -> this.setFieldRelativeHeadingSetpoint(
-				Degrees.of(newHeading)
-			)
-		);
-		
-	}
-	
-	@Override
 	public void periodic() {
 		
 		double headingPIDOutput = this.headingPIDController.calculate(
