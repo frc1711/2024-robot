@@ -211,7 +211,6 @@ public class RobotContainer {
 			return this.prepareToShootAtAngle(angle, shooterSpeed)
 				.withTimeout(armMovementTimeout)
 				.andThen(new WaitCommand(armSettlingTime))
-				
 				.andThen(this.feedShooter())
 				.finallyDo(() -> {
 					RobotContainer.this.shooter.stop();
