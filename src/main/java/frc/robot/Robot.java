@@ -33,6 +33,8 @@ public class Robot extends TimedRobot {
 		
         // Initialize the RobotContainer.
         this.robotContainer = new RobotContainer();
+        
+        this.robotContainer.robotInit();
 		
     }
     

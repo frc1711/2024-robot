@@ -76,6 +76,12 @@ public class RobotContainer {
 		
 	}
 	
+	public void robotInit() {
+		
+		this.swerve.calibrateFieldRelativeHeading();
+		
+	}
+	
 	public void robotPeriodic() {
 	
 	
