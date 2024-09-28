@@ -286,7 +286,7 @@ public class RobotContainer {
 			Swerve.Commands swerve = RobotContainer.this.swerve.commands;
 			Measure<Time> driveTrainSettlingWaitTime = Seconds.of(0.25);
 			
-			Command driveToNote = swerve.driveForTime(
+			Command driveToNote = swerve.driveForTime2(
 				noteHeading,
 				speed,
 				Degrees.of(0),
@@ -297,7 +297,7 @@ public class RobotContainer {
 				driveTrainSettlingWaitTime.in(Seconds)
 			);
 			
-			Command returnToSubwoofer = swerve.driveForTime(
+			Command returnToSubwoofer = swerve.driveForTime2(
 				noteHeading.plus(Rotations.of(0.5)),
 				speed,
 				Degrees.of(0),
