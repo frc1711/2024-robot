@@ -225,7 +225,7 @@ public class RobotContainer {
 				Degrees.of(55),
 				1,
 				1,
-				0.25
+				0.5
 			);
 			
 		}
