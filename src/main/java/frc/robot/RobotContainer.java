@@ -233,20 +233,21 @@ public class RobotContainer {
 		
 		public Command makeToast() {
 			
-			Command slowDown = new InstantCommand(() -> RobotContainer.this.swerve.setSpeedMultiplier(0.2));
 			Arm.Commands arm = RobotContainer.this.arm.commands;
+			Swerve.Commands swerve = RobotContainer.this.swerve.commands;
 			
-			return slowDown
-				.andThen(this.prepareToShootAtAngle(Degrees.of(92), 0.13))
-				.andThen(this.feedShooter())
-				.andThen(new WaitCommand(0.05))
-				.andThen(arm.holdAtAngle(Degrees.of(82)).withTimeout(0.2))
-				.andThen(arm.holdAtAngle(Degrees.of(91)).withTimeout(1))
-				.finallyDo(() -> {
-					RobotContainer.this.shooter.stop();
-					RobotContainer.this.arm.setRestingAngle(Degrees.of(0));
-					RobotContainer.this.swerve.setSpeedMultiplier(1);
-				});
+			Command makeToast =
+				this.prepareToShootAtAngle(Degrees.of(92), 0.13)
+					.andThen(this.feedShooter())
+					.andThen(new WaitCommand(0.05))
+					.andThen(arm.holdAtAngle(Degrees.of(82)).withTimeout(0.2))
+					.andThen(arm.holdAtAngle(Degrees.of(91)).withTimeout(1))
+					.finallyDo(() -> {
+						RobotContainer.this.shooter.stop();
+						RobotContainer.this.arm.setRestingAngle(Degrees.of(0));
+					});
+			
+			return swerve.slowDownWhile(0.3, makeToast);
 			
 		}
 		

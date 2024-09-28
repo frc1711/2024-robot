@@ -1,7 +1,7 @@
 package frc.robot.controlsschemes;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer;
@@ -215,8 +215,9 @@ public class ControlsSchemeBuilder {
 		CommandXboxController controller
 	) {
 		
-		controller.a().onTrue(new InstantCommand(() -> this.robot.swerve.setSpeedMultiplier(0.3)));
-		controller.a().onFalse(new InstantCommand(() -> this.robot.swerve.setSpeedMultiplier(1)));
+		Swerve.Commands swerve = this.robot.swerve.commands;
+		
+		controller.a().whileTrue(swerve.slowDown(0.3));
 		
 		return this;
 		
@@ -236,6 +237,12 @@ public class ControlsSchemeBuilder {
 		
 		Intake.Commands intake = this.robot.intake.commands;
 		Shooter.Commands shooter = this.robot.shooter.commands;
+		Swerve.Commands swerve = this.robot.swerve.commands;
+		
+		Command intakeNote = new SelectCommand<>(Map.ofEntries(
+			Map.entry(true, intake.intake()),
+			Map.entry(false, this.robot.commands.intakeUntilNoteIsReady())
+		), this.robot.upperBeamBreakSensor);
 		
 		// Spin the intake outwards while the left trigger is pressed.
 		controller.leftTrigger(TRIGGER_THRESHOLD).whileTrue(
@@ -243,18 +250,8 @@ public class ControlsSchemeBuilder {
 		);
 		
 		// Spin the intake inwards while the right trigger is pressed.
-		controller.rightTrigger(TRIGGER_THRESHOLD).whileTrue(
-			new SelectCommand<>(Map.ofEntries(
-				Map.entry(true, intake.intake()),
-				Map.entry(false, this.robot.commands.intakeUntilNoteIsReady())
-			), this.robot.upperBeamBreakSensor)
-				.alongWith(new FunctionalCommand(
-					() -> this.robot.swerve.setSpeedMultiplier(0.3),
-					() -> {},
-					(wasInterrupted) -> this.robot.swerve.setSpeedMultiplier(1),
-					() -> false
-				))
-		);
+		controller.rightTrigger(TRIGGER_THRESHOLD)
+			.whileTrue(swerve.slowDownWhile(0.3, intakeNote));
 		
 		return this;
 		
@@ -297,13 +294,9 @@ public class ControlsSchemeBuilder {
 	) {
 		
 		RobotContainer.Commands robot = this.robot.commands;
+		Swerve.Commands swerve = this.robot.swerve.commands;
 		
-		controller.x().whileTrue(robot.shootAtAngle(Degrees.of(55), 1).alongWith(new FunctionalCommand(
-			() -> this.robot.swerve.setSpeedMultiplier(0.3),
-			() -> {},
-			(wasInterrupted) -> this.robot.swerve.setSpeedMultiplier(1),
-			() -> false
-		)));
+		controller.x().whileTrue(swerve.slowDownWhile(0.3, robot.shootAtAngle(Degrees.of(55), 1)));
 		controller.b().whileTrue(this.robot.commands.makeToast());
 		controller.y().whileTrue(robot.shootAtAngle(Degrees.of(38.5), 1));
 		controller.a().whileTrue(
