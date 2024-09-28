@@ -180,7 +180,121 @@ public enum Auton {
 				.andThen(robot.shootBelliedUpToSubwoofer()))
 		), () -> DriverStation.getAlliance().orElse(Auton.getDefaultAlliance()));
 		
-	});
+	}),
+	
+	HOT_AUTON("Hot Auton", robot -> (new WaitCommand(9))
+		.andThen(new SelectCommand<>(Map.ofEntries(
+			Map.entry(Alliance.Blue, robot.swerve.commands.driveForTime(
+					Degrees.of(0),
+					0.35,
+					Degrees.of(0),
+					Seconds.of(0.25)
+				).andThen(robot.swerve.commands.driveForTime(
+					Degrees.of(90),
+					0.35,
+					Degrees.of(-60),
+					Seconds.of(0.6)
+				)).andThen(robot.commands.shootBelliedUpToSubwoofer())
+				.andThen(robot.swerve.commands.driveForTime(
+					Degrees.of(-60),
+					0.5,
+					Degrees.of(-60),
+					Seconds.of(0.25)
+				))
+				.andThen(robot.swerve.commands.driveForTime(
+					Degrees.of(0),
+					0.5,
+					Degrees.of(0),
+					Seconds.of(1.5)
+				))
+			),
+			Map.entry(Alliance.Red, robot.swerve.commands.driveForTime(
+					Degrees.of(0),
+					0.35,
+					Degrees.of(0),
+					Seconds.of(0.25)
+				).andThen(robot.swerve.commands.driveForTime(
+					Degrees.of(-90),
+					0.35,
+					Degrees.of(60),
+					Seconds.of(0.6)
+				)).andThen(robot.commands.shootBelliedUpToSubwoofer())
+				.andThen(robot.swerve.commands.driveForTime(
+					Degrees.of(60),
+					0.5,
+					Degrees.of(60),
+					Seconds.of(0.25)
+				))
+				.andThen(robot.swerve.commands.driveForTime(
+					Degrees.of(0),
+					0.5,
+					Degrees.of(0),
+					Seconds.of(1.5)
+				))
+			)
+		), () -> DriverStation.getAlliance().orElse(Auton.getDefaultAlliance())))
+	),
+	
+	KETTERING_AUTON("Kettering Finals Auton", robot -> new SelectCommand<>(Map.ofEntries(
+		Map.entry(Alliance.Blue, robot.swerve.commands.driveForTime(
+				Degrees.of(0),
+				0.35,
+				Degrees.of(0),
+				Seconds.of(0.25)
+			).andThen(robot.swerve.commands.driveForTime(
+				Degrees.of(90),
+				0.35,
+				Degrees.of(-60),
+				Seconds.of(0.6)
+			)).andThen(robot.commands.shootBelliedUpToSubwoofer())
+			.andThen(robot.swerve.commands.driveForTime(
+				Degrees.of(-60),
+				0.5,
+				Degrees.of(-60),
+				Seconds.of(0.25)
+			))
+			.andThen(robot.swerve.commands.driveForTime(
+				Degrees.of(-90),
+				0.5,
+				Degrees.of(0),
+				Seconds.of(1.5)
+			))
+			.andThen(robot.swerve.commands.driveForTime(
+				Degrees.of(0),
+				0.5,
+				Degrees.of(0),
+				Seconds.of(1.25)
+			))),
+		Map.entry(Alliance.Red, robot.swerve.commands.driveForTime(
+				Degrees.of(0),
+				0.35,
+				Degrees.of(0),
+				Seconds.of(0.25)
+			).andThen(robot.swerve.commands.driveForTime(
+				Degrees.of(-90),
+				0.35,
+				Degrees.of(60),
+				Seconds.of(0.6)
+			)).andThen(robot.commands.shootBelliedUpToSubwoofer())
+			.andThen(robot.swerve.commands.driveForTime(
+				Degrees.of(60),
+				0.5,
+				Degrees.of(60),
+				Seconds.of(0.25)
+			))
+			.andThen(robot.swerve.commands.driveForTime(
+				Degrees.of(90),
+				0.5,
+				Degrees.of(0),
+				Seconds.of(1.5)
+			))
+			.andThen(robot.swerve.commands.driveForTime(
+				Degrees.of(0),
+				0.5,
+				Degrees.of(0),
+				Seconds.of(1.25)
+			)))
+	), () -> DriverStation.getAlliance().orElse(Auton.getDefaultAlliance())));
 	
 	/**
 	 * The Shuffleboard widget used for selecting the auton to run.
