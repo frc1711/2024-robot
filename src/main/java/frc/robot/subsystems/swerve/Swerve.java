@@ -18,6 +18,7 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -471,6 +472,46 @@ public class Swerve extends SubsystemBase {
 					Math.sin(translationAngle.in(Radians)) * translationSpeed,
 					0
 				), true),
+				(wasInterrupted) -> Swerve.this.stop(),
+				() -> false,
+				Swerve.this
+			).withTimeout(duration.in(Seconds));
+			
+		}
+		
+		public Command driveForTime2(
+			Measure<Angle> translationAngle,
+			double translationSpeed,
+			Measure<Angle> heading,
+			Measure<Time> duration
+		) {
+			
+			double rampTimeSeconds = 0.5;
+			Timer timer = new Timer();
+			
+			return new FunctionalCommand(
+				() -> {
+					timer.start();
+					Swerve.this.setFieldRelativeHeadingSetpoint(heading);
+				},
+				() -> {
+					
+					double timeSinceStart = timer.get();
+					double timeUntilEnd = duration.in(Seconds) - timeSinceStart;
+					double activeSpeed = Math.min(
+						(timeSinceStart/rampTimeSeconds) * translationSpeed,
+						(timeUntilEnd/rampTimeSeconds) * translationSpeed
+					);
+					
+					activeSpeed = Math.min(activeSpeed, translationSpeed);
+					
+					Swerve.this.applyChassisSpeeds(new ChassisSpeeds(
+						Math.cos(translationAngle.in(Radians)) * activeSpeed,
+						Math.sin(translationAngle.in(Radians)) * activeSpeed,
+						0
+					), true);
+					
+				},
 				(wasInterrupted) -> Swerve.this.stop(),
 				() -> false,
 				Swerve.this
