@@ -298,7 +298,12 @@ public class ControlsSchemeBuilder {
 		
 		RobotContainer.Commands robot = this.robot.commands;
 		
-		controller.x().whileTrue(robot.shootAtAngle(Degrees.of(55), 1));
+		controller.x().whileTrue(robot.shootAtAngle(Degrees.of(55), 1).alongWith(new FunctionalCommand(
+			() -> this.robot.swerve.setSpeedMultiplier(0.3),
+			() -> {},
+			(wasInterrupted) -> this.robot.swerve.setSpeedMultiplier(1),
+			() -> false
+		)));
 		controller.b().whileTrue(this.robot.commands.makeToast());
 		controller.y().whileTrue(robot.shootAtAngle(Degrees.of(38.5), 1));
 		controller.a().whileTrue(
