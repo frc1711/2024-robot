@@ -230,19 +230,6 @@ public class RobotContainer {
 			
 		}
 		
-		public Command shootBelliedUpToSubwooferAndRecenter() {
-			
-			return this.shootBelliedUpToSubwoofer().deadlineWith(
-				RobotContainer.this.swerve.commands.driveForTime(
-					Rotations.of(0.5),
-					0.05,
-					Degrees.of(0),
-					Seconds.of(1)
-				)
-			);
-			
-		}
-		
 		public Command makeToast() {
 			
 			Command slowDown = new InstantCommand(() -> RobotContainer.this.swerve.setSpeedMultiplier(0.2));
