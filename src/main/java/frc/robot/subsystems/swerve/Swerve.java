@@ -51,6 +51,8 @@ public class Swerve extends SubsystemBase {
 	
 	protected final AHRS gyro;
 	
+	protected Measure<Angle> fieldRelativeHeadingAdjustmentAngle;
+	
 	protected final SwerveDriveKinematics kinematics;
 	
 	protected SwerveDriveOdometry odometry;
@@ -124,6 +126,7 @@ public class Swerve extends SubsystemBase {
 		
 		this.headingPIDController = new PIDController(0, 0, 0);
 		this.gyro = new AHRS();
+		this.fieldRelativeHeadingAdjustmentAngle = Degrees.of(0);
 		this.kinematics = new SwerveDriveKinematics(
 			this.frontLeftSwerveModule.getPositionInRobot(),
 			this.frontRightSwerveModule.getPositionInRobot(),
@@ -221,17 +224,24 @@ public class Swerve extends SubsystemBase {
 	
 	public void calibrateFieldRelativeHeading() {
 		
+		this.calibrateFieldRelativeHeading(Degrees.of(0));
+
+	}
+	
+	public void calibrateFieldRelativeHeading(Measure<Angle> currentHeading) {
+		
 		this.gyro.reset();
+		this.fieldRelativeHeadingAdjustmentAngle = currentHeading.negate();
 		this.headingPIDController.setSetpoint(
 			this.getFieldRelativeHeading().in(Degrees)
 		);
-		
+
 //		this.swerveDriveOdometry.resetPosition(
 //			this.getFieldRelativeHeadingRotation2d(),
 //			modulePositions,
 //			this.updateOdometry()
 //		);
-
+		
 	}
 	
 	public Measure<Angle> getFieldRelativeHeading() {
@@ -244,7 +254,11 @@ public class Swerve extends SubsystemBase {
 	
 	public Rotation2d getFieldRelativeHeadingRotation2d() {
 		
-		return this.gyro.getRotation2d();
+		Rotation2d adjustment = Rotation2d.fromDegrees(
+			this.fieldRelativeHeadingAdjustmentAngle.in(Degrees)
+		);
+		
+		return this.gyro.getRotation2d().plus(adjustment);
 		
 	}
 	
