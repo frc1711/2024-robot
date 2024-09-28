@@ -412,6 +412,24 @@ public class Swerve extends SubsystemBase {
 
 		}
 		
+		public Command slowDown(double speedMultiplier) {
+			
+			return new FunctionalCommand(
+				() -> Swerve.this.setSpeedMultiplier(speedMultiplier),
+				() -> {},
+				(ignored) -> Swerve.this.setSpeedMultiplier(1),
+				() -> false,
+				Swerve.this
+			);
+			
+		}
+		
+		public Command slowDownWhile(double speedMultiplier, Command command) {
+			
+			return command.alongWith(this.slowDown(speedMultiplier));
+			
+		}
+		
 		public Command setFieldRelativeHeading(Measure<Angle> heading) {
 			
 			return Swerve.this.runOnce(
