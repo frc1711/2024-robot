@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
@@ -98,16 +99,24 @@ public enum Auton {
 		Supplier<Alliance> getAlliance = () ->
 			DriverStation.getAlliance().orElse(Auton.getDefaultAlliance());
 		
+		Command calibrateAt60DegHeading = new InstantCommand(() ->
+			robotContainer.swerve.calibrateFieldRelativeHeading(Degrees.of(60))
+		);
+		
+		Command calibrateAtNeg60DegHeading = new InstantCommand(() ->
+			robotContainer.swerve.calibrateFieldRelativeHeading(Degrees.of(-60))
+		);
+		
 		Supplier<Command> blueAmpRedSource = () ->
 			robot.shootBelliedUpToSubwoofer()
-			.andThen(robot.grabNoteAndReturn(
-				Degrees.of(-60),
-				0.35,
-				Seconds.of(1.65)
-			)).andThen(robot.shootBelliedUpToSubwoofer());
+				.andThen(robot.grabNoteAndReturn(
+					Degrees.of(-60),
+					0.35,
+					Seconds.of(1.65)
+				)).andThen(robot.shootBelliedUpToSubwoofer())
+				.andThen(calibrateAt60DegHeading);
 		
-		Command middle =
-			robot.shootBelliedUpToSubwoofer()
+		Command middle = robot.shootBelliedUpToSubwoofer()
 			.andThen(robot.grabNoteAndReturn(
 				Degrees.of(0),
 				0.35,
@@ -116,11 +125,12 @@ public enum Auton {
 		
 		Supplier<Command> blueSourceRedAmp = () ->
 			robot.shootBelliedUpToSubwoofer()
-			.andThen(robot.grabNoteAndReturn(
-				Degrees.of(65),
-				0.35,
-				Seconds.of(1.65)
-			)).andThen(robot.shootBelliedUpToSubwoofer());
+				.andThen(robot.grabNoteAndReturn(
+					Degrees.of(65),
+					0.35,
+					Seconds.of(1.65)
+				)).andThen(robot.shootBelliedUpToSubwoofer())
+				.andThen(calibrateAtNeg60DegHeading);
 		
 		return new SelectCommand<>(Map.ofEntries(
 			Map.entry(StartPosition.AMP_SIDE_SLANTED, new SelectCommand<>(Map.ofEntries(
