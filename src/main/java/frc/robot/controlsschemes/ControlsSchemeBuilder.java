@@ -1,6 +1,7 @@
 package frc.robot.controlsschemes;
 
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer;
@@ -205,6 +206,17 @@ public class ControlsSchemeBuilder {
 			this.robot.swerve.setFieldRelativeHeadingSetpoint(Degrees.of(currentHeading));
 			
 		}));
+		
+		return this;
+		
+	}
+	
+	public ControlsSchemeBuilder useAButtonAsSlowMode(
+		CommandXboxController controller
+	) {
+		
+		controller.a().onTrue(new InstantCommand(() -> this.robot.swerve.setSpeedMultiplier(0.3)));
+		controller.a().onFalse(new InstantCommand(() -> this.robot.swerve.setSpeedMultiplier(1)));
 		
 		return this;
 		
