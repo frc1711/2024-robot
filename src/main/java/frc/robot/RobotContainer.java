@@ -309,41 +309,32 @@ public class RobotContainer {
 			
 		}
 		
-		public Command grabNote1FromMiddlePosition(
-			double speed,
-			Measure<Time> driveTime
-		) {
+		public Command grabNote1FromMiddlePosition() {
 			
 			return this.grabNoteAndReturn(
 				Degrees.of(52),
-				speed,
-				driveTime
+				1,
+				Seconds.of(1.2)
 			);
 			
 		}
 		
-		public Command grabNote2FromMiddlePosition(
-			double speed,
-			Measure<Time> driveTime
-		) {
+		public Command grabNote2FromMiddlePosition() {
 			
 			return this.grabNoteAndReturn(
 				Degrees.of(0),
-				speed,
-				driveTime
+				1,
+				Seconds.of(0.9)
 			);
 			
 		}
 		
-		public Command grabNote3FromMiddlePosition(
-			double speed,
-			Measure<Time> driveTime
-		) {
+		public Command grabNote3FromMiddlePosition() {
 			
 			return this.grabNoteAndReturn(
 				Degrees.of(-50),
-				speed,
-				driveTime
+				1,
+				Seconds.of(1.2)
 			);
 			
 		}
