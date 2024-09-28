@@ -251,7 +251,9 @@ public class RobotContainer {
 			return slowDown
 				.andThen(this.prepareToShootAtAngle(Degrees.of(92), 0.13))
 				.andThen(this.feedShooter())
-				.andThen(arm.holdAtAngle(Degrees.of(90)).withTimeout(1))
+				.andThen(new WaitCommand(0.05))
+				.andThen(arm.holdAtAngle(Degrees.of(82)).withTimeout(0.2))
+				.andThen(arm.holdAtAngle(Degrees.of(91)).withTimeout(1))
 				.finallyDo(() -> {
 					RobotContainer.this.shooter.stop();
 					RobotContainer.this.arm.setRestingAngle(Degrees.of(0));
