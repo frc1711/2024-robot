@@ -1,10 +1,7 @@
 package frc.robot.configuration;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import frc.robot.util.StringUtilities;
 
 /**
  * An enumeration representing the starting position of the robot on the field
@@ -19,7 +16,7 @@ public enum StartPosition {
      * A starting position in which the robot is positioned against the center
      * of the SUBWOOFER (the angled field element underneath the SPEAKER).
      */
-    MIDDLE(0),
+    MIDDLE("Middle"),
     
     /**
      * A starting position in which the robot is positioned against the side of
@@ -31,7 +28,7 @@ public enum StartPosition {
      * station). On the blue alliance, this entails the robot being positioned
      * on the left side of the SUBWOOFER.
      */
-    AMP_SIDE(0.35),
+    AMP_SIDE_SLANTED("Amp Side (Slanted)"),
     
     /**
      * A starting position in which the robot is positioned against the side of
@@ -43,7 +40,7 @@ public enum StartPosition {
      * station). On the blue alliance, this entails the robot being positioned
      * on the right side of the SUBWOOFER.
      */
-    SOURCE_SIDE(-0.35);
+    SOURCE_SIDE_SLANTED("Source Side (Slanted)");
     
     /**
      * The Shuffleboard widget used for selecting the starting position of the
@@ -66,30 +63,19 @@ public enum StartPosition {
     private static boolean hasShuffleboardSelectorBeenInitialized = false;
     
     /**
-     * The relative speed at which the robot should move forward or backward
-     * during autonomous mode, based on the selected starting position.
+     * The human-readable name of this start position.
      */
-    public final double autonYSpeed;
+    public final String humanReadableName;
     
     /**
      * Constructs a new StartPosition with the given relative speed at which the
      * robot should move forward or backward during autonomous mode.
      *
-     * @param autonYSpeed The relative speed at which the robot should move
-     * forward or backward during autonomous mode.
+     * @param humanReadableName The human-readable name of this start position.
      */
-    StartPosition(double autonYSpeed) {
+    StartPosition(String humanReadableName) {
         
-        double effectiveYSpeed = autonYSpeed;
-        
-        // Get our current alliance information from the FMS, otherwise
-        // default to Red.
-        Alliance alliance = DriverStation.getAlliance()
-            .orElse(Alliance.Red);
-        
-        if (alliance == Alliance.Red) effectiveYSpeed *= -1;
-        
-        this.autonYSpeed = effectiveYSpeed;
+        this.humanReadableName = humanReadableName;
         
     }
     
@@ -146,9 +132,7 @@ public enum StartPosition {
      */
     public String getHumanReadableName() {
         
-        return StringUtilities.toTitleCase(
-            this.name().replace('_', ' ')
-        );
+        return this.humanReadableName;
         
     }
     

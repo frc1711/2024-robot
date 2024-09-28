@@ -78,12 +78,12 @@ public enum Auton {
 		
 		return robot.waitToStartAuton().andThen(
 			new SelectCommand<>(Map.ofEntries(
-				Map.entry(StartPosition.AMP_SIDE, new SelectCommand<>(Map.ofEntries(
+				Map.entry(StartPosition.AMP_SIDE_SLANTED, new SelectCommand<>(Map.ofEntries(
 					Map.entry(Alliance.Red, blueSourceRedAmp.get()),
 					Map.entry(Alliance.Blue, blueAmpRedSource.get())
 				), getAlliance)),
 				Map.entry(StartPosition.MIDDLE, middle),
-				Map.entry(StartPosition.SOURCE_SIDE, new SelectCommand<>(Map.ofEntries(
+				Map.entry(StartPosition.SOURCE_SIDE_SLANTED, new SelectCommand<>(Map.ofEntries(
 					Map.entry(Alliance.Red, blueAmpRedSource.get()),
 					Map.entry(Alliance.Blue, blueSourceRedAmp.get())
 				), getAlliance))
@@ -123,12 +123,12 @@ public enum Auton {
 			)).andThen(robot.shootBelliedUpToSubwoofer());
 		
 		return new SelectCommand<>(Map.ofEntries(
-			Map.entry(StartPosition.AMP_SIDE, new SelectCommand<>(Map.ofEntries(
+			Map.entry(StartPosition.AMP_SIDE_SLANTED, new SelectCommand<>(Map.ofEntries(
 				Map.entry(Alliance.Red, blueSourceRedAmp.get()),
 				Map.entry(Alliance.Blue, blueAmpRedSource.get())
 			), getAlliance)),
 			Map.entry(StartPosition.MIDDLE, middle),
-			Map.entry(StartPosition.SOURCE_SIDE, new SelectCommand<>(Map.ofEntries(
+			Map.entry(StartPosition.SOURCE_SIDE_SLANTED, new SelectCommand<>(Map.ofEntries(
 				Map.entry(Alliance.Red, blueAmpRedSource.get()),
 				Map.entry(Alliance.Blue, blueSourceRedAmp.get())
 			), getAlliance))
