@@ -409,8 +409,7 @@ public class Swerve extends SubsystemBase {
 				() -> Swerve.this.setSpeedMultiplier(speedMultiplier),
 				() -> {},
 				(ignored) -> Swerve.this.setSpeedMultiplier(1),
-				() -> false,
-				Swerve.this
+				() -> false
 			);
 			
 		}
