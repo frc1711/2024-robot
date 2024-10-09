@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.configuration.DIODevice;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.controlsschemes.ControlsScheme;
+import frc.robot.controlsschemes.SingleControllerTeleoperativeControlsScheme;
 import frc.robot.controlsschemes.StandardTeleoperativeControlsScheme;
 import frc.robot.devicewrappers.RaptorsLaserCanBooleanSupplier;
 import frc.robot.subsystems.Arm;
@@ -62,7 +63,7 @@ public class RobotContainer {
 		this.subsystemController = new CommandXboxController(1);
 		
 		// Initialize the controls scheme.
-		this.controlsScheme = new StandardTeleoperativeControlsScheme();
+		this.controlsScheme = new SingleControllerTeleoperativeControlsScheme();
 		this.commands = new RobotContainer.Commands();
 		
 		Shuffleboard.getTab("Subsystems").add("Swerve", this.swerve);

@@ -4,15 +4,10 @@
 
 package frc.robot.subsystems.swerve;
 
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
@@ -23,11 +18,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.configuration.CANDevice;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.configuration.RobotDimensions;
+import frc.robot.devicewrappers.RaptorsNavX;
+import frc.robot.devicewrappers.swerve.RaptorsSwerveModule;
 import frc.robot.util.ControlsUtilities;
 import frc.robot.util.Point;
 
@@ -39,23 +35,27 @@ import static edu.wpi.first.units.Units.*;
 
 public class Swerve extends SubsystemBase {
 	
-	protected final SwerveModule frontLeftSwerveModule;
+	protected static final int FRONT_LEFT_SWERVE_MODULE_ID = 0;
 	
-	protected final SwerveModule frontRightSwerveModule;
+	protected static final int FRONT_RIGHT_SWERVE_MODULE_ID = 1;
 	
-	protected final SwerveModule rearLeftSwerveModule;
+	protected static final int REAR_LEFT_SWERVE_MODULE_ID = 2;
 	
-	protected final SwerveModule rearRightSwerveModule;
+	protected static final int REAR_RIGHT_SWERVE_MODULE_ID = 3;
+	
+	protected final RaptorsSwerveModule frontLeftSwerveModule;
+	
+	protected final RaptorsSwerveModule frontRightSwerveModule;
+	
+	protected final RaptorsSwerveModule rearLeftSwerveModule;
+	
+	protected final RaptorsSwerveModule rearRightSwerveModule;
 	
 	protected final PIDController headingPIDController;
 	
-	protected final AHRS gyro;
-	
-	protected Measure<Angle> fieldRelativeHeadingAdjustmentAngle;
+	protected final RaptorsNavX gyro;
 	
 	protected final SwerveDriveKinematics kinematics;
-	
-	protected SwerveDriveOdometry odometry;
 	
 	protected boolean isHeadingLockEnabled;
 	
@@ -80,7 +80,7 @@ public class Swerve extends SubsystemBase {
 		double swerveModuleYOffsetFromCenterInMeters =
 			RobotDimensions.WIDTHWISE_WHEELBASE.in(Units.Meters) / 2;
 		
-		this.frontLeftSwerveModule = new SwerveModule(
+		this.frontLeftSwerveModule = new RaptorsSwerveModule(
 			CANDevice.FRONT_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_LEFT_ENCODER.id,
@@ -91,7 +91,7 @@ public class Swerve extends SubsystemBase {
 			)
 		);
 		
-		this.frontRightSwerveModule = new SwerveModule(
+		this.frontRightSwerveModule = new RaptorsSwerveModule(
 			CANDevice.FRONT_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.FRONT_RIGHT_ENCODER.id,
@@ -102,7 +102,7 @@ public class Swerve extends SubsystemBase {
 			)
 		);
 		
-		this.rearLeftSwerveModule = new SwerveModule(
+		this.rearLeftSwerveModule = new RaptorsSwerveModule(
 			CANDevice.REAR_LEFT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_LEFT_ENCODER.id,
@@ -113,7 +113,7 @@ public class Swerve extends SubsystemBase {
 			)
 		);
 		
-		this.rearRightSwerveModule = new SwerveModule(
+		this.rearRightSwerveModule = new RaptorsSwerveModule(
 			CANDevice.REAR_RIGHT_STEER_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_DRIVE_MOTOR_CONTROLLER.id,
 			CANDevice.REAR_RIGHT_ENCODER.id,
@@ -125,27 +125,13 @@ public class Swerve extends SubsystemBase {
 		);
 		
 		this.headingPIDController = new PIDController(0, 0, 0);
-		this.gyro = new AHRS();
-		this.fieldRelativeHeadingAdjustmentAngle = Degrees.of(0);
+		this.gyro = new RaptorsNavX();
 		this.kinematics = new SwerveDriveKinematics(
 			this.frontLeftSwerveModule.getPositionInRobot(),
 			this.frontRightSwerveModule.getPositionInRobot(),
 			this.rearLeftSwerveModule.getPositionInRobot(),
 			this.rearRightSwerveModule.getPositionInRobot()
 		);
-		this.odometry = new SwerveDriveOdometry(
-			this.kinematics,
-			this.getFieldRelativeHeadingRotation2d(),
-			this.getModulePositions()
-		);
-
-		// Create a new sendable field for each module
-//		RobotContainer.putSendable("Analysis Tab", "fl-Module", frontLeftSwerveModule);
-//		RobotContainer.putSendable("Analysis Tab", "fr-Module", frontRightSwerveModule);
-//		RobotContainer.putSendable("Analysis Tab", "rl-Module", rearLeftSwerveModule);
-//		RobotContainer.putSendable("Analysis Tab", "rr-Module", rearRightSwerveModule);
-//		RobotContainer.putSendable("Analysis Tab", "gyro", gyro);
-		// RobotContainer.putSendable("kinematics", odometry);
 		
 		this.isHeadingLockEnabled = true;
 		this.speedMultiplier = 1;
@@ -173,14 +159,10 @@ public class Swerve extends SubsystemBase {
 		shuffleboardCalibrationTab.add(
 			this.commands.calibrateFieldRelativeHeading()
 		);
-
-		shuffleboardCalibrationTab.add(
-			this.commands.calibrateOdometry()
-		);
 		
 	}
 	
-	protected Stream<SwerveModule> getModuleStream() {
+	protected Stream<RaptorsSwerveModule> getModuleStream() {
 		
 		return Stream.of(
 			frontLeftSwerveModule,
@@ -191,34 +173,17 @@ public class Swerve extends SubsystemBase {
 		
 	}
 	
-	protected SwerveModulePosition[] getModulePositions() {
-		
-		return new SwerveModulePosition[] {
-			this.frontLeftSwerveModule.getPosition(),
-			this.frontRightSwerveModule.getPosition(),
-			this.rearLeftSwerveModule.getPosition(),
-			this.rearRightSwerveModule.getPosition()
-		};
-		
-	}
-	
-	public HolonomicDriveController getHolonomicDriveController() {
-		
-		return new HolonomicDriveController(
-			new PIDController(1, 0, 0),
-			new PIDController(1, 0, 0),
-			new ProfiledPIDController(
-				0.015, 0, 0,
-				new Constraints(30, 60)
-			)
-		);
-		
-	}
-	
 	public void stop() {
 		
-		this.applyChassisSpeeds(new ChassisSpeeds(0, 0, 0), false);
-		this.getModuleStream().forEach(SwerveModule::stop);
+		this.applyChassisSpeeds(
+			new ChassisSpeeds(
+				0,
+				0,
+				0
+			),
+			false
+		);
+		this.getModuleStream().forEach(RaptorsSwerveModule::stop);
 		
 	}
 	
@@ -230,35 +195,14 @@ public class Swerve extends SubsystemBase {
 	
 	public void calibrateFieldRelativeHeading(Measure<Angle> currentHeading) {
 		
-		this.gyro.reset();
-		this.fieldRelativeHeadingAdjustmentAngle = currentHeading.negate();
-		this.headingPIDController.setSetpoint(
-			this.getFieldRelativeHeading().in(Degrees)
-		);
-
-//		this.swerveDriveOdometry.resetPosition(
-//			this.getFieldRelativeHeadingRotation2d(),
-//			modulePositions,
-//			this.updateOdometry()
-//		);
+		this.gyro.calibrate(currentHeading);
+		this.setFieldRelativeHeadingSetpoint(currentHeading.negate());
 		
 	}
 	
 	public Measure<Angle> getFieldRelativeHeading() {
 		
-		return Degrees.of(
-			this.getFieldRelativeHeadingRotation2d().getDegrees()
-		);
-		
-	}
-	
-	public Rotation2d getFieldRelativeHeadingRotation2d() {
-		
-		Rotation2d adjustment = Rotation2d.fromDegrees(
-			this.fieldRelativeHeadingAdjustmentAngle.in(Degrees)
-		);
-		
-		return this.gyro.getRotation2d().plus(adjustment);
+		return this.gyro.getRotation();
 		
 	}
 	
@@ -267,10 +211,7 @@ public class Swerve extends SubsystemBase {
 	 */
 	public void calibrateModuleSteeringHeadings() {
 		
-		this.getModuleStream().forEach(
-			(swerveModule) ->
-				swerveModule.calibrateSteeringHeading(Degrees.of(0))
-		);
+		this.getModuleStream().forEach(RaptorsSwerveModule::calibrateSteeringHeading);
 		
 	}
 	
@@ -280,7 +221,7 @@ public class Swerve extends SubsystemBase {
 			
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
 				chassisSpeeds,
-				this.getFieldRelativeHeadingRotation2d()
+				Rotation2d.fromDegrees(this.gyro.getRotation().in(Degrees))
 			);
 			
 		}
@@ -334,20 +275,11 @@ public class Swerve extends SubsystemBase {
 		
 	}
 	
-	public void xMode() {
-		
-		frontLeftSwerveModule.update(new SwerveModuleState(0, new Rotation2d(135)));
-		frontRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-135)));
-		rearLeftSwerveModule.update(new SwerveModuleState(0, new Rotation2d(45)));
-		rearRightSwerveModule.update(new SwerveModuleState(0, new Rotation2d(-45)));
-		
-	}
-	
 	@Override
 	public void periodic() {
 		
 		double headingPIDOutput = this.headingPIDController.calculate(
-			this.getFieldRelativeHeadingRotation2d().getDegrees()
+			this.getFieldRelativ/eHeading().in(Degrees)
 		);
 		
 		this.currentActualChassisSpeeds = isHeadingLockEnabled ?
@@ -366,9 +298,21 @@ public class Swerve extends SubsystemBase {
 		this.rearLeftSwerveModule.update(moduleStates[2]);
 		this.rearRightSwerveModule.update(moduleStates[3]);
 		
-		this.odometry.update(
-			this.getFieldRelativeHeadingRotation2d(),
-			this.getModulePositions()
+	}
+	
+	@Override
+	public void initSendable(SendableBuilder builder) {
+		
+		builder.addDoubleProperty(
+			"Heading",
+			() -> this.getFieldRelativeHeading().in(Degrees),
+			(double headingDegrees) -> this.setFieldRelativeHeadingSetpoint(Degrees.of(headingDegrees))
+		);
+		
+		builder.addDoubleProperty(
+			"Heading Setpoint",
+			() -> this.headingPIDController.getSetpoint(),
+			(double headingDegrees) -> this.setFieldRelativeHeadingSetpoint(Degrees.of(headingDegrees))
 		);
 		
 	}
@@ -386,21 +330,17 @@ public class Swerve extends SubsystemBase {
 		
 		public Command calibrateFieldRelativeHeading() {
 			
-			return Swerve.this
-				.runOnce(Swerve.this::calibrateFieldRelativeHeading)
-				.withName("Calibrate Swerve Field-relative Heading")
-				.ignoringDisable(true);
+			return this.calibrateFieldRelativeHeading(Degrees.of(0));
 			
 		}
 		
-		public Command calibrateOdometry() {
+		public Command calibrateFieldRelativeHeading(Measure<Angle> currentHeading) {
 			
-			return new InstantCommand(() -> {});
-//			return Swerve.this
-//				.runOnce(Swerve.this::resetOdometry)
-//				.withName("Calibrate Swerve Odometry")
-//				.ignoringDisable(true);
-
+			return Swerve.this
+				.runOnce(() -> Swerve.this.calibrateFieldRelativeHeading(currentHeading))
+				.withName("Calibrate Swerve Field-relative Heading")
+				.ignoringDisable(true);
+			
 		}
 		
 		public Command slowDown(double speedMultiplier) {

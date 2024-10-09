@@ -91,7 +91,7 @@ public class ControlsSchemeBuilder {
 	) {
 		
 		controller.back().onTrue(
-			this.robot.swerve.commands.calibrateFieldRelativeHeading()
+			this.robot.swerve.commands.calibrateFieldRelativeHeading(Degrees.of(60))
 		);
 		
 		return this;
@@ -123,6 +123,7 @@ public class ControlsSchemeBuilder {
 					.withClamp(-1, 1)
 					.withScaledDeadband(JOYSTICK_DEADBAND)
 					.withExponentialCurve(LINEAR_INPUT_SMOOTHING_POWER)
+					.withScaling(2)
 			)
 		);
 		

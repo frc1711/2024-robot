@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.swerve;
+package frc.robot.devicewrappers.swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.RelativeEncoder;
@@ -22,7 +22,7 @@ import frc.robot.util.ControlsUtilities;
 
 import static edu.wpi.first.units.Units.*;
 
-public class SwerveModule extends SubsystemBase {
+public class RaptorsSwerveModule extends SubsystemBase {
 	
 	/**
 	 * The units of the angular heading of the module.
@@ -97,7 +97,7 @@ public class SwerveModule extends SubsystemBase {
 	 * angular offset of the steering encoder for this module.
 	 * @param positionInRobot The position of this module within the robot.
 	 */
-	public SwerveModule(
+	public RaptorsSwerveModule(
 		int steerMotorControllerCANID,
 		int driveMotorControllerCANID,
 		int encoderCANID,
@@ -175,7 +175,7 @@ public class SwerveModule extends SubsystemBase {
 	public void setSteeringEncoderOffset(Measure<Angle> offset) {
 		
 		this.steeringEncoderOffsetPreference.set(
-			offset.in(SwerveModule.ANGULAR_HEADING_UNITS)
+			offset.in(RaptorsSwerveModule.ANGULAR_HEADING_UNITS)
 		);
 		
 	}
@@ -190,6 +190,19 @@ public class SwerveModule extends SubsystemBase {
 	public Measure<Angle> getSteeringEncoderOffset() {
 		
 		return Degrees.of(this.steeringEncoderOffsetPreference.get());
+		
+	}
+	
+	/**
+	 * Calibrates the steering heading for this swerve module such that it will
+	 * return 0 degrees in its current physical position after this method is
+	 * called.
+	 *
+	 * @see #calibrateSteeringHeading(Measure)
+	 */
+	public void calibrateSteeringHeading() {
+		
+		this.calibrateSteeringHeading(Degrees.of(0));
 		
 	}
 	
@@ -298,7 +311,7 @@ public class SwerveModule extends SubsystemBase {
 
 			double feedforwardVoltage = this.steerFeedforward.calculate(
 				Math.copySign(
-					SwerveModule.STEER_SPEED.in(DegreesPerSecond),
+					RaptorsSwerveModule.STEER_SPEED.in(DegreesPerSecond),
 					pidVoltage
 				)
 
