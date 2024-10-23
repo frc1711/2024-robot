@@ -8,10 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.units.Angle;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Time;
-import edu.wpi.first.units.Units;
+import edu.wpi.first.units.*;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -19,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.configuration.CANDevice;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.configuration.RobotDimensions;
@@ -279,10 +277,10 @@ public class Swerve extends SubsystemBase {
 	public void periodic() {
 		
 		double headingPIDOutput = this.headingPIDController.calculate(
-			this.getFieldRelativ/eHeading().in(Degrees)
+			this.getFieldRelativeHeading().in(Degrees)
 		);
 		
-		this.currentActualChassisSpeeds = isHeadingLockEnabled ?
+		this.currentRawChassisSpeeds = isHeadingLockEnabled ?
 			new ChassisSpeeds(
 				this.currentRawChassisSpeeds.vxMetersPerSecond,
 				this.currentRawChassisSpeeds.vyMetersPerSecond,
@@ -313,6 +311,28 @@ public class Swerve extends SubsystemBase {
 			"Heading Setpoint",
 			() -> this.headingPIDController.getSetpoint(),
 			(double headingDegrees) -> this.setFieldRelativeHeadingSetpoint(Degrees.of(headingDegrees))
+		);
+		
+	}
+	
+	public SysIdRoutine generateSysIdRoutine() {
+		
+		return new SysIdRoutine(
+			new SysIdRoutine.Config(
+				Volts.of(1).per(Seconds.of(1)),
+				Volts.of(7),
+				Seconds.of(5)
+			),
+			new SysIdRoutine.Mechanism(
+				(Measure<Voltage> voltage) -> {
+					this.frontLeftSwerveModule.setDriveVoltage(voltage);
+					this.frontRightSwerveModule.setDriveVoltage(voltage);
+					this.rearLeftSwerveModule.setDriveVoltage(voltage);
+					this.rearRightSwerveModule.setDriveVoltage(voltage);
+				},
+				null,
+				this
+			)
 		);
 		
 	}
@@ -480,6 +500,18 @@ public class Swerve extends SubsystemBase {
 //			);
 //
 //		}
+		
+		public Command quasistatic(SysIdRoutine.Direction direction) {
+			
+			return Swerve.this.generateSysIdRoutine().quasistatic(direction);
+			
+		}
+		
+		public Command dynamic(SysIdRoutine.Direction direction) {
+			
+			return Swerve.this.generateSysIdRoutine().dynamic(direction);
+			
+		}
 		
 	}
 	

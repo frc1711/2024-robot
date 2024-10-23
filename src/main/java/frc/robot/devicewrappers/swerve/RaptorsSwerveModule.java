@@ -148,6 +148,8 @@ public class RaptorsSwerveModule extends SubsystemBase {
 		DoublePreference.SWERVE_DRIVE_PID_KD
 			.useValue(this.drivePIDController::setD);
 		
+		this.driveMotorController.sparkMax.disableVoltageCompensation();
+		
 	}
 	
 	public SwerveModulePosition getPosition() {
@@ -289,7 +291,8 @@ public class RaptorsSwerveModule extends SubsystemBase {
 			new Rotation2d(currentSteeringHeading)
 		);
 		
-		this.steerPIDController.setSetpoint(optimizedState.angle.getDegrees());
+//		this.steerPIDController.setSetpoint(optimizedState.angle.getDegrees());
+		this.steerPIDController.setSetpoint(0);
 		this.drivePIDController.setSetpoint(
 			optimizedState.speedMetersPerSecond
 		);
@@ -298,40 +301,45 @@ public class RaptorsSwerveModule extends SubsystemBase {
 	
 	@Override
 	public void periodic() {
-
-		double pidVoltage = this.steerPIDController.calculate(
+		
+		double drivePIDVoltage = this.drivePIDController.getSetpoint();
+		double steerPIDVoltage = this.steerPIDController.calculate(
 			this.getSteeringHeading().in(Degrees)
 		);
-
+		
 		if (steerPIDController.atSetpoint()) {
-
+			
 			this.steerMotorController.stopMotor();
-
+			
 		} else {
-
+			
 			double feedforwardVoltage = this.steerFeedforward.calculate(
 				Math.copySign(
 					RaptorsSwerveModule.STEER_SPEED.in(DegreesPerSecond),
-					pidVoltage
+					steerPIDVoltage
 				)
-
+			
 			);
-
+			
 			this.steerMotorController.sparkMax.setVoltage(
-				pidVoltage + feedforwardVoltage
+				steerPIDVoltage + feedforwardVoltage
 			);
-
+			
 		}
 		
-		double driveSpeed = this.drivePIDController.getSetpoint();
+//		if (Math.abs(drivePIDVoltage) > 0.05) {
+//
+//			this.driveMotorController.set(
+//				Math.min(this.drivePIDController.getSetpoint(), 1)
+//			);
+//
+//		} else this.driveMotorController.stopMotor();
 		
-		if (Math.abs(driveSpeed) > 0.05) {
-			
-			this.driveMotorController.set(
-				Math.min(this.drivePIDController.getSetpoint(), 1)
-			);
-			
-		} else this.driveMotorController.stopMotor();
+	}
+	
+	public void setDriveVoltage(Measure<Voltage> voltage) {
+		
+		this.driveMotorController.setVoltage(voltage);
 		
 	}
 	

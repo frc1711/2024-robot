@@ -7,11 +7,14 @@ package frc.robot;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.configuration.DIODevice;
 import frc.robot.configuration.DoublePreference;
 import frc.robot.controlsschemes.ControlsScheme;
@@ -22,6 +25,8 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.Swerve;
+import org.littletonrobotics.urcl.URCL;
+
 import java.util.function.BooleanSupplier;
 import static edu.wpi.first.units.Units.*;
 
@@ -41,7 +46,7 @@ public class RobotContainer {
 	
 	protected final CommandXboxController subsystemController;
 	
-	protected final ControlsScheme controlsScheme;
+//	protected final ControlsScheme controlsScheme;
 	
 	public final Commands commands;
 	
@@ -63,7 +68,7 @@ public class RobotContainer {
 		this.subsystemController = new CommandXboxController(1);
 		
 		// Initialize the controls scheme.
-		this.controlsScheme = new SingleControllerTeleoperativeControlsScheme();
+//		this.controlsScheme = new SingleControllerTeleoperativeControlsScheme();
 		this.commands = new RobotContainer.Commands();
 		
 		Shuffleboard.getTab("Subsystems").add("Swerve", this.swerve);
@@ -75,10 +80,17 @@ public class RobotContainer {
 			this.upperBeamBreakSensor::getAsBoolean
 		);
 		
+		this.driveController.a().whileTrue(this.swerve.commands.quasistatic(SysIdRoutine.Direction.kForward));
+		this.driveController.x().whileTrue(this.swerve.commands.quasistatic(SysIdRoutine.Direction.kReverse));
+		this.driveController.y().whileTrue(this.swerve.commands.dynamic(SysIdRoutine.Direction.kForward));
+		this.driveController.b().whileTrue(this.swerve.commands.dynamic(SysIdRoutine.Direction.kReverse));
+		
 	}
 	
 	public void robotInit() {
 		
+		DataLogManager.start();
+		URCL.start();
 		this.swerve.calibrateFieldRelativeHeading();
 		
 	}
@@ -91,31 +103,31 @@ public class RobotContainer {
 	
 	public void initTeleop() {
 		
-		this.controlsScheme.configureControls(
-			this,
-			this.driveController,
-			this.subsystemController
-		);
+//		this.controlsScheme.configureControls(
+//			this,
+//			this.driveController,
+//			this.subsystemController
+//		);
 		
 	}
 	
 	public void teleopPeriodic() {
 		
-		this.controlsScheme.periodic(
-			this,
-			this.driveController,
-			this.subsystemController
-		);
+//		this.controlsScheme.periodic(
+//			this,
+//			this.driveController,
+//			this.subsystemController
+//		);
 		
 	}
 	
 	public void teleopExit() {
 		
-		this.controlsScheme.exit(
-			this,
-			this.driveController,
-			this.subsystemController
-		);
+//		this.controlsScheme.exit(
+//			this,
+//			this.driveController,
+//			this.subsystemController
+//		);
 		
 	}
 	
